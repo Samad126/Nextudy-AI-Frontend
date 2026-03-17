@@ -5,12 +5,13 @@ import Link from "next/link"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/shared/ui/button"
-import { GoogleButton } from "@/features/auth/components/google-button"
-import { OrDivider } from "@/features/auth/components/or-divider"
-import { FormField } from "@/features/auth/components/form-field"
-import { PasswordField } from "@/features/auth/components/password-toggle"
 import { validateEmail, validatePassword } from "@/lib/validations/auth"
-import { GoogleOAuthProvider } from "@react-oauth/google"
+import {
+  FormField,
+  GoogleButton,
+  OrDivider,
+  PasswordField,
+} from "@/features/auth/components"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -50,10 +51,8 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
-        <GoogleButton />
-      </GoogleOAuthProvider>
-      
+      <GoogleButton />
+
       <OrDivider />
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
