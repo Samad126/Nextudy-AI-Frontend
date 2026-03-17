@@ -10,6 +10,7 @@ import { OrDivider } from "@/features/auth/components/or-divider"
 import { FormField } from "@/features/auth/components/form-field"
 import { PasswordField } from "@/features/auth/components/password-toggle"
 import { validateEmail, validatePassword } from "@/lib/validations/auth"
+import { GoogleOAuthProvider } from "@react-oauth/google"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -49,7 +50,10 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <GoogleButton />
+      <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+        <GoogleButton />
+      </GoogleOAuthProvider>
+      
       <OrDivider />
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
