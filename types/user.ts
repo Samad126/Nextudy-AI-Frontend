@@ -1,0 +1,9 @@
+export interface User {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  avatarUrl?: string
+  googleLinked: boolean
+  createdAt: string
+}

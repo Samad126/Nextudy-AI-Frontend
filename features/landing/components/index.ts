@@ -1,0 +1,8 @@
+export { CtaBanner } from "./cta-banner"
+export { FeaturesSection } from "./features"
+export { Footer } from "./footer"
+export { Hero } from "./hero"
+export { HowItWorks } from "./how-it-works"
+export { MockAppUI } from "./mock-app-ui"
+export { LandingNavbar } from "./navbar"
+export { Testimonials } from "./testimonials"
