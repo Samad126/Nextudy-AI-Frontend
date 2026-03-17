@@ -1,29 +1,33 @@
-/* Auth form validation — plain functions, no external deps */
+import { z } from "zod"
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+export const loginSchema = z.object({
+  email: z.email("Enter a valid email address."),
+  password: z.string().min(1, "Password is required."),
+})
 
-export function validateEmail(email: string): string | null {
-  if (!email) return "Email is required."
-  if (!EMAIL_RE.test(email)) return "Enter a valid email address."
-  return null
-}
+export type LoginFormValues = z.infer<typeof loginSchema>
 
-export function validatePassword(password: string): string | null {
-  if (!password) return "Password is required."
-  if (password.length < 8) return "Password must be at least 8 characters."
-  return null
-}
+export const forgotPasswordSchema = z.object({
+  email: z.email("Enter a valid email address."),
+})
 
-export function validatePasswordMatch(a: string, b: string): string | null {
-  if (!b) return "Please confirm your password."
-  if (a !== b) return "Passwords do not match."
-  return null
-}
+export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>
 
-export function validateRequired(value: string, label = "This field"): string | null {
-  if (!value.trim()) return `${label} is required.`
-  return null
-}
+export const registerSchema = z
+  .object({
+    firstName: z.string().min(1, "First name is required."),
+    lastName: z.string().min(1, "Last name is required."),
+    email: z.email("Enter a valid email address."),
+    password: z.string().min(8, "Password must be at least 8 characters."),
+    confirmPassword: z.string().min(1, "Please confirm your password."),
+    terms: z.literal(true, { error: "You must agree to continue." }),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  })
+
+export type RegisterFormValues = z.infer<typeof registerSchema>
 
 export type PasswordStrength = { level: 1 | 2 | 3; label: "Weak" | "Medium" | "Strong" }
 

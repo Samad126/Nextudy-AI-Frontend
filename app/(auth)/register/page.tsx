@@ -1,66 +1,41 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
 import { Check, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { useForm, useWatch, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/shared/ui/button"
 import { Checkbox } from "@/shared/ui/checkbox"
 import { Label } from "@/shared/ui/label"
-import { getPasswordStrength, validateEmail, validatePassword, validatePasswordMatch, validateRequired } from "@/lib/validations/auth"
-import { FormField, GoogleButton, OrDivider, PasswordField } from "@/features/auth/components"
+import { FormField } from "@/shared/components/form-field"
+import { PasswordField } from "@/shared/components/password-field"
+import { GoogleButton, OrDivider } from "@/features/auth/components"
+import { registerSchema, type RegisterFormValues, getPasswordStrength } from "@/lib/validations/auth"
 
 const STRENGTH_COLOR = { 1: "#ef4444", 2: "#f59e0b", 3: "var(--color-sage)" }
 
 export default function RegisterPage() {
-  const [fields, setFields] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { firstName: "", lastName: "", email: "", password: "", confirmPassword: "", terms: undefined },
   })
-  const [terms, setTerms] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [loading, setLoading] = useState(false)
 
-  const set = (key: string, value: string) => {
-    setFields((f) => ({ ...f, [key]: value }))
-    setErrors((e) => ({ ...e, [key]: "" }))
-  }
+  const password = useWatch({ control, name: "password" })
+  const confirmPassword = useWatch({ control, name: "confirmPassword" })
+  const strength = getPasswordStrength(password)
+  const passwordsMatch = !!confirmPassword && password === confirmPassword
 
-  function validate() {
-    const e: Record<string, string> = {}
-    const firstErr = validateRequired(fields.firstName, "First name")
-    const lastErr = validateRequired(fields.lastName, "Last name")
-    const emailErr = validateEmail(fields.email)
-    const passErr = validatePassword(fields.password)
-    const matchErr = validatePasswordMatch(
-      fields.password,
-      fields.confirmPassword
-    )
-    if (firstErr) e.firstName = firstErr
-    if (lastErr) e.lastName = lastErr
-    if (emailErr) e.email = emailErr
-    if (passErr) e.password = passErr
-    if (matchErr) e.confirmPassword = matchErr
-    if (!terms) e.terms = "You must agree to continue."
-    setErrors(e)
-    return !Object.keys(e).length
-  }
-
-  async function handleSubmit(ev: { preventDefault(): void }) {
-    ev.preventDefault()
-    if (!validate()) return
-    setLoading(true)
+  async function onSubmit(data: RegisterFormValues) {
+    console.log(data);
     await new Promise((r) => setTimeout(r, 1500))
-    setLoading(false)
     toast.success("Account created! Welcome to Nextudy.")
   }
-
-  const strength = getPasswordStrength(fields.password)
-  const passwordsMatch =
-    !!fields.confirmPassword && fields.password === fields.confirmPassword
 
   return (
     <div className="flex flex-col gap-5">
@@ -76,26 +51,23 @@ export default function RegisterPage() {
       <GoogleButton />
       <OrDivider />
 
-      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
           <FormField
             id="firstName"
             label="First name"
             autoComplete="given-name"
             placeholder="Jane"
-            right={<div>salam</div>}
-            value={fields.firstName}
-            error={errors.firstName}
-            onChange={(e) => set("firstName", e.target.value)}
+            error={errors.firstName?.message}
+            {...register("firstName")}
           />
           <FormField
             id="lastName"
             label="Last name"
             autoComplete="family-name"
             placeholder="Doe"
-            value={fields.lastName}
-            error={errors.lastName}
-            onChange={(e) => set("lastName", e.target.value)}
+            error={errors.lastName?.message}
+            {...register("lastName")}
           />
         </div>
 
@@ -105,19 +77,18 @@ export default function RegisterPage() {
           type="email"
           autoComplete="email"
           placeholder="you@example.com"
-          value={fields.email}
-          error={errors.email}
-          onChange={(e) => set("email", e.target.value)}
+          error={errors.email?.message}
+          {...register("email")}
         />
 
         <div className="flex flex-col gap-1.5">
           <PasswordField
             id="password"
+            label="Password"
             autoComplete="new-password"
             placeholder="Min. 8 characters"
-            value={fields.password}
-            error={errors.password}
-            onChange={(v) => set("password", v)}
+            error={errors.password?.message}
+            {...register("password")}
           />
           {strength && (
             <div className="flex items-center gap-2">
@@ -149,24 +120,24 @@ export default function RegisterPage() {
           id="confirmPassword"
           label="Confirm password"
           autoComplete="new-password"
-          value={fields.confirmPassword}
-          error={errors.confirmPassword}
-          onChange={(v) => set("confirmPassword", v)}
-          adornment={
-            passwordsMatch ? <Check className="size-4 text-sage" /> : undefined
-          }
+          error={errors.confirmPassword?.message}
+          adornment={passwordsMatch ? <Check className="size-4 text-sage" /> : undefined}
+          {...register("confirmPassword")}
         />
 
         <div className="flex flex-col gap-1">
           <div className="flex items-start gap-2.5">
-            <Checkbox
-              id="terms"
-              checked={terms}
-              className="mt-0.5 cursor-pointer"
-              onCheckedChange={(c) => {
-                setTerms(c === true)
-                setErrors((e) => ({ ...e, terms: "" }))
-              }}
+            <Controller
+              name="terms"
+              control={control}
+              render={({ field }) => (
+                <Checkbox
+                  id="terms"
+                  checked={field.value === true}
+                  className="mt-0.5 cursor-pointer"
+                  onCheckedChange={(c) => field.onChange(c === true ? true : undefined)}
+                />
+              )}
             />
             <Label
               htmlFor="terms"
@@ -184,17 +155,17 @@ export default function RegisterPage() {
           </div>
           {errors.terms && (
             <p className="text-xs text-destructive" role="alert">
-              {errors.terms}
+              {errors.terms.message}
             </p>
           )}
         </div>
 
         <Button
           type="submit"
-          disabled={loading}
+          disabled={isSubmitting}
           className="mt-1 h-10 w-full cursor-pointer bg-teal text-white hover:bg-teal/90"
         >
-          {loading ? (
+          {isSubmitting ? (
             <>
               <Loader2 className="size-4 animate-spin" /> Creating account…
             </>

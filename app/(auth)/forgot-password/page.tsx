@@ -1,21 +1,28 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { ArrowLeft, CheckCircle2, Loader2, Mail } from "lucide-react"
 import { toast } from "sonner"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/shared/ui/button"
-import { FormField } from "@/features/auth/components/form-field"
-import { validateEmail } from "@/lib/validations/auth"
+import { FormField } from "@/shared/components/form-field"
+import { forgotPasswordSchema, type ForgotPasswordFormValues } from "@/lib/validations/auth"
 
 const RESEND_COOLDOWN = 30
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("")
-  const [emailError, setEmailError] = useState("")
-  const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [countdown, setCountdown] = useState(0)
+  const [resending, setResending] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors, isSubmitting },
+  } = useForm<ForgotPasswordFormValues>({ resolver: zodResolver(forgotPasswordSchema) })
 
   useEffect(() => {
     if (countdown <= 0) return
@@ -23,33 +30,26 @@ export default function ForgotPasswordPage() {
     return () => clearTimeout(t)
   }, [countdown])
 
-  function validate() {
-    const err = validateEmail(email)
-    setEmailError(err ?? "")
-    return !err
-  }
-
-  async function handleSubmit(ev: { preventDefault(): void }) {
-    ev.preventDefault()
-    if (!validate()) return
-    setLoading(true)
+  async function onSubmit() {
     await new Promise((r) => setTimeout(r, 1500))
-    setLoading(false)
     setSent(true)
     setCountdown(RESEND_COOLDOWN)
   }
 
   async function handleResend() {
-    setLoading(true)
+    setResending(true)
     await new Promise((r) => setTimeout(r, 1200))
-    setLoading(false)
+    setResending(false)
     setCountdown(RESEND_COOLDOWN)
     toast.success("Reset link resent.")
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <Link href="/login" className="inline-flex w-fit cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">
+      <Link
+        href="/login"
+        className="inline-flex w-fit cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
         <ArrowLeft className="size-3.5" />
         Back to sign in
       </Link>
@@ -63,7 +63,8 @@ export default function ForgotPasswordPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-navy">Check your email</h1>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              We sent a reset link to <span className="font-medium text-foreground">{email}</span>. It expires in 15 minutes.
+              We sent a reset link to{" "}
+              <span className="font-medium text-foreground">{getValues("email")}</span>. It expires in 15 minutes.
             </p>
           </div>
 
@@ -79,13 +80,17 @@ export default function ForgotPasswordPage() {
 
           <Button
             variant="outline"
-            disabled={countdown > 0 || loading}
+            disabled={countdown > 0 || resending}
             onClick={handleResend}
             className="h-10 w-full cursor-pointer disabled:cursor-not-allowed"
           >
-            {loading
-              ? <><Loader2 className="size-4 animate-spin" /> Sending…</>
-              : countdown > 0 ? `Resend in ${countdown}s` : "Resend reset link"}
+            {resending ? (
+              <><Loader2 className="size-4 animate-spin" /> Sending…</>
+            ) : countdown > 0 ? (
+              `Resend in ${countdown}s`
+            ) : (
+              "Resend reset link"
+            )}
           </Button>
 
           <Link href="/login" className="text-sm font-medium text-teal hover:underline">
@@ -101,14 +106,26 @@ export default function ForgotPasswordPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
             <FormField
-              id="email" label="Email address" type="email" autoComplete="email"
-              placeholder="you@example.com" value={email} error={emailError}
-              onChange={(e) => { setEmail(e.target.value); setEmailError("") }}
+              id="email"
+              label="Email address"
+              type="email"
+              autoComplete="email"
+              placeholder="you@example.com"
+              error={errors.email?.message}
+              {...register("email")}
             />
-            <Button type="submit" disabled={loading} className="h-10 w-full cursor-pointer bg-teal text-white hover:bg-teal/90">
-              {loading ? <><Loader2 className="size-4 animate-spin" /> Sending reset link…</> : "Send reset link"}
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="h-10 w-full cursor-pointer bg-teal text-white hover:bg-teal/90"
+            >
+              {isSubmitting ? (
+                <><Loader2 className="size-4 animate-spin" /> Sending reset link…</>
+              ) : (
+                "Send reset link"
+              )}
             </Button>
           </form>
 

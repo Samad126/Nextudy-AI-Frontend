@@ -6,8 +6,8 @@ interface FormFieldProps extends React.ComponentProps<typeof Input> {
   id: string
   label: React.ReactNode
   error?: string
-  right?: React.ReactNode  // e.g. "Forgot password?" link
-  inputRight?: React.ReactNode  // e.g. show/hide button inside input
+  right?: React.ReactNode
+  inputRight?: React.ReactNode
 }
 
 export function FormField({ id, label, error, right, inputRight, className, ...props }: FormFieldProps) {
