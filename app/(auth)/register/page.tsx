@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { Check, Loader2 } from "lucide-react"
-import { toast } from "sonner"
 import { useForm, useWatch, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/shared/ui/button"
@@ -12,18 +11,22 @@ import { FormField } from "@/shared/components/form-field"
 import { PasswordField } from "@/shared/components/password-field"
 import { GoogleButton, OrDivider } from "@/features/auth/components"
 import { registerSchema, type RegisterFormValues, getPasswordStrength } from "@/lib/validations/auth"
+import { useRegister } from "@/features/auth/mutations/use-register"
 
 const STRENGTH_COLOR = { 1: "#ef4444", 2: "#f59e0b", 3: "var(--color-sage)" }
 
 export default function RegisterPage() {
+  const { mutate: registerUser, isPending, error } = useRegister()
+
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { firstName: "", lastName: "", email: "", password: "", confirmPassword: "", terms: undefined },
+    mode: "onChange"
   })
 
   const password = useWatch({ control, name: "password" })
@@ -31,10 +34,8 @@ export default function RegisterPage() {
   const strength = getPasswordStrength(password)
   const passwordsMatch = !!confirmPassword && password === confirmPassword
 
-  async function onSubmit(data: RegisterFormValues) {
-    console.log(data);
-    await new Promise((r) => setTimeout(r, 1500))
-    toast.success("Account created! Welcome to Nextudy.")
+  function onSubmit(data: RegisterFormValues) {
+    registerUser(data)
   }
 
   return (
@@ -160,12 +161,18 @@ export default function RegisterPage() {
           )}
         </div>
 
+        {error && (
+          <p className="text-sm text-destructive" role="alert">
+            {error.response?.data?.error.message ?? "Something went wrong."}
+          </p>
+        )}
+
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isPending}
           className="mt-1 h-10 w-full cursor-pointer bg-teal text-white hover:bg-teal/90"
         >
-          {isSubmitting ? (
+          {isPending ? (
             <>
               <Loader2 className="size-4 animate-spin" /> Creating account…
             </>

@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { Loader2 } from "lucide-react"
-import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/shared/ui/button"
@@ -10,17 +9,19 @@ import { FormField } from "@/shared/components/form-field"
 import { PasswordField } from "@/shared/components/password-field"
 import { GoogleButton, OrDivider } from "@/features/auth/components"
 import { loginSchema, type LoginFormValues } from "@/lib/validations/auth"
+import { useLogin } from "@/features/auth/mutations/use-login"
 
 export default function LoginPage() {
+  const { mutate: login, isPending, error } = useLogin();
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) })
 
-  async function onSubmit() {
-    await new Promise((r) => setTimeout(r, 1500))
-    toast.success("Signed in successfully!")
+  function onSubmit(data: LoginFormValues) {
+    login(data);
   }
 
   return (
@@ -59,12 +60,18 @@ export default function LoginPage() {
           {...register("password")}
         />
 
+        {error && (
+          <p className="text-sm text-destructive" role="alert">
+            {error.response?.data?.error.message ?? "Something went wrong."}
+          </p>
+        )}
+
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isPending}
           className="mt-1 h-10 w-full cursor-pointer bg-teal text-white hover:bg-teal/90"
         >
-          {isSubmitting ? (
+          {isPending ? (
             <><Loader2 className="size-4 animate-spin" /> Signing in…</>
           ) : (
             "Sign in"

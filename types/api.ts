@@ -1,11 +1,14 @@
-export interface ApiResponse<T> {
+export interface ApiSuccess<T> {
+  success: true
   data: T
-  message?: string
 }
 
-export interface PaginatedResponse<T> {
-  data: T[]
-  total: number
-  page: number
-  pageSize: number
+export interface ApiError {
+  success: false
+  error: {
+    code: string
+    message: string
+  }
 }
+
+export type ApiResponse<T> = ApiSuccess<T> | ApiError

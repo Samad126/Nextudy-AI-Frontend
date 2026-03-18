@@ -1,0 +1,29 @@
+import { useMutation } from "@tanstack/react-query"
+import { useRouter } from "next/navigation"
+import type { AxiosError } from "axios"
+
+import { axiosBase, setAccessToken } from "@/lib/api/client"
+import type { LoginFormValues } from "@/lib/validations/auth"
+import type { ApiSuccess, ApiError } from "@/types/api"
+
+interface LoginData {
+  accessToken: string
+  refreshToken: string
+}
+
+async function loginFn(data: LoginFormValues): Promise<LoginData> {
+  const res = await axiosBase.post<ApiSuccess<LoginData>>("/auth/login", data)
+  return res.data.data
+}
+
+export function useLogin() {
+  const router = useRouter();
+
+  return useMutation<LoginData, AxiosError<ApiError>, LoginFormValues>({
+    mutationFn: loginFn,
+    onSuccess: (data) => {
+      setAccessToken(data.accessToken)
+      router.push("/dashboard")
+    },
+  })
+}
