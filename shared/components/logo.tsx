@@ -15,10 +15,10 @@ export function Logo({ size = "md", inverted = false, className }: LogoProps) {
 
   return (
     <Link href="/" className={cn("flex items-center gap-2 select-none", className)}>
-      <div className={cn(icon, "rounded-lg flex items-center justify-center", inverted ? "bg-white/10" : "bg-navy")}>
+      <div className={cn(icon, "rounded-lg flex items-center justify-center", inverted ? "bg-white/10" : "bg-navy dark:bg-primary")}>
         <BookOpen className={cn(iconInner, "text-white")} />
       </div>
-      <span className={cn(text, "font-semibold tracking-tight", inverted ? "text-white" : "text-navy")}>
+      <span className={cn(text, "font-semibold tracking-tight", inverted ? "text-white" : "text-navy dark:text-foreground")}>
         Nextudy
       </span>
     </Link>

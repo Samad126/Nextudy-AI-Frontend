@@ -40,7 +40,7 @@ export default function RegisterPage() {
   return (
     <div className="flex flex-col gap-5">
       <div className="text-center">
-        <h1 className="text-2xl font-bold tracking-tight text-navy">
+        <h1 className="text-2xl font-bold tracking-tight text-navy dark:text-foreground">
           Create your account
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -144,11 +144,11 @@ export default function RegisterPage() {
               className="cursor-pointer text-sm leading-relaxed text-muted-foreground"
             >
               I agree to the{" "}
-              <a href="#" className="text-teal hover:underline">
+              <a href="#" className="text-teal hover:underline dark:text-sky">
                 Terms of Service
               </a>{" "}
               and{" "}
-              <a href="#" className="text-teal hover:underline">
+              <a href="#" className="text-teal hover:underline dark:text-sky">
                 Privacy Policy
               </a>
             </Label>
@@ -177,7 +177,7 @@ export default function RegisterPage() {
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-teal hover:underline">
+        <Link href="/login" className="font-medium text-teal hover:underline dark:text-sky">
           Sign in
         </Link>
       </p>

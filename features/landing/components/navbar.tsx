@@ -21,7 +21,7 @@ export function LandingNavbar() {
   return (
     <header className={cn(
       "fixed inset-x-0 top-0 z-50 transition-all duration-200",
-      scrolled ? "border-b border-border bg-white/95 shadow-sm backdrop-blur-sm" : "bg-transparent",
+      scrolled ? "border-b border-border bg-background/95 shadow-sm backdrop-blur-sm" : "bg-transparent",
     )}>
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Logo />
@@ -51,7 +51,7 @@ export function LandingNavbar() {
       </div>
 
       {open && (
-        <div className="flex flex-col gap-1 border-b border-border bg-white px-6 pb-4 md:hidden">
+        <div className="flex flex-col gap-1 border-b border-border bg-background px-6 pb-4 md:hidden">
           {NAV_LINKS.map(({ label, href }) => (
             <a key={label} href={href} onClick={() => setOpen(false)} className="cursor-pointer rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-muted">
               {label}

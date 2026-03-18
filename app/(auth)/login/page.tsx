@@ -26,7 +26,7 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="text-center">
-        <h1 className="text-2xl font-bold tracking-tight text-navy">
+        <h1 className="text-2xl font-bold tracking-tight text-navy dark:text-foreground">
           Welcome back
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -52,7 +52,7 @@ export default function LoginPage() {
           autoComplete="current-password"
           error={errors.password?.message}
           right={
-            <Link href="/forgot-password" className="text-xs text-teal hover:underline">
+            <Link href="/forgot-password" className="text-xs text-teal hover:underline dark:text-sky">
               Forgot password?
             </Link>
           }
@@ -74,7 +74,7 @@ export default function LoginPage() {
 
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="font-medium text-teal hover:underline">
+        <Link href="/register" className="font-medium text-teal hover:underline dark:text-sky">
           Sign up
         </Link>
       </p>

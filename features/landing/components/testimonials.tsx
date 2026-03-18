@@ -5,7 +5,7 @@ export function Testimonials() {
     <section id="testimonials" className="bg-muted/30 px-6 py-20">
       <div className="mx-auto max-w-6xl">
         <div className="mb-12 text-center">
-          <h2 className="mb-3 text-3xl font-bold tracking-tight text-navy">Students love Nextudy</h2>
+          <h2 className="mb-3 text-3xl font-bold tracking-tight text-navy dark:text-foreground">Students love Nextudy</h2>
           <p className="text-muted-foreground">Real feedback from real learners.</p>
         </div>
 
@@ -17,7 +17,7 @@ export function Testimonials() {
                   {initials}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-navy">{name}</p>
+                  <p className="text-sm font-medium text-navy dark:text-foreground">{name}</p>
                   <p className="text-xs text-muted-foreground">{role}</p>
                 </div>
               </div>

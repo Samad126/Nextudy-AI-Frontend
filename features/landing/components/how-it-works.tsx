@@ -5,7 +5,7 @@ export function HowItWorks() {
     <section id="how-it-works" className="px-6 py-20">
       <div className="mx-auto max-w-6xl">
         <div className="mb-14 text-center">
-          <h2 className="mb-3 text-3xl font-bold tracking-tight text-navy">Up and running in minutes</h2>
+          <h2 className="mb-3 text-3xl font-bold tracking-tight text-navy dark:text-foreground">Up and running in minutes</h2>
           <p className="text-muted-foreground">Three steps to smarter studying.</p>
         </div>
 
@@ -18,7 +18,7 @@ export function HowItWorks() {
                 <Icon className={`size-8 text-${color}`} />
               </div>
               <p className={`mb-2 text-xs font-bold tracking-widest text-${color}`}>STEP {step}</p>
-              <h3 className="mb-2 text-lg font-semibold text-navy">{title}</h3>
+              <h3 className="mb-2 text-lg font-semibold text-navy dark:text-foreground">{title}</h3>
               <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">{desc}</p>
             </div>
           ))}

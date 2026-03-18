@@ -13,9 +13,9 @@ export function Hero() {
             AI-powered study platform
           </div>
 
-          <h1 className="mb-5 text-5xl font-bold leading-[1.1] tracking-tight text-navy sm:text-6xl">
+          <h1 className="mb-5 text-5xl font-bold leading-[1.1] tracking-tight text-navy dark:text-foreground sm:text-6xl">
             Study smarter,{" "}
-            <span className="text-teal">not harder</span>
+            <span className="text-teal dark:text-sky">not harder</span>
           </h1>
 
           <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-muted-foreground">

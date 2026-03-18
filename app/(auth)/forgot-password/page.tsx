@@ -61,7 +61,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-navy">Check your email</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-navy dark:text-foreground">Check your email</h1>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               We sent a reset link to{" "}
               <span className="font-medium text-foreground">{getValues("email")}</span>. It expires in 15 minutes.
@@ -100,7 +100,7 @@ export default function ForgotPasswordPage() {
       ) : (
         <>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-navy">Reset your password</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-navy dark:text-foreground">Reset your password</h1>
             <p className="mt-1 text-sm text-muted-foreground">
               Enter your email and we&apos;ll send you a reset link.
             </p>
@@ -131,7 +131,7 @@ export default function ForgotPasswordPage() {
 
           <p className="text-center text-sm text-muted-foreground">
             Remember your password?{" "}
-            <Link href="/login" className="font-medium text-teal hover:underline">Sign in</Link>
+            <Link href="/login" className="font-medium text-teal hover:underline dark:text-sky">Sign in</Link>
           </p>
         </>
       )}

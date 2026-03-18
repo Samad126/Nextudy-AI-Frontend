@@ -13,9 +13,9 @@ const TABS = ["Resources", "Questions", "AI Chat"]
 
 export function MockAppUI() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-2xl" style={{ minWidth: 0 }}>
+    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-2xl" style={{ minWidth: 0 }}>
       {/* Window chrome */}
-      <div className="flex items-center gap-1.5 border-b border-border bg-[#f8f9fa] px-4 py-3">
+      <div className="flex items-center gap-1.5 border-b border-border bg-muted/50 px-4 py-3">
         <span className="size-3 rounded-full bg-red-400" />
         <span className="size-3 rounded-full bg-yellow-400" />
         <span className="size-3 rounded-full bg-green-400" />
@@ -24,7 +24,7 @@ export function MockAppUI() {
 
       <div className="flex h-72">
         {/* Sidebar */}
-        <div className="flex w-44 shrink-0 flex-col gap-1 border-r border-border bg-[#f8f9fa] p-3">
+        <div className="flex w-44 shrink-0 flex-col gap-1 border-r border-border bg-muted/50 p-3">
           <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Biology 101</p>
           {SIDEBAR_ITEMS.map(({ icon: Icon, label }) => (
             <div key={label} className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted/50">
