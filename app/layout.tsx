@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Toaster } from "sonner"
 
 import "./globals.css"
+import { QueryProvider } from "@/shared/providers/query-provider"
 import { ThemeProvider } from "@/shared/providers/theme-provider"
 import { cn } from "@/lib/utils"
 
@@ -38,15 +39,17 @@ export default function RootLayout({
       className={cn(fontSans.variable, fontMono.variable)}
     >
       <body className="antialiased font-sans">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster position="bottom-right" richColors closeButton />
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem={false}
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster position="bottom-right" richColors closeButton />
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   )
