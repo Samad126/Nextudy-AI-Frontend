@@ -1,4 +1,5 @@
-import axios from "axios"
+import type { ApiSuccess } from "@/types"
+import axios, { type AxiosRequestConfig } from "axios"
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"
 
@@ -7,6 +8,30 @@ let accessToken: string | null = null
 export const getAccessToken = () => accessToken
 export const setAccessToken = (token: string | null) => {
   accessToken = token
+}
+
+type RefreshTokenResponse = {
+  accessToken: string
+  refreshToken: string
+}
+
+type QueueItem = {
+  resolve: (token: string) => void
+  reject: (error: unknown) => void
+}
+
+let isRefreshing = false
+let queue: QueueItem[] = []
+
+function processQueue(error: unknown, token: string | null) {
+  queue.forEach((item) => {
+    if (error) {
+      item.reject(error)
+    } else {
+      item.resolve(token!)
+    }
+  })
+  queue = []
 }
 
 // Public instance (no auth)
@@ -30,32 +55,57 @@ axiosPrivate.interceptors.request.use(
     }
     return config
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 )
 
 axiosPrivate.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config
+    const originalRequest: AxiosRequestConfig & { _retry?: boolean } =
+      error.config
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true
-
-      try {
-        const { data } = await axiosBase.post<{ accessToken: string }>(
-          "/auth/refresh",
-        )
-
-        accessToken = data.accessToken
-        originalRequest.headers["Authorization"] = `Bearer ${accessToken}`
-
-        return axiosPrivate(originalRequest)
-      } catch {
-        accessToken = null
-        window.location.href = "/login"
-      }
+    if (error.response?.status !== 401 || originalRequest._retry) {
+      return Promise.reject(error)
     }
 
-    return Promise.reject(error)
-  },
+    if (isRefreshing) {
+      return new Promise<string>((resolve, reject) => {
+        queue.push({ resolve, reject })
+      })
+        .then((token) => {
+          originalRequest.headers = {
+            ...originalRequest.headers,
+            Authorization: `Bearer ${token}`,
+          }
+          return axiosPrivate(originalRequest)
+        })
+        .catch(Promise.reject.bind(Promise))
+    }
+
+    originalRequest._retry = true
+    isRefreshing = true
+
+    try {
+      const { data } =
+        await axiosBase.post<ApiSuccess<RefreshTokenResponse>>("/auth/refresh")
+      const newToken = data.data.accessToken
+
+      accessToken = newToken
+      processQueue(null, newToken)
+
+      originalRequest.headers = {
+        ...originalRequest.headers,
+        Authorization: `Bearer ${newToken}`,
+      }
+
+      return axiosPrivate(originalRequest)
+    } catch (refreshError) {
+      processQueue(refreshError, null)
+      accessToken = null
+      window.location.href = "/login"
+      return Promise.reject(refreshError)
+    } finally {
+      isRefreshing = false
+    }
+  }
 )
