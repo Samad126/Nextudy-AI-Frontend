@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
+import Script from "next/script"
 import { Toaster } from "sonner"
 
 import "./globals.css"
@@ -38,6 +39,9 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn(fontSans.variable, fontMono.variable)}
     >
+      <head>
+        <Script src="https://unpkg.com/react-scan/dist/auto.global.js" strategy="beforeInteractive" />
+      </head>
       <body className="antialiased font-sans">
         <QueryProvider>
           <ThemeProvider
