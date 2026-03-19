@@ -64,7 +64,10 @@ axiosPrivate.interceptors.response.use(
     const originalRequest: AxiosRequestConfig & { _retry?: boolean } =
       error.config
 
-    if (error.response?.status !== 401 || originalRequest._retry) {
+    if (
+      (error.response?.status !== 401 && error.response?.status !== 403) ||
+      originalRequest._retry
+    ) {
       return Promise.reject(error)
     }
 
@@ -103,6 +106,7 @@ axiosPrivate.interceptors.response.use(
       processQueue(refreshError, null)
       accessToken = null
       if (typeof window !== "undefined") {
+        console.log("DISPATCHED")
         window.dispatchEvent(new CustomEvent("auth:session-expired"))
       }
       return Promise.reject(refreshError)

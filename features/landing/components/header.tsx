@@ -7,16 +7,15 @@ import { Button } from "@/shared/ui/button"
 import { Logo } from "@/shared/components/logo"
 import { NAV_LINKS } from "../constants"
 import { cn } from "@/lib/utils"
-import { useAuthStore } from "@/store/auth.store"
+import { useGetUserProfile } from "../queries/useGetUserProfile"
 import { useHasSession } from "@/shared/providers/auth-provider"
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
 
-  const user = useAuthStore((s) => s.user);
-  const { isHydrated } = useAuthStore();
-  const hasSession = useHasSession();
+  const hasSession = useHasSession()
+  const { data: user } = useGetUserProfile();
 
   const handler = useEffectEvent(() => setScrolled(scrollY > 12))
 
@@ -50,7 +49,7 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          {hasSession && !isHydrated ? (
+          {hasSession && !user ? (
             <div className="h-8 w-32 animate-pulse rounded-md bg-muted" />
           ) : user ? (
             <Link href="/dashboard">
@@ -96,7 +95,7 @@ export function Header() {
             </a>
           ))}
           <div className="mt-2 flex gap-2 border-t border-border pt-2">
-            {hasSession && !isHydrated ? (
+            {hasSession && !user ? (
               <div className="h-8 w-full animate-pulse rounded-md bg-muted" />
             ) : user ? (
               <Link href="/dashboard" className="flex-1">

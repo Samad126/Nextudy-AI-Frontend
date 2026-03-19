@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import type { AxiosError } from "axios"
 
@@ -18,12 +18,17 @@ async function loginFn(data: LoginFormValues): Promise<LoginData> {
 
 export function useLogin() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation<LoginData, AxiosError<ApiError>, LoginFormValues>({
     mutationFn: loginFn,
     onSuccess: (data) => {
       setAccessToken(data.accessToken)
+
+      queryClient.resetQueries();
+
       router.push("/")
+      router.refresh()
     },
   })
 }
