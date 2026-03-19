@@ -24,7 +24,7 @@ export function useRegister() {
     mutationFn: registerFn,
     onSuccess: (data) => {
       setAccessToken(data.accessToken)
-      router.push("/dashboard")
+      router.push("/")
     },
   })
 }

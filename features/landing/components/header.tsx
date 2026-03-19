@@ -7,13 +7,16 @@ import { Button } from "@/shared/ui/button"
 import { Logo } from "@/shared/components/logo"
 import { NAV_LINKS } from "../constants"
 import { cn } from "@/lib/utils"
-import { useGetUserProfile } from "../queries/useGetUserProfile"
+import { useAuthStore } from "@/store/auth.store"
+import { useHasSession } from "@/shared/providers/auth-provider"
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
 
-  const { data, error, isLoading } = useGetUserProfile();
+  const user = useAuthStore((s) => s.user);
+  const { isHydrated } = useAuthStore();
+  const hasSession = useHasSession();
 
   const handler = useEffectEvent(() => setScrolled(scrollY > 12))
 
@@ -47,19 +50,28 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Link href="/login">
-            <Button variant="ghost" size="sm" className="cursor-pointer">
-              Sign in
-            </Button>
-          </Link>
-          <Link href="/register">
-            <Button
-              size="sm"
-              className="cursor-pointer bg-teal text-white hover:bg-teal/90"
-            >
-              Get started <ChevronRight className="size-3.5" />
-            </Button>
-          </Link>
+          {hasSession && !isHydrated ? (
+            <div className="h-8 w-32 animate-pulse rounded-md bg-muted" />
+          ) : user ? (
+            <Link href="/dashboard">
+              <Button size="sm" className="cursor-pointer bg-teal text-white hover:bg-teal/90">
+                Go to dashboard <ChevronRight className="size-3.5" />
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button variant="ghost" size="sm" className="cursor-pointer">
+                  Sign in
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button size="sm" className="cursor-pointer bg-teal text-white hover:bg-teal/90">
+                  Get started <ChevronRight className="size-3.5" />
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -84,23 +96,28 @@ export function Header() {
             </a>
           ))}
           <div className="mt-2 flex gap-2 border-t border-border pt-2">
-            <Link href="/login" className="flex-1">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full cursor-pointer"
-              >
-                Sign in
-              </Button>
-            </Link>
-            <Link href="/register" className="flex-1">
-              <Button
-                size="sm"
-                className="w-full cursor-pointer bg-teal text-white hover:bg-teal/90"
-              >
-                Get started
-              </Button>
-            </Link>
+            {hasSession && !isHydrated ? (
+              <div className="h-8 w-full animate-pulse rounded-md bg-muted" />
+            ) : user ? (
+              <Link href="/dashboard" className="flex-1">
+                <Button size="sm" className="w-full cursor-pointer bg-teal text-white hover:bg-teal/90">
+                  Go to dashboard
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/login" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full cursor-pointer">
+                    Sign in
+                  </Button>
+                </Link>
+                <Link href="/register" className="flex-1">
+                  <Button size="sm" className="w-full cursor-pointer bg-teal text-white hover:bg-teal/90">
+                    Get started
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

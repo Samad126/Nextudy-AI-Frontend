@@ -10,7 +10,7 @@ export const setAccessToken = (token: string | null) => {
   accessToken = token
 }
 
-type RefreshTokenResponse = {
+export type RefreshTokenResponse = {
   accessToken: string
   refreshToken: string
 }
@@ -102,7 +102,9 @@ axiosPrivate.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError, null)
       accessToken = null
-      window.location.href = "/login"
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("auth:session-expired"))
+      }
       return Promise.reject(refreshError)
     } finally {
       isRefreshing = false

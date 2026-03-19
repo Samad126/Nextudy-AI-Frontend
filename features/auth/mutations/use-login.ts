@@ -23,7 +23,7 @@ export function useLogin() {
     mutationFn: loginFn,
     onSuccess: (data) => {
       setAccessToken(data.accessToken)
-      router.push("/dashboard")
+      router.push("/")
     },
   })
 }

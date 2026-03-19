@@ -11,5 +11,6 @@ export function useGetUserProfile() {
   return useQuery({
     queryFn: getUser,
     queryKey: ["user-profile"],
+    staleTime: 0
   })
 }
