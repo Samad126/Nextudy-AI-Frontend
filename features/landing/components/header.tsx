@@ -21,8 +21,7 @@ import { Logo } from "@/shared/components/logo"
 import { NAV_LINKS } from "../constants"
 import { cn } from "@/lib/utils"
 import { useGetUserProfile } from "../queries/useGetUserProfile"
-import { useHasSession } from "@/shared/providers/auth-provider"
-import { useAuthStore } from "@/store/auth.store"
+import { useAuth } from "@/shared/providers/auth-provider"
 import { useRouter } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
 
@@ -30,9 +29,8 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
 
-  const hasSession = useHasSession()
   const { data: user } = useGetUserProfile()
-  const logout = useAuthStore((s) => s.logout)
+  const { hasSession, logout } = useAuth()
   const queryClient = useQueryClient();
   const router = useRouter()
 
@@ -44,7 +42,6 @@ export function Header() {
   }, [])
 
   function handleLogout() {
-    
     fetch("/api/logout", { method: "POST" }).then(() => {
       logout()
       queryClient.removeQueries();

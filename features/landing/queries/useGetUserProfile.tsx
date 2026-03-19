@@ -1,6 +1,5 @@
 import { axiosPrivate } from "@/lib/api/client"
-import { useAuthStore } from "@/store/auth.store"
-import { useHasSession } from "@/shared/providers/auth-provider"
+import { useAuth } from "@/shared/providers/auth-provider"
 import { ApiSuccess, User } from "@/types"
 import { useQuery } from "@tanstack/react-query"
 
@@ -10,8 +9,7 @@ async function getUser(): Promise<User> {
 }
 
 export function useGetUserProfile() {
-  const hasSession = useHasSession()
-  const isHydrated = useAuthStore((s) => s.isHydrated)
+  const { hasSession, isHydrated } = useAuth()
 
   console.log("HAS SESSION ", hasSession);
   console.log("IS HYDRATED ", isHydrated);

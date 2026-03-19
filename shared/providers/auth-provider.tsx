@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 
 import {
@@ -9,13 +9,23 @@ import {
   RefreshTokenResponse,
   setAccessToken,
 } from "@/lib/api/client"
-import { useAuthStore } from "@/store/auth.store"
 import type { ApiSuccess } from "@/types"
 
 const OPTIONAL_AUTH_PATHS = ["/", "/about", "/pricing"]
 
-const HasSessionContext = createContext(false)
-export const useHasSession = () => useContext(HasSessionContext)
+interface AuthContextValue {
+  hasSession: boolean
+  isHydrated: boolean
+  logout: () => void
+}
+
+const AuthContext = createContext<AuthContextValue>({
+  hasSession: false,
+  isHydrated: false,
+  logout: () => {},
+})
+
+export const useAuth = () => useContext(AuthContext)
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -23,9 +33,16 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children, hasSession }: AuthProviderProps) {
-  const { setHydrated, logout } = useAuthStore()
+  console.log("AUTH PROVIDER RE-RENDERED");
+
+  const [isHydrated, setHydrated] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
+
+  function logout() {
+    setAccessToken(null)
+    setHydrated(false)
+  }
 
   useEffect(() => {
     async function restoreToken() {
@@ -47,12 +64,11 @@ export function AuthProvider({ children, hasSession }: AuthProviderProps) {
         setHydrated(true)
       } catch {
         window.dispatchEvent(new CustomEvent("auth:session-expired"))
-        // refresh failed — token stays null, queries will get 401
       }
     }
 
     restoreToken()
-  }, [hasSession, setHydrated])
+  }, [hasSession])
 
   useEffect(() => {
     function handleSessionExpired() {
@@ -62,7 +78,7 @@ export function AuthProvider({ children, hasSession }: AuthProviderProps) {
           "Content-Type": "application/json",
         },
       }).then(() => {
-        logout();
+        logout()
         console.log("TRIGGERED FETCH")
 
         const isOptional = OPTIONAL_AUTH_PATHS.some(
@@ -80,11 +96,11 @@ export function AuthProvider({ children, hasSession }: AuthProviderProps) {
     addEventListener("auth:session-expired", handleSessionExpired)
     return () =>
       removeEventListener("auth:session-expired", handleSessionExpired)
-  }, [pathname, router, logout, setHydrated])
+  }, [pathname, router])
 
   return (
-    <HasSessionContext.Provider value={hasSession}>
+    <AuthContext.Provider value={{ hasSession, isHydrated, logout }}>
       {children}
-    </HasSessionContext.Provider>
+    </AuthContext.Provider>
   )
 }
