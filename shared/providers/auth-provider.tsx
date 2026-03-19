@@ -62,9 +62,7 @@ export function AuthProvider({ children, hasSession }: AuthProviderProps) {
           "Content-Type": "application/json",
         },
       }).then(() => {
-        logout()
-        setHydrated(false)
-
+        logout();
         console.log("TRIGGERED FETCH")
 
         const isOptional = OPTIONAL_AUTH_PATHS.some(

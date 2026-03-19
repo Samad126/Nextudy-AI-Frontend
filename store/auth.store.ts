@@ -13,5 +13,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
   setHydrated: (val) => set({ isHydrated: val }),
   logout: () => {
     setAccessToken(null)
+    set({ isHydrated: false })
   },
 }))
