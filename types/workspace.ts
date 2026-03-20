@@ -3,12 +3,11 @@ import type { User } from "./user"
 export type Role = "owner" | "editor" | "member"
 
 export interface Workspace {
-  id: string
+  id: number
   name: string
   description: string
-  memberCount: number
-  role: Role
-  createdAt: string
+  created_at: string
+  updated_at: Date
 }
 
 export interface WorkspaceMember {

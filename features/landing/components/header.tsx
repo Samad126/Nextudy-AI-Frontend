@@ -78,7 +78,7 @@ export function Header() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="cursor-pointer">
+                  <Link href="/workspaces" className="cursor-pointer">
                     <LayoutDashboard className="size-4" />
                     Dashboard
                   </Link>
@@ -138,7 +138,7 @@ export function Header() {
             ) : user ? (
               <>
                 <Link
-                  href="/dashboard"
+                  href="/workspaces"
                   className="flex-1"
                   onClick={() => setOpen(false)}
                 >
