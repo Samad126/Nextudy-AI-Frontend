@@ -5,6 +5,7 @@ import type { AxiosError } from "axios"
 import { axiosBase, setAccessToken } from "@/lib/api/client"
 import type { LoginFormValues } from "@/lib/validations/auth"
 import type { ApiSuccess, ApiError } from "@/types/api"
+import { useAuth } from "@/shared/providers/auth-provider"
 
 interface LoginData {
   accessToken: string
@@ -19,16 +20,15 @@ async function loginFn(data: LoginFormValues): Promise<LoginData> {
 export function useLogin() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { markSessionActive } = useAuth()
 
   return useMutation<LoginData, AxiosError<ApiError>, LoginFormValues>({
     mutationFn: loginFn,
     onSuccess: (data) => {
       setAccessToken(data.accessToken)
-
+      markSessionActive()
       queryClient.resetQueries();
-
       router.push("/")
-      router.refresh()
     },
   })
 }

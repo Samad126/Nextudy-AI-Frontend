@@ -1,6 +1,12 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState } from "react"
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react"
 import { useRouter, usePathname } from "next/navigation"
 
 import {
@@ -10,19 +16,23 @@ import {
   setAccessToken,
 } from "@/lib/api/client"
 import type { ApiSuccess } from "@/types"
+import { useLogout } from "@/features/auth/mutations/use-logout"
+import { useQueryClient } from "@tanstack/react-query"
 
 const OPTIONAL_AUTH_PATHS = ["/", "/about", "/pricing"]
 
 interface AuthContextValue {
   hasSession: boolean
   isAccessTokenHydrated: boolean
-  logout: () => void
+  handleLogout: () => void
+  markSessionActive: () => void
 }
 
 const AuthContext = createContext<AuthContextValue>({
   hasSession: false,
   isAccessTokenHydrated: false,
-  logout: () => {},
+  handleLogout: () => {},
+  markSessionActive: () => {},
 })
 
 export const useAuth = () => useContext(AuthContext)
@@ -32,20 +42,23 @@ interface AuthProviderProps {
   hasSession: boolean
 }
 
-export function AuthProvider({ children, hasSession }: AuthProviderProps) {
-  console.log("AUTH PROVIDER RE-RENDERED");
+export function AuthProvider({ children, hasSession: initialHasSession }: AuthProviderProps) {
+  console.log("AUTH PROVIDER RE-RENDERED")
 
+  const [hasSession, setHasSession] = useState(initialHasSession)
   const [isAccessTokenHydrated, setAccessTokenHydrated] = useState(false)
   const router = useRouter()
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const queryClient = useQueryClient();
 
-  function logout() {
-    setAccessToken(null)
-    setAccessTokenHydrated(false)
-  }
+  const { mutate: triggerLogout } = useLogout()
 
   useEffect(() => {
     async function restoreToken() {
+      console.log("TRIGGERED RESTORE TOKEN");
+      console.log("HAS SESSION IN RESTORE TOKEN", hasSession);
+      console.log("getAccessToken()", getAccessToken());
+
       if (!hasSession) {
         return
       }
@@ -56,6 +69,7 @@ export function AuthProvider({ children, hasSession }: AuthProviderProps) {
       }
 
       try {
+        console.log("TRYING TO REFRESH TOKEN");
         const { data } =
           await axiosBase.post<ApiSuccess<RefreshTokenResponse>>(
             "/auth/refresh"
@@ -70,36 +84,54 @@ export function AuthProvider({ children, hasSession }: AuthProviderProps) {
     restoreToken()
   }, [hasSession])
 
-  useEffect(() => {
-    function handleSessionExpired() {
-      fetch("/api/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then(() => {
-        logout()
-        console.log("TRIGGERED FETCH")
+  const handleRedirect = useCallback(() => {
+    const isOptional = OPTIONAL_AUTH_PATHS.some(
+      (p) => pathname === p || pathname.startsWith(p + "/")
+    )
 
-        const isOptional = OPTIONAL_AUTH_PATHS.some(
-          (p) => pathname === p || pathname.startsWith(p + "/")
-        )
-
-        if (!isOptional) {
-          router.push("/login")
-        }
-
-        router.refresh()
-      })
+    if (!isOptional) {
+      router.push("/login");
     }
-
-    addEventListener("auth:session-expired", handleSessionExpired)
-    return () =>
-      removeEventListener("auth:session-expired", handleSessionExpired)
   }, [pathname, router])
 
+  const clearToken = useCallback(async () => {
+    return fetch("/api/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then(() => {
+      setAccessToken(null)
+      setAccessTokenHydrated(false)
+    })
+  }, [])
+
+  const handleLogout = async() => {
+    triggerLogout();
+    await clearToken()
+    setHasSession(false)
+    queryClient.removeQueries();
+    handleRedirect()
+  }
+
+  const handleSessionExpire = useCallback(async () => {
+    await clearToken()
+    setHasSession(false)
+    handleRedirect()
+  }, [clearToken, handleRedirect]);
+
+  useEffect(() => {
+    addEventListener("auth:session-expired", handleSessionExpire)
+    return () =>
+      removeEventListener("auth:session-expired", handleSessionExpire)
+  }, [pathname, router, handleSessionExpire])
+
+  const markSessionActive = useCallback(() => setHasSession(true), [])
+
   return (
-    <AuthContext.Provider value={{ hasSession, isAccessTokenHydrated, logout }}>
+    <AuthContext.Provider
+      value={{ hasSession, isAccessTokenHydrated, handleLogout, markSessionActive }}
+    >
       {children}
     </AuthContext.Provider>
   )

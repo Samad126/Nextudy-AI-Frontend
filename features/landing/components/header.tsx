@@ -22,17 +22,13 @@ import { NAV_LINKS } from "../constants"
 import { cn } from "@/lib/utils"
 import { useGetUserProfile } from "../queries/useGetUserProfile"
 import { useAuth } from "@/shared/providers/auth-provider"
-import { useRouter } from "next/navigation"
-import { useQueryClient } from "@tanstack/react-query"
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
 
   const { data: user } = useGetUserProfile()
-  const { hasSession, logout } = useAuth()
-  const queryClient = useQueryClient();
-  const router = useRouter()
+  const { hasSession, handleLogout } = useAuth()
 
   const handler = useEffectEvent(() => setScrolled(scrollY > 12))
 
@@ -40,14 +36,6 @@ export function Header() {
     addEventListener("scroll", handler)
     return () => window.removeEventListener("scroll", handler)
   }, [])
-
-  function handleLogout() {
-    fetch("/api/logout", { method: "POST" }).then(() => {
-      logout()
-      queryClient.removeQueries();
-      router.refresh();
-    })
-  }
 
   return (
     <header
