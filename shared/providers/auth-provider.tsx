@@ -15,13 +15,13 @@ const OPTIONAL_AUTH_PATHS = ["/", "/about", "/pricing"]
 
 interface AuthContextValue {
   hasSession: boolean
-  isHydrated: boolean
+  isAccessTokenHydrated: boolean
   logout: () => void
 }
 
 const AuthContext = createContext<AuthContextValue>({
   hasSession: false,
-  isHydrated: false,
+  isAccessTokenHydrated: false,
   logout: () => {},
 })
 
@@ -35,13 +35,13 @@ interface AuthProviderProps {
 export function AuthProvider({ children, hasSession }: AuthProviderProps) {
   console.log("AUTH PROVIDER RE-RENDERED");
 
-  const [isHydrated, setHydrated] = useState(false)
+  const [isAccessTokenHydrated, setAccessTokenHydrated] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
 
   function logout() {
     setAccessToken(null)
-    setHydrated(false)
+    setAccessTokenHydrated(false)
   }
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export function AuthProvider({ children, hasSession }: AuthProviderProps) {
       }
 
       if (getAccessToken()) {
-        setHydrated(true)
+        setAccessTokenHydrated(true)
         return
       }
 
@@ -61,7 +61,7 @@ export function AuthProvider({ children, hasSession }: AuthProviderProps) {
             "/auth/refresh"
           )
         setAccessToken(data.data.accessToken)
-        setHydrated(true)
+        setAccessTokenHydrated(true)
       } catch {
         window.dispatchEvent(new CustomEvent("auth:session-expired"))
       }
@@ -99,7 +99,7 @@ export function AuthProvider({ children, hasSession }: AuthProviderProps) {
   }, [pathname, router])
 
   return (
-    <AuthContext.Provider value={{ hasSession, isHydrated, logout }}>
+    <AuthContext.Provider value={{ hasSession, isAccessTokenHydrated, logout }}>
       {children}
     </AuthContext.Provider>
   )
