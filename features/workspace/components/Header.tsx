@@ -7,7 +7,7 @@ function Header() {
   const { handleLogout } = useAuth()
 
   return (
-    <header className="flex items-center justify-between border-b border-border px-6 py-4">
+    <header className="flex items-center justify-between border-b border-border px-5 h-14">
       <Logo size="sm" />
       <Button
         variant="ghost"
