@@ -14,6 +14,11 @@ function WorkspaceItem({ ws }: { ws: Workspace }) {
         <span className="truncate font-semibold text-foreground">
           {ws.name}
         </span>
+        {ws.description && (
+          <span className="line-clamp-2 text-xs text-muted-foreground">
+            {ws.description}
+          </span>
+        )}
         <span className="text-xs text-muted-foreground">
           Created {formatDate(new Date(ws.created_at))}
         </span>
