@@ -23,7 +23,7 @@ export default function ResourcesPage() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-    <div className="mx-auto w-auto max-w-7xl px-4 py-8 sm:px-6 xl:w-7xl">
+    <div>
       {/* Page header */}
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-foreground tracking-tight">Resources</h1>
