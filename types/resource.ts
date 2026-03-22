@@ -1,18 +1,18 @@
-export type ResourceType = "pdf" | "doc" | "image" | "txt"
+export type ResourceType = "PDF" | "DOC" | "IMAGE" | "TXT"
 
 export interface Resource {
-  id: string
-  workspaceId: string
+  id: number
+  workspaceId: number
   name: string
   type: ResourceType
-  sizeBytes: number
-  uploadedAt: string
-  groupId?: string
+  file_size: number
+  mime_type: string
+  created_at: string
 }
 
 export interface ResourceGroup {
-  id: string
-  workspaceId: string
+  id: number
+  workspaceId: number
   name: string
-  resourceIds: string[]
+  resources: Resource[]
 }
