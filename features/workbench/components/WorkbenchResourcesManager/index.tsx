@@ -1,16 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { X, Save, PackageOpen } from "lucide-react"
+import { useState } from "react"
+import { Save, PackageOpen } from "lucide-react"
 import { toast } from "sonner"
-import { Resource } from "@/types"
 import { Button } from "@/shared/ui/button"
 import { Skeleton } from "@/shared/ui/skeleton"
 import { Separator } from "@/shared/ui/separator"
 import { cn } from "@/lib/utils"
-import { useGetWorkbenchResources } from "../queries/use-get-workbench-resources"
-import { useUpdateWorkbenchResources } from "../mutations/use-update-workbench-resources"
+import { useGetWorkbenchResources } from "../../queries/use-get-workbench-resources"
+import { useUpdateWorkbenchResources } from "../../mutations/use-update-workbench-resources"
 import { useGetResources } from "@/features/resources/queries/use-get-resources"
+import { ResourceChip } from "./ResourceChip"
+import { ResourceTypeLabel } from "./ResourceTypeLabel"
 
 interface WorkbenchResourcesManagerProps {
   workbenchId: number
@@ -26,16 +27,9 @@ export function WorkbenchResourcesManager({
   const { data: allResources = [], isLoading: loadingAll } = useGetResources(workspaceId)
   const { mutate: saveResources, isPending: saving } = useUpdateWorkbenchResources(workbenchId)
 
-  // Local selected IDs — initialised from server data once loaded
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
-  const [initialised, setInitialised] = useState(false)
-
-  useEffect(() => {
-    if (currentResources && !initialised) {
-      setSelectedIds(new Set(currentResources.map((r) => r.id)))
-      setInitialised(true)
-    }
-  }, [currentResources, initialised])
+  // null means no local override yet — derive from server data
+  const [localSelectedIds, setLocalSelectedIds] = useState<Set<number> | null>(null)
+  const selectedIds = localSelectedIds ?? new Set(currentResources?.map((r) => r.id) ?? [])
 
   const isLoading = loadingCurrent || loadingAll
 
@@ -43,15 +37,13 @@ export function WorkbenchResourcesManager({
   const availableResources = allResources.filter((r) => !selectedIds.has(r.id))
 
   function handleRemove(id: number) {
-    setSelectedIds((prev) => {
-      const next = new Set(prev)
-      next.delete(id)
-      return next
-    })
+    const next = new Set(selectedIds)
+    next.delete(id)
+    setLocalSelectedIds(next)
   }
 
   function handleAdd(id: number) {
-    setSelectedIds((prev) => new Set(prev).add(id))
+    setLocalSelectedIds(new Set(selectedIds).add(id))
   }
 
   function handleSave() {
@@ -177,42 +169,3 @@ export function WorkbenchResourcesManager({
   )
 }
 
-function ResourceChip({
-  resource,
-  onRemove,
-}: {
-  resource: Resource
-  onRemove: () => void
-}) {
-  return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-border bg-muted/50 pl-2 pr-1 py-1">
-      <span className="flex size-5 items-center justify-center shrink-0">
-        <ResourceTypeLabel type={resource.type} />
-      </span>
-      <span className="text-xs text-foreground max-w-[140px] truncate">{resource.name}</span>
-      <button
-        onClick={onRemove}
-        className="text-muted-foreground hover:text-destructive transition-colors p-0.5 rounded"
-        aria-label={`Remove ${resource.name}`}
-      >
-        <X className="size-3" />
-      </button>
-    </div>
-  )
-}
-
-function ResourceTypeLabel({ type }: { type: string }) {
-  const map: Record<string, string> = {
-    pdf: "PDF",
-    video: "VID",
-    audio: "AUD",
-    image: "IMG",
-    link: "URL",
-    note: "TXT",
-  }
-  return (
-    <span className="text-[9px] font-semibold text-muted-foreground leading-none">
-      {map[type] ?? type.slice(0, 3).toUpperCase()}
-    </span>
-  )
-}

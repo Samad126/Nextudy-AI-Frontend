@@ -1,7 +1,8 @@
 "use client"
 
 import { Minus, Plus, Clock, SlidersHorizontal, AlignLeft, Columns2, PanelRight } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { ActionButton } from "./ActionButton"
+import { LayoutButton } from "./LayoutButton"
 
 export type LayoutMode = "left" | "split" | "right"
 
@@ -49,8 +50,8 @@ export function WorkbenchDetailHeader({
         />
       </div>
 
-      {/* Right: Layout toggle */}
-      <div className="flex items-center gap-0.5 rounded-lg border border-border p-0.5">
+      {/* Right: Layout toggle — hidden on mobile, visible on md+ */}
+      <div className="hidden md:flex items-center gap-0.5 rounded-lg border border-border p-0.5">
         <LayoutButton
           active={layout === "left"}
           icon={<AlignLeft className="size-3.5" />}
@@ -71,52 +72,5 @@ export function WorkbenchDetailHeader({
         />
       </div>
     </div>
-  )
-}
-
-function ActionButton({
-  icon,
-  label,
-  onClick,
-}: {
-  icon: React.ReactNode
-  label: string
-  onClick: () => void
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-    >
-      {icon}
-      {label}
-    </button>
-  )
-}
-
-function LayoutButton({
-  active,
-  icon,
-  label,
-  onClick,
-}: {
-  active: boolean
-  icon: React.ReactNode
-  label: string
-  onClick: () => void
-}) {
-  return (
-    <button
-      onClick={onClick}
-      aria-label={label}
-      className={cn(
-        "rounded-md p-1.5 transition-colors",
-        active
-          ? "bg-foreground text-background"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted"
-      )}
-    >
-      {icon}
-    </button>
   )
 }
