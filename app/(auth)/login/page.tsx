@@ -62,7 +62,7 @@ export default function LoginPage() {
 
         {error && (
           <p className="text-sm text-destructive" role="alert">
-            {error.response?.data?.error.message ?? "Something went wrong."}
+            {error.response?.data?.error?.message ?? "Something went wrong."}
           </p>
         )}
 
