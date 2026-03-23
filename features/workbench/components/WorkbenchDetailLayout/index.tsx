@@ -1,12 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Resource } from "@/types"
+import { Resource, SourceCitation } from "@/types"
 import { useGetWorkbenchResources } from "../../queries/use-get-workbench-resources"
 import { useGetResources } from "@/features/resources/queries/use-get-resources"
 import { WorkbenchDetailHeader, LayoutMode } from "../WorkbenchDetailHeader"
 import { SelectSourceDialog } from "../SelectSourceDialog"
 import { QAGeneratorView } from "../QAGeneratorView"
+import { QuestionsDialog } from "../QuestionsDialog"
 import { WorkbenchChatView } from "../WorkbenchChatView"
 import { ResourcePreviewPanel } from "../ResourcePreviewPanel"
 import { WorkbenchPanelTabs } from "./WorkbenchPanelTabs"
@@ -23,8 +24,11 @@ export function WorkbenchDetailLayout({ workbenchId, workspaceId }: WorkbenchDet
   const [layout, setLayout] = useState<LayoutMode>("split")
   const [activeTab, setActiveTab] = useState<ActiveTab>("qa")
   const [sourceDialogOpen, setSourceDialogOpen] = useState(false)
+  const [questionsDialogOpen, setQuestionsDialogOpen] = useState(false)
+  const [questionsDialogIsRegen, setQuestionsDialogIsRegen] = useState(false)
   // null means "not overridden yet" — derive from server data instead
   const [localSelectedIds, setLocalSelectedIds] = useState<Set<number> | null>(null)
+  const [activeCitation, setActiveCitation] = useState<SourceCitation | null>(null)
 
   const { data: workbenchResources = [] } = useGetWorkbenchResources(workbenchId)
   const { data: allResources = [] } = useGetResources(workspaceId)
@@ -73,7 +77,22 @@ export function WorkbenchDetailLayout({ workbenchId, workspaceId }: WorkbenchDet
           <WorkbenchPanelTabs activeTab={activeTab} onTabChange={setActiveTab} />
           <div className="flex-1 overflow-hidden px-4 pb-4 pt-3">
             {activeTab === "qa" ? (
-              <QAGeneratorView hasResources={hasResources} />
+              <QAGeneratorView
+                hasResources={hasResources}
+                workbenchId={workbenchId}
+                onGenerate={() => {
+                  setQuestionsDialogIsRegen(false)
+                  setQuestionsDialogOpen(true)
+                }}
+                onRegenerate={() => {
+                  setQuestionsDialogIsRegen(true)
+                  setQuestionsDialogOpen(true)
+                }}
+                onSourceClick={(citation) => {
+                  setActiveCitation(citation)
+                  setLayout("split")
+                }}
+              />
             ) : (
               <WorkbenchChatView hasResources={hasResources} />
             )}
@@ -93,9 +112,16 @@ export function WorkbenchDetailLayout({ workbenchId, workspaceId }: WorkbenchDet
             layout === "split" ? "md:flex-1 md:min-w-0" : "md:w-full"
           )}
         >
-          <ResourcePreviewPanel resources={selectedResources} />
+          <ResourcePreviewPanel resources={selectedResources} activeCitation={activeCitation} />
         </div>
       </div>
+
+      <QuestionsDialog
+        open={questionsDialogOpen}
+        setOpen={setQuestionsDialogOpen}
+        workbenchId={workbenchId}
+        isRegenerate={questionsDialogIsRegen}
+      />
 
       <SelectSourceDialog
         open={sourceDialogOpen}

@@ -1,74 +1,109 @@
 "use client"
 
+import { Sparkles } from "lucide-react"
+import { Button } from "@/shared/ui/button"
+import { Skeleton } from "@/shared/ui/skeleton"
 import { QAQuestion, QAQuestionCard } from "../QAQuestionCard"
 import { QAToolbar } from "./QAToolbar"
 import { QAEmptyState } from "./QAEmptyState"
+import { useGetQuestions } from "../../queries/use-get-questions"
+import type { ApiQuestion, SourceCitation } from "@/types"
 
-// Mock Q&A data — replace with real API data when available
-const MOCK_QUESTIONS: QAQuestion[] = [
-  {
-    id: 1,
-    number: 1,
-    type: "verified",
-    difficulty: "hard",
-    hasSource: true,
-    text: "[Advanced] AI Generated Query regarding section 1?",
-    options: [
-      { label: "A", text: "Verified Evidence A" },
-      { label: "B", text: "Documented Fact B" },
-      { label: "C", text: "Synthesized Theory C" },
-      { label: "D", text: "Plausible Distractor D" },
-    ],
-    answer: "A",
-    explanation:
-      "Based on the provided document, this response is directly supported by the text. The specific mechanics described in the materials confirm these findings.",
-  },
-  {
-    id: 2,
-    number: 2,
-    type: "ai_plus",
-    difficulty: "hard",
-    hasSource: false,
-    text: "[Advanced] AI Generated Query regarding section 1?",
-    options: [],
-    answer: "Verification Confirmed",
-    explanation:
-      "While the document provides the foundation, this response utilises broader AI knowledge to bridge the gaps. This synthesis helps provide a more comprehensive academic perspective.",
-  },
-  {
-    id: 3,
-    number: 3,
-    type: "verified",
-    difficulty: "hard",
-    hasSource: true,
-    text: "[Advanced] AI Generated Query regarding section 1?",
-    options: [
-      { label: "A", text: "Verified Evidence A" },
-      { label: "B", text: "Documented Fact B" },
-      { label: "C", text: "Synthesized Theory C" },
-      { label: "D", text: "Plausible Distractor D" },
-    ],
-    answer: "B",
-    explanation:
-      "The document explicitly states this in section 1.3. Cross-referencing with additional materials confirms this as the most accurate answer.",
-  },
-]
+function mapApiQuestion(q: ApiQuestion, index: number): QAQuestion {
+  const isMCQ = q.question_type === "mcq"
+
+  const sortedChoices = [...(q.mcqChoices ?? [])].sort(
+    (a, b) => a.choice_order - b.choice_order
+  )
+
+  const options = isMCQ
+    ? sortedChoices.map((c, i) => ({
+        label: String.fromCharCode(65 + i),
+        text: c.choice_text,
+      }))
+    : []
+
+  const correctChoice = sortedChoices.find((c) => c.is_correct)
+  const correctIndex = correctChoice
+    ? sortedChoices.findIndex((c) => c.id === correctChoice.id)
+    : -1
+  const correctLabel =
+    correctIndex >= 0 ? String.fromCharCode(65 + correctIndex) : undefined
+
+  return {
+    id: q.id,
+    number: index + 1,
+    type: q.answer_source === "file" ? "verified" : "ai_plus",
+    difficulty: q.difficulty.toLowerCase() as "easy" | "medium" | "hard",
+    hasSource: q.answer_source === "file" || q.answer_source === "mixed",
+    sourceCitation: q.source_citation,
+    text: q.title,
+    options,
+    answer: correctLabel ?? q.openEndedAnswer?.sample_answer ?? "",
+    explanation: q.explanation ?? "",
+  }
+}
 
 interface QAGeneratorViewProps {
   hasResources: boolean
+  workbenchId: number
+  onGenerate: () => void
+  onRegenerate: () => void
+  onSourceClick: (citation: SourceCitation) => void
 }
 
-export function QAGeneratorView({ hasResources }: QAGeneratorViewProps) {
+export function QAGeneratorView({
+  hasResources,
+  workbenchId,
+  onGenerate,
+  onRegenerate,
+  onSourceClick,
+}: QAGeneratorViewProps) {
+  const { data: questions, isLoading } = useGetQuestions(workbenchId)
+
   if (!hasResources) {
     return <QAEmptyState />
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="h-28 rounded-xl" />
+        ))}
+      </div>
+    )
+  }
+
+  if (!questions || questions.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 h-full py-16 text-center">
+        <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+          <Sparkles className="size-5 text-muted-foreground" />
+        </div>
+        <div className="flex flex-col gap-1">
+          <p className="text-sm font-medium text-foreground">No questions yet</p>
+          <p className="text-xs text-muted-foreground">
+            Generate questions from your selected materials.
+          </p>
+        </div>
+        <Button size="sm" onClick={onGenerate} className="mt-1">
+          Create Questions
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col h-full">
-      <QAToolbar />
+      <QAToolbar onRegenerate={onRegenerate} />
       <div className="flex flex-col gap-3 overflow-y-auto flex-1 pr-0.5">
-        {MOCK_QUESTIONS.map((q) => (
-          <QAQuestionCard key={q.id} question={q} />
+        {questions.map((q, i) => (
+          <QAQuestionCard
+            key={q.id}
+            question={mapApiQuestion(q, i)}
+            onSourceClick={onSourceClick}
+          />
         ))}
       </div>
     </div>

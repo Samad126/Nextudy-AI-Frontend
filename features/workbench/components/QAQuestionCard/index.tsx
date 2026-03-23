@@ -6,6 +6,7 @@ import { DifficultyBadge } from "./DifficultyBadge"
 import { SourceButton } from "./SourceButton"
 import { AnswerOption } from "./AnswerOption"
 import { IconButton } from "./IconButton"
+import type { SourceCitation } from "@/types"
 
 export interface QAOption {
   label: string
@@ -18,6 +19,7 @@ export interface QAQuestion {
   type: "verified" | "ai_plus"
   difficulty: "easy" | "medium" | "hard"
   hasSource: boolean
+  sourceCitation?: SourceCitation
   text: string
   options: QAOption[]
   answer: string
@@ -28,9 +30,10 @@ interface QAQuestionCardProps {
   question: QAQuestion
   onEdit?: () => void
   onRegenerate?: () => void
+  onSourceClick?: (citation: SourceCitation) => void
 }
 
-export function QAQuestionCard({ question, onEdit, onRegenerate }: QAQuestionCardProps) {
+export function QAQuestionCard({ question, onEdit, onRegenerate, onSourceClick }: QAQuestionCardProps) {
   return (
     <div className="rounded-xl border border-border bg-card">
       {/* Card header row */}
@@ -40,7 +43,9 @@ export function QAQuestionCard({ question, onEdit, onRegenerate }: QAQuestionCar
         </span>
         <TypeBadge type={question.type} />
         <DifficultyBadge difficulty={question.difficulty} />
-        {question.hasSource && <SourceButton />}
+        {question.hasSource && question.sourceCitation && (
+          <SourceButton onClick={() => onSourceClick?.(question.sourceCitation!)} />
+        )}
         <div className="ml-auto flex items-center gap-1">
           <IconButton onClick={onEdit} label="Edit question">
             <Pencil className="size-3.5" />

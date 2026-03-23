@@ -1,19 +1,25 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { PackageOpen } from "lucide-react"
-import { Resource } from "@/types"
+import { Resource, SourceCitation } from "@/types"
 import { ResourceTabBar } from "./ResourceTabBar"
 import { ResourceContent } from "./ResourceContent"
 
 interface ResourcePreviewPanelProps {
   resources: Resource[]
+  activeCitation?: SourceCitation | null
 }
 
-export function ResourcePreviewPanel({ resources }: ResourcePreviewPanelProps) {
+export function ResourcePreviewPanel({ resources, activeCitation }: ResourcePreviewPanelProps) {
   const [activeId, setActiveId] = useState<number | null>(
     resources.length > 0 ? resources[0].id : null
   )
+
+  // When a source citation is triggered, switch to that resource tab
+  useEffect(() => {
+    if (activeCitation) setActiveId(activeCitation.resourceId)
+  }, [activeCitation])
 
   // Sync active tab when resources change
   const activeResource =
@@ -45,7 +51,16 @@ export function ResourcePreviewPanel({ resources }: ResourcePreviewPanelProps) {
       />
 
       {/* Preview content */}
-      {activeResource && <ResourceContent resource={activeResource} />}
+      {activeResource && (
+        <ResourceContent
+          resource={activeResource}
+          highlight={
+            activeCitation?.resourceId === activeResource.id
+              ? activeCitation.snippet
+              : undefined
+          }
+        />
+      )}
     </div>
   )
 }
