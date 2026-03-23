@@ -12,14 +12,6 @@ export interface GradingKeyword {
   weight: number
 }
 
-export interface Workbench {
-  id: string
-  workspaceId: string
-  name: string
-  pinnedResourceIds: string[]
-  createdAt: string
-}
-
 export interface Question {
   id: string
   workbenchId: string
