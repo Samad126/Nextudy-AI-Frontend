@@ -59,6 +59,11 @@ export function ResourcePreviewPanel({ resources, activeCitation }: ResourcePrev
               ? activeCitation.snippet
               : undefined
           }
+          highlightPage={
+            activeCitation?.resourceId === activeResource.id
+              ? activeCitation.page
+              : undefined
+          }
         />
       )}
     </div>

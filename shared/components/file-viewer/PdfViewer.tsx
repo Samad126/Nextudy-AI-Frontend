@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo } from "react"
 import { Viewer, Worker } from "@react-pdf-viewer/core"
+import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation"
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout"
 import { searchPlugin } from "@react-pdf-viewer/search"
 import { ChevronUp, ChevronDown } from "lucide-react"
@@ -12,11 +13,13 @@ import "@react-pdf-viewer/search/lib/styles/index.css"
 interface PdfViewerProps {
   blob: Blob
   highlight?: string
+  highlightPage?: number
 }
 
-export function PdfViewer({ blob, highlight }: PdfViewerProps) {
+export function PdfViewer({ blob, highlight, highlightPage }: PdfViewerProps) {
   const blobUrl = useMemo(() => URL.createObjectURL(blob), [blob])
   const searchPluginInstance = searchPlugin()
+  const pageNavigationPluginInstance = pageNavigationPlugin()
   const defaultLayoutPluginInstance = defaultLayoutPlugin()
 
   useEffect(() => {
@@ -25,12 +28,26 @@ export function PdfViewer({ blob, highlight }: PdfViewerProps) {
 
   useEffect(() => {
     if (!highlight) return
-    const timer = setTimeout(() => {
-      searchPluginInstance.highlight(highlight)
+    const timer = setTimeout(async () => {
+      // Jump to the cited page first (page numbers are 1-based from API, 0-based in viewer)
+      if (highlightPage && highlightPage > 1) {
+        pageNavigationPluginInstance.jumpToPage(highlightPage - 1)
+      }
+
+      // Split into clause-sized chunks so each fits within a single PDF text-layer line.
+      // A long snippet spanning multiple visual lines will never match as one string
+      // because the PDF text layer stores line-break tokens between rows.
+      const chunks = highlight
+        .split(/[,;.]/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 6)
+
+      const keywords = chunks.length > 0 ? chunks : [highlight]
+      searchPluginInstance.highlight(keywords)
     }, 500)
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [highlight])
+  }, [highlight, highlightPage])
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -55,7 +72,7 @@ export function PdfViewer({ blob, highlight }: PdfViewerProps) {
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
           <Viewer
             fileUrl={blobUrl}
-            plugins={[defaultLayoutPluginInstance, searchPluginInstance]}
+            plugins={[defaultLayoutPluginInstance, pageNavigationPluginInstance, searchPluginInstance]}
           />
         </Worker>
       </div>

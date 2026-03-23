@@ -11,9 +11,10 @@ import { ImageViewer } from "./ImageViewer"
 interface FileViewerProps {
   resource: Resource
   highlight?: string
+  highlightPage?: number
 }
 
-export function FileViewer({ resource, highlight }: FileViewerProps) {
+export function FileViewer({ resource, highlight, highlightPage }: FileViewerProps) {
   const { data: blob, isLoading, isError } = useGetResourceFile(resource.id)
 
   if (isLoading) {
@@ -34,7 +35,7 @@ export function FileViewer({ resource, highlight }: FileViewerProps) {
 
   switch (resource.type) {
     case "PDF":
-      return <PdfViewer blob={blob} highlight={highlight} />
+      return <PdfViewer blob={blob} highlight={highlight} highlightPage={highlightPage} />
     case "DOC":
       return <DocxViewer blob={blob} highlight={highlight} />
     case "TXT":
