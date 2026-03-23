@@ -4,6 +4,7 @@ import { useState } from "react"
 import { FileText, PackageOpen } from "lucide-react"
 import { Resource } from "@/types"
 import { cn } from "@/lib/utils"
+import { FileViewer } from "@/shared/components/file-viewer"
 
 interface ResourcePreviewPanelProps {
   resources: Resource[]
@@ -15,14 +16,17 @@ export function ResourcePreviewPanel({ resources }: ResourcePreviewPanelProps) {
   )
 
   // Sync active tab when resources change
-  const activeResource = resources.find((r) => r.id === activeId) ?? resources[0] ?? null
+  const activeResource =
+    resources.find((r) => r.id === activeId) ?? resources[0] ?? null
 
   if (resources.length === 0) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border text-center py-16">
+      <div className="flex h-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border py-16 text-center">
         <PackageOpen className="size-6 text-muted-foreground" />
         <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium text-foreground">No resources selected</p>
+          <p className="text-sm font-medium text-foreground">
+            No resources selected
+          </p>
           <p className="text-xs text-muted-foreground">
             Select study materials to preview them here.
           </p>
@@ -32,7 +36,7 @@ export function ResourcePreviewPanel({ resources }: ResourcePreviewPanelProps) {
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden rounded-xl border border-border bg-card">
+    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card">
       {/* Resource tabs */}
       <ResourceTabBar
         resources={resources}
@@ -41,9 +45,7 @@ export function ResourcePreviewPanel({ resources }: ResourcePreviewPanelProps) {
       />
 
       {/* Preview content */}
-      {activeResource && (
-        <ResourceContent resource={activeResource} />
-      )}
+      {activeResource && <ResourceContent resource={activeResource} />}
     </div>
   )
 }
@@ -58,16 +60,16 @@ function ResourceTabBar({
   onTabClick: (id: number) => void
 }) {
   return (
-    <div className="flex items-center gap-0 border-b border-border overflow-x-auto shrink-0 scrollbar-hide">
+    <div className="scrollbar-hide flex shrink-0 items-center gap-0 overflow-x-auto border-b border-border">
       {resources.map((r) => (
         <button
           key={r.id}
           onClick={() => onTabClick(r.id)}
           className={cn(
-            "flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-colors border-b-2 shrink-0",
+            "flex shrink-0 items-center gap-1.5 border-b-2 px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-colors",
             activeId === r.id
-              ? "border-primary text-foreground bg-muted/30"
-              : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/20"
+              ? "border-primary bg-muted/30 text-foreground"
+              : "border-transparent text-muted-foreground hover:bg-muted/20 hover:text-foreground"
           )}
         >
           <ResourceTypeDot type={r.type} />
@@ -87,55 +89,40 @@ function ResourceTypeDot({ type }: { type: string }) {
   }
   return (
     <span
-      className={cn("size-2 rounded-full shrink-0", colorMap[type.toUpperCase()] ?? "bg-muted-foreground")}
+      className={cn(
+        "size-2 shrink-0 rounded-full",
+        colorMap[type.toUpperCase()] ?? "bg-muted-foreground"
+      )}
     />
   )
 }
 
 function ResourceContent({ resource }: { resource: Resource }) {
   return (
-    <div className="flex-1 overflow-y-auto p-6">
-      <div className="max-w-prose mx-auto">
-        {/* File header */}
-        <div className="mb-6 pb-4 border-b border-border">
-          <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-              <FileText className="size-5 text-muted-foreground" />
-            </div>
-            <div className="min-w-0">
-              <h2 className="text-lg font-bold text-foreground leading-snug break-words">
-                {resource.name}
-              </h2>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {resource.type.toUpperCase()} •{" "}
-                {resource.file_size ? formatFileSize(resource.file_size) : "Unknown size"}
-              </p>
-            </div>
+    <div className="flex h-full flex-col overflow-hidden">
+      {/* File header */}
+      <div className="shrink-0 border-b border-border px-5 py-3">
+        <div className="flex items-center gap-3">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted">
+            <FileText className="size-4 text-muted-foreground" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="truncate text-sm leading-snug font-semibold text-foreground">
+              {resource.name}
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {resource.type.toUpperCase()} •{" "}
+              {resource.file_size
+                ? formatFileSize(resource.file_size)
+                : "Unknown size"}
+            </p>
           </div>
         </div>
-
-        {/* Placeholder preview text */}
-        <ResourcePlaceholderContent />
       </div>
-    </div>
-  )
-}
 
-function ResourcePlaceholderContent() {
-  return (
-    <div className="flex flex-col gap-3">
-      <p className="text-sm text-muted-foreground/60 font-mono leading-relaxed">
-        x 3T0 B]C ani &nbsp; U &nbsp; z&amp;` &nbsp; 8 ( &nbsp; h ^ _a &nbsp;&nbsp;&nbsp;&nbsp; r
-      </p>
-      <div className="flex flex-col gap-2 mt-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-3 rounded bg-muted/50" style={{ width: `${75 + Math.sin(i) * 15}%` }} />
-        ))}
-      </div>
-      <div className="flex flex-col gap-2 mt-2">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-3 rounded bg-muted/50" style={{ width: `${60 + Math.cos(i) * 20}%` }} />
-        ))}
+      {/* File viewer — PDF manages its own scroll via defaultLayoutPlugin */}
+      <div className="flex-1 overflow-hidden">
+        <FileViewer resource={resource} />
       </div>
     </div>
   )
