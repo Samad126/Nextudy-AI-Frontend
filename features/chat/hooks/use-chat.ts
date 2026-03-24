@@ -45,7 +45,10 @@ export function useChat({ chatId, initialMessages }: UseChatOptions) {
   const [isTyping, setIsTyping] = useState(false)
   // true only during active streaming (first chunk received, final message not yet)
   const [isStreaming, setIsStreaming] = useState(false)
-  const lastOptimisticId = useRef<string | null>(null)
+  // Queue of optimistic IDs in send order — matched FIFO against chat:userMessage confirmations
+  const optimisticQueue = useRef<string[]>([])
+  // ID of the message currently being edited — used to replace it when chat:userMessage confirms
+  const pendingEditId = useRef<string | null>(null)
 
   useEffect(() => {
     if (!socket || chatId === undefined) return
@@ -65,40 +68,54 @@ export function useChat({ chatId, initialMessages }: UseChatOptions) {
       })
     }
 
-    function onMessage(msg: Message) {
+    function onUserMessage(msg: Message) {
+      // Emitted before streaming starts — replace the optimistic or edited message with the real DB record
       const local = toLocal(msg)
-      if (local.role === "assistant") {
-        // Replace streaming placeholder with the final saved message
-        setMessages((prev) => {
-          const filtered = prev.filter((m) => m.id !== STREAMING_ID)
-          return prev.some((m) => m.id === local.id) ? filtered : [...filtered, local]
-        })
-        setIsTyping(false)
-        setIsStreaming(false)
-      } else {
-        setMessages((prev) =>
-          prev.some((m) => m.id === local.id) ? prev : [...prev, local]
-        )
+      const editId = pendingEditId.current
+      if (editId) {
+        pendingEditId.current = null
+        setMessages((prev) => prev.map((m) => (m.id === editId ? { ...local, isEdited: true } : m)))
+        return
       }
+      const optimisticId = optimisticQueue.current.shift() ?? null
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === local.id)) return prev
+        if (optimisticId) return prev.map((m) => (m.id === optimisticId ? local : m))
+        return [...prev, local]
+      })
+    }
+
+    function onMessage(msg: Message) {
+      // Only handles the final assistant message
+      const local = toLocal(msg)
+      setMessages((prev) => {
+        const filtered = prev.filter((m) => m.id !== STREAMING_ID)
+        return prev.some((m) => m.id === local.id) ? filtered : [...filtered, local]
+      })
+      setIsTyping(false)
+      setIsStreaming(false)
     }
 
     function onError({ message }: { message: string }) {
       setIsTyping(false)
       setIsStreaming(false)
       setMessages((prev) => {
-        const filtered = prev
-          .filter((m) => m.id !== STREAMING_ID)
-          .filter((m) => (lastOptimisticId.current ? m.id !== lastOptimisticId.current : true))
-        lastOptimisticId.current = null
-        return [...filtered, { id: `error-${Date.now()}`, role: "system", content: message, isError: true }]
+        const pendingIds = new Set(optimisticQueue.current)
+        optimisticQueue.current = []
+        return [
+          ...prev.filter((m) => m.id !== STREAMING_ID && !pendingIds.has(m.id)),
+          { id: `error-${Date.now()}`, role: "system", content: message, isError: true },
+        ]
       })
     }
 
     socket.on("chat:chunk", onChunk)
+    socket.on("chat:userMessage", onUserMessage)
     socket.on("chat:message", onMessage)
     socket.on("chat:error", onError)
     return () => {
       socket.off("chat:chunk", onChunk)
+      socket.off("chat:userMessage", onUserMessage)
       socket.off("chat:message", onMessage)
       socket.off("chat:error", onError)
     }
@@ -109,7 +126,7 @@ export function useChat({ chatId, initialMessages }: UseChatOptions) {
       if (!socket || !isConnected || !content.trim() || chatId === undefined) return
 
       const optimisticId = `optimistic-${Date.now()}`
-      lastOptimisticId.current = optimisticId
+      optimisticQueue.current.push(optimisticId)
       setIsTyping(true)
       setMessages((prev) => [...prev, { id: optimisticId, role: "user", content }])
 
@@ -131,6 +148,7 @@ export function useChat({ chatId, initialMessages }: UseChatOptions) {
         return updated
       })
 
+      pendingEditId.current = messageId
       socket.emit("chat:editMessage", { chatId, messageId: Number(messageId), content })
     },
     [socket, isConnected, chatId]
