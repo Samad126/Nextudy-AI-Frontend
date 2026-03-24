@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Resource, SourceCitation } from "@/types"
 import { useSocket } from "@/shared/providers/socket-provider"
 import { useGetWorkbenchResources } from "../../queries/use-get-workbench-resources"
@@ -55,6 +55,21 @@ export function WorkbenchDetailLayout({ workbenchId, workspaceId }: WorkbenchDet
   const selectedResources: Resource[] = allResources.filter((r) => selectedIds.has(r.id))
   const hasResources = selectedIds.size > 0
 
+  const handleGenerate = useCallback(() => {
+    setQuestionsDialogIsRegen(false)
+    setQuestionsDialogOpen(true)
+  }, [])
+
+  const handleRegenerate = useCallback(() => {
+    setQuestionsDialogIsRegen(true)
+    setQuestionsDialogOpen(true)
+  }, [])
+
+  const handleSourceClick = useCallback((citation: SourceCitation) => {
+    setActiveCitation(citation)
+    setLayout("split")
+  }, [])
+
   // On desktop, respect the layout toggle. On mobile, always show both panels stacked.
   const showLeft = layout === "left" || layout === "split"
   const showRight = layout === "right" || layout === "split"
@@ -94,26 +109,14 @@ export function WorkbenchDetailLayout({ workbenchId, workspaceId }: WorkbenchDet
                 hasResources={hasResources}
                 workbenchId={workbenchId}
                 workspaceId={workspaceId}
-                onGenerate={() => {
-                  setQuestionsDialogIsRegen(false)
-                  setQuestionsDialogOpen(true)
-                }}
-                onRegenerate={() => {
-                  setQuestionsDialogIsRegen(true)
-                  setQuestionsDialogOpen(true)
-                }}
-                onSourceClick={(citation) => {
-                  setActiveCitation(citation)
-                  setLayout("split")
-                }}
+                onGenerate={handleGenerate}
+                onRegenerate={handleRegenerate}
+                onSourceClick={handleSourceClick}
               />
             ) : (
               <WorkbenchChatView
                 workbenchId={workbenchId}
-                onSourceClick={(citation) => {
-                  setActiveCitation(citation)
-                  setLayout("split")
-                }}
+                onSourceClick={handleSourceClick}
               />
             )}
           </div>

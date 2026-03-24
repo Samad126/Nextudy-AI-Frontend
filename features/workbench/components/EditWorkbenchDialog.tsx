@@ -48,7 +48,7 @@ export function EditWorkbenchDialog({
     if (open) {
       reset({ name: workbench.name, description: workbench.description ?? "" })
     }
-  }, [open, workbench, reset])
+  }, [open, workbench.id, reset])
 
   function onSubmit(values: FormValues) {
     update(

@@ -117,7 +117,7 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
     window.addEventListener("auth:session-expired", handleSessionExpire)
     return () =>
       window.removeEventListener("auth:session-expired", handleSessionExpire)
-  }, [pathname, router, handleSessionExpire])
+  }, [handleSessionExpire])
 
   const markSessionActive = useCallback(() => setHasSession(true), [])
 

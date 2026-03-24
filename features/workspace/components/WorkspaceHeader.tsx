@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useCallback } from "react"
 import { useParams, usePathname, useRouter } from "next/navigation"
 import { BookOpen, FileText, LayoutDashboard, Shuffle, BarChart2, Layers } from "lucide-react"
 import { Logo } from "@/shared/components/logo"
@@ -40,6 +41,10 @@ export function WorkspaceHeader() {
   const baseUrl = `/workspaces/${id}`
   const currentWorkspace = workspaces?.find((ws) => String(ws.id) === id)
 
+  const handleSwitch = useCallback((wsId: number) => router.push(`/workspaces/${wsId}`), [router])
+  const handleGoToWorkspaces = useCallback(() => router.push("/workspaces"), [router])
+  const handleSettings = useCallback(() => router.push(`/workspaces/${id}/settings/profile`), [router, id])
+
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
@@ -52,15 +57,15 @@ export function WorkspaceHeader() {
               currentWorkspace={currentWorkspace}
               workspaces={workspaces}
               currentId={id}
-              onSwitch={(wsId) => router.push(`/workspaces/${wsId}`)}
-              onAllWorkspaces={() => router.push("/workspaces")}
+              onSwitch={handleSwitch}
+              onAllWorkspaces={handleGoToWorkspaces}
             />
             <div className="flex items-center gap-1">
               <NotificationBell />
               <UserMenu
                 user={user}
-                onSettings={() => router.push(`/workspaces/${id}/settings/profile`)}
-                onSwitchWorkspace={() => router.push("/workspaces")}
+                onSettings={handleSettings}
+                onSwitchWorkspace={handleGoToWorkspaces}
                 onLogout={handleLogout}
               />
             </div>
@@ -77,8 +82,8 @@ export function WorkspaceHeader() {
                 currentWorkspace={currentWorkspace}
                 workspaces={workspaces}
                 currentId={id}
-                onSwitch={(wsId) => router.push(`/workspaces/${wsId}`)}
-                onAllWorkspaces={() => router.push("/workspaces")}
+                onSwitch={handleSwitch}
+                onAllWorkspaces={handleGoToWorkspaces}
               />
             </div>
 
@@ -113,8 +118,8 @@ export function WorkspaceHeader() {
               <NotificationBell />
               <UserMenu
                 user={user}
-                onSettings={() => router.push(`/workspaces/${id}/settings/profile`)}
-                onSwitchWorkspace={() => router.push("/workspaces")}
+                onSettings={handleSettings}
+                onSwitchWorkspace={handleGoToWorkspaces}
                 onLogout={handleLogout}
               />
             </div>

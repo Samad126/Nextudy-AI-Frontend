@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Search, FileText, File } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Input } from "@/shared/ui/input"
@@ -23,8 +23,9 @@ function ResourceIcon({ type }: { type: Resource["type"] }) {
 export function ResourceMultiSelect({ resources, selectedIds, onChange }: ResourceMultiSelectProps) {
   const [search, setSearch] = useState("")
 
-  const filtered = resources.filter((r) =>
-    r.name.toLowerCase().includes(search.toLowerCase())
+  const filtered = useMemo(
+    () => resources.filter((r) => r.name.toLowerCase().includes(search.toLowerCase())),
+    [resources, search]
   )
 
   function toggle(id: number) {

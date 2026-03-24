@@ -82,7 +82,8 @@ export function EditQuestionDrawer({
         }))
       )
     }
-  }, [question])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question?.id])
 
   if (!question) return null
 
