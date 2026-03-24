@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useSocket } from "@/shared/providers/socket-provider"
-import type { Message, SourceCitation, TypingEvent } from "@/types/chat"
+import type { Message, SourceCitation } from "@/types/chat"
 
 export interface LocalChatMessage {
   id: string
@@ -18,6 +18,9 @@ const SYSTEM_INIT: LocalChatMessage = {
   role: "system",
   content: "Workbench initialized. Ask questions about your study materials.",
 }
+
+// Stable placeholder ID for the in-flight streaming message
+const STREAMING_ID = "streaming-assistant"
 
 function toLocal(m: Message): LocalChatMessage {
   return {
@@ -38,40 +41,64 @@ export function useChat({ chatId, initialMessages }: UseChatOptions) {
   const [messages, setMessages] = useState<LocalChatMessage[]>(
     initialMessages?.length ? initialMessages : [SYSTEM_INIT]
   )
+  // true while waiting for first chunk (shows typing dots) OR while streaming
   const [isTyping, setIsTyping] = useState(false)
+  // true only during active streaming (first chunk received, final message not yet)
+  const [isStreaming, setIsStreaming] = useState(false)
   const lastOptimisticId = useRef<string | null>(null)
 
   useEffect(() => {
     if (!socket || chatId === undefined) return
 
-    function onTyping({ chatId: incomingId, isTyping: typing }: TypingEvent) {
+    function onChunk({ chatId: incomingId, chunk }: { chatId: number; chunk: string }) {
       if (incomingId !== chatId) return
-      setIsTyping(typing)
+      setIsStreaming(true)
+      setMessages((prev) => {
+        const idx = prev.findIndex((m) => m.id === STREAMING_ID)
+        if (idx === -1) {
+          // First chunk — add the streaming placeholder
+          return [...prev, { id: STREAMING_ID, role: "assistant", content: chunk }]
+        }
+        const updated = [...prev]
+        updated[idx] = { ...updated[idx], content: updated[idx].content + chunk }
+        return updated
+      })
     }
 
     function onMessage(msg: Message) {
       const local = toLocal(msg)
-      setMessages((prev) =>
-        prev.some((m) => m.id === local.id) ? prev : [...prev, local]
-      )
+      if (local.role === "assistant") {
+        // Replace streaming placeholder with the final saved message
+        setMessages((prev) => {
+          const filtered = prev.filter((m) => m.id !== STREAMING_ID)
+          return prev.some((m) => m.id === local.id) ? filtered : [...filtered, local]
+        })
+        setIsTyping(false)
+        setIsStreaming(false)
+      } else {
+        setMessages((prev) =>
+          prev.some((m) => m.id === local.id) ? prev : [...prev, local]
+        )
+      }
     }
 
     function onError({ message }: { message: string }) {
       setIsTyping(false)
+      setIsStreaming(false)
       setMessages((prev) => {
-        const filtered = lastOptimisticId.current
-          ? prev.filter((m) => m.id !== lastOptimisticId.current)
-          : prev
+        const filtered = prev
+          .filter((m) => m.id !== STREAMING_ID)
+          .filter((m) => (lastOptimisticId.current ? m.id !== lastOptimisticId.current : true))
         lastOptimisticId.current = null
         return [...filtered, { id: `error-${Date.now()}`, role: "system", content: message, isError: true }]
       })
     }
 
-    socket.on("chat:typing", onTyping)
+    socket.on("chat:chunk", onChunk)
     socket.on("chat:message", onMessage)
     socket.on("chat:error", onError)
     return () => {
-      socket.off("chat:typing", onTyping)
+      socket.off("chat:chunk", onChunk)
       socket.off("chat:message", onMessage)
       socket.off("chat:error", onError)
     }
@@ -83,6 +110,7 @@ export function useChat({ chatId, initialMessages }: UseChatOptions) {
 
       const optimisticId = `optimistic-${Date.now()}`
       lastOptimisticId.current = optimisticId
+      setIsTyping(true)
       setMessages((prev) => [...prev, { id: optimisticId, role: "user", content }])
 
       socket.emit("chat:sendMessage", { chatId, content })
@@ -94,6 +122,7 @@ export function useChat({ chatId, initialMessages }: UseChatOptions) {
     (messageId: string, content: string) => {
       if (!socket || !isConnected || !content.trim() || chatId === undefined) return
 
+      setIsTyping(true)
       setMessages((prev) => {
         const idx = prev.findIndex((m) => m.id === messageId)
         if (idx === -1) return prev
@@ -107,5 +136,5 @@ export function useChat({ chatId, initialMessages }: UseChatOptions) {
     [socket, isConnected, chatId]
   )
 
-  return { messages, isTyping, isConnected, sendMessage, editMessage }
+  return { messages, isTyping, isStreaming, isConnected, sendMessage, editMessage }
 }

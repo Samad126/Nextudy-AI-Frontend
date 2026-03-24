@@ -130,7 +130,7 @@ function ChatView({
   const [editingId, setEditingId] = useState<string | null>(null)
   const autoSendTriggered = useRef(false)
   const bottomRef = useRef<HTMLDivElement>(null)
-  const { messages, isTyping, isConnected, sendMessage, editMessage } = useChat({
+  const { messages, isTyping, isStreaming, isConnected, sendMessage, editMessage } = useChat({
     chatId,
     initialMessages,
   })
@@ -190,7 +190,7 @@ function ChatView({
             onSourceClick={onSourceClick}
           />
         ))}
-        {isTyping && <TypingIndicator />}
+        {isTyping && !isStreaming && <TypingIndicator />}
         <div ref={bottomRef} />
       </div>
 
