@@ -8,25 +8,29 @@ import { FlashcardSetGrid } from "@/features/flashcards/components/FlashcardSetG
 import { FlashcardSetsEmptyState } from "@/features/flashcards/components/FlashcardSetsEmptyState"
 import { FlashcardSetsSkeleton } from "@/features/flashcards/components/FlashcardSetsSkeleton"
 import { CreateFlashcardSetModal } from "@/features/flashcards/components/CreateFlashcardSetModal"
+import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
+import { can } from "@/lib/permissions"
 
 export default function FlashcardsPage() {
   const { id } = useParams<{ id: string }>()
   const workspaceId = Number(id)
   const [createOpen, setCreateOpen] = useState(false)
   const { data: sets, isLoading } = useGetFlashcardSets(workspaceId)
+  const { role } = useWorkspaceRole()
+  const canEdit = role !== undefined && can.editContent(role)
 
   return (
     <>
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold tracking-tight">Flashcards</h1>
-          <Button onClick={() => setCreateOpen(true)}>Create Set</Button>
+          {canEdit && <Button onClick={() => setCreateOpen(true)}>Create Set</Button>}
         </div>
 
         {isLoading ? (
           <FlashcardSetsSkeleton />
         ) : !sets || sets.length === 0 ? (
-          <FlashcardSetsEmptyState onCreateClick={() => setCreateOpen(true)} />
+          <FlashcardSetsEmptyState onCreateClick={canEdit ? () => setCreateOpen(true) : undefined} />
         ) : (
           <FlashcardSetGrid sets={sets} workspaceId={workspaceId} />
         )}

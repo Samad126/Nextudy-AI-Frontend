@@ -2,7 +2,7 @@ import { ClipboardList } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 
 interface QuizEmptyStateProps {
-  onCreateClick: () => void
+  onCreateClick?: () => void
 }
 
 export function QuizEmptyState({ onCreateClick }: QuizEmptyStateProps) {
@@ -17,7 +17,7 @@ export function QuizEmptyState({ onCreateClick }: QuizEmptyStateProps) {
           Build a quiz from your workbench questions and start testing your knowledge.
         </p>
       </div>
-      <Button onClick={onCreateClick}>Create your first quiz</Button>
+      {onCreateClick && <Button onClick={onCreateClick}>Create your first quiz</Button>}
     </div>
   )
 }

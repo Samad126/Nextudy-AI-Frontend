@@ -13,6 +13,8 @@ import { RenameGroupDialog } from "./RenameGroupDialog"
 import { useDeleteResourceGroup } from "../mutations/use-delete-resource-group"
 import { useAddResourceToGroup } from "../mutations/use-add-resource-to-group"
 import { useRemoveResourceFromGroup } from "../mutations/use-remove-resource-from-group"
+import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
+import { can } from "@/lib/permissions"
 
 interface ResourceGroupCardProps {
   group: ResourceGroup
@@ -28,6 +30,8 @@ export function ResourceGroupCard({ group, workspaceId, allResources }: Resource
   const { mutate: deleteGroup, isPending: deleting } = useDeleteResourceGroup(workspaceId)
   const { mutate: addResource, isPending: adding } = useAddResourceToGroup(workspaceId)
   const { mutate: removeResource } = useRemoveResourceFromGroup(workspaceId)
+  const { role } = useWorkspaceRole()
+  const canEdit = role !== undefined && can.editContent(role)
 
   const groupResourceIds = new Set(group.resources.map((r) => r.id))
   const availableToAdd = allResources.filter((r) => !groupResourceIds.has(r.id))
@@ -82,27 +86,29 @@ export function ResourceGroupCard({ group, workspaceId, allResources }: Resource
             )}
           </button>
 
-          <div className="flex items-center gap-1 shrink-0">
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              className="text-muted-foreground hover:text-foreground"
-              onClick={() => setRenameOpen(true)}
-              aria-label="Rename group"
-            >
-              <Pencil className="size-3.5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-              onClick={handleDelete}
-              disabled={deleting}
-              aria-label="Delete group"
-            >
-              <Trash2 className="size-3.5" />
-            </Button>
-          </div>
+          {canEdit && (
+            <div className="flex items-center gap-1 shrink-0">
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="text-muted-foreground hover:text-foreground"
+                onClick={() => setRenameOpen(true)}
+                aria-label="Rename group"
+              >
+                <Pencil className="size-3.5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                onClick={handleDelete}
+                disabled={deleting}
+                aria-label="Delete group"
+              >
+                <Trash2 className="size-3.5" />
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Expanded section */}
@@ -122,13 +128,15 @@ export function ResourceGroupCard({ group, workspaceId, allResources }: Resource
                       <span className="text-xs text-foreground max-w-[120px] truncate">
                         {resource.name}
                       </span>
-                      <button
-                        onClick={() => handleRemove(resource.id)}
-                        className="text-muted-foreground hover:text-destructive transition-colors p-0.5 rounded"
-                        aria-label={`Remove ${resource.name}`}
-                      >
-                        <X className="size-3" />
-                      </button>
+                      {canEdit && (
+                        <button
+                          onClick={() => handleRemove(resource.id)}
+                          className="text-muted-foreground hover:text-destructive transition-colors p-0.5 rounded"
+                          aria-label={`Remove ${resource.name}`}
+                        >
+                          <X className="size-3" />
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -137,7 +145,7 @@ export function ResourceGroupCard({ group, workspaceId, allResources }: Resource
               )}
 
               {/* Add resource */}
-              {availableToAdd.length > 0 && (
+              {canEdit && availableToAdd.length > 0 && (
                 <div className="relative">
                   {addOpen ? (
                     <div className="rounded-lg border border-border bg-popover shadow-md p-1 max-h-48 overflow-y-auto">

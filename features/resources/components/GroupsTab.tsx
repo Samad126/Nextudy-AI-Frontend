@@ -8,6 +8,8 @@ import { useGetResourceGroups } from "../queries/use-get-resource-groups"
 import { useGetResources } from "../queries/use-get-resources"
 import { ResourceGroupCard } from "./ResourceGroupCard"
 import { CreateGroupDialog } from "./CreateGroupDialog"
+import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
+import { can } from "@/lib/permissions"
 
 interface GroupsTabProps {
   workspaceId: number
@@ -17,6 +19,8 @@ export function GroupsTab({ workspaceId }: GroupsTabProps) {
   const [createOpen, setCreateOpen] = useState(false)
   const { data: groups, isLoading } = useGetResourceGroups(workspaceId)
   const { data: allResources = [] } = useGetResources(workspaceId)
+  const { role } = useWorkspaceRole()
+  const canEdit = role !== undefined && can.editContent(role)
 
   return (
     <div className="flex flex-col gap-4">
@@ -29,10 +33,12 @@ export function GroupsTab({ workspaceId }: GroupsTabProps) {
             <>{groups?.length ?? 0} group{groups?.length !== 1 ? "s" : ""}</>
           )}
         </span>
-        <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
-          <FolderPlus className="size-3.5" />
-          New Group
-        </Button>
+        {canEdit && (
+          <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
+            <FolderPlus className="size-3.5" />
+            New Group
+          </Button>
+        )}
       </div>
 
       {/* List */}
@@ -69,9 +75,11 @@ export function GroupsTab({ workspaceId }: GroupsTabProps) {
             <p className="text-sm font-medium text-foreground">No groups yet</p>
             <p className="text-xs text-muted-foreground mt-0.5">Organize your resources into groups</p>
           </div>
-          <Button size="sm" variant="outline" onClick={() => setCreateOpen(true)} className="mt-1">
-            Create a group
-          </Button>
+          {canEdit && (
+            <Button size="sm" variant="outline" onClick={() => setCreateOpen(true)} className="mt-1">
+              Create a group
+            </Button>
+          )}
         </div>
       )}
 

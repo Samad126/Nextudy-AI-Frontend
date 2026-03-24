@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { Trash2, FolderPlus, Check } from "lucide-react"
 import { toast } from "sonner"
 import { Resource, ResourceGroup } from "@/types"
@@ -18,6 +17,8 @@ import { ResourceTypeIcon } from "./ResourceTypeIcon"
 import { useDeleteResource } from "../mutations/use-delete-resource"
 import { useAddResourceToGroup } from "../mutations/use-add-resource-to-group"
 import { useRemoveResourceFromGroup } from "../mutations/use-remove-resource-from-group"
+import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
+import { can } from "@/lib/permissions"
 
 interface ResourceCardProps {
   resource: Resource
@@ -43,6 +44,8 @@ export function ResourceCard({ resource, workspaceId, groups }: ResourceCardProp
   const { mutate: deleteResource, isPending: deleting } = useDeleteResource(workspaceId)
   const { mutate: addToGroup, isPending: adding } = useAddResourceToGroup(workspaceId)
   const { mutate: removeFromGroup, isPending: removing } = useRemoveResourceFromGroup(workspaceId)
+  const { role } = useWorkspaceRole()
+  const canEdit = role !== undefined && can.editContent(role)
 
   // which groups currently contain this resource
   const memberGroupIds = new Set(
@@ -99,55 +102,57 @@ export function ResourceCard({ resource, workspaceId, groups }: ResourceCardProp
         </div>
       </div>
 
-      <div className={cn("flex items-center gap-0.5 shrink-0 transition-opacity")}>
-        {/* Add to group */}
-        {groups.length > 0 && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                className="text-muted-foreground hover:text-foreground"
-                disabled={isBusy}
-                aria-label="Add to group"
-              >
-                <FolderPlus className="size-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                Add to group
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {groups.map((group) => {
-                const inGroup = memberGroupIds.has(group.id)
-                return (
-                  <DropdownMenuItem
-                    key={group.id}
-                    onClick={() => handleToggleGroup(group)}
-                    className="flex items-center justify-between gap-2 cursor-pointer"
-                  >
-                    <span className="truncate text-sm">{group.name}</span>
-                    {inGroup && <Check className="size-3.5 text-primary shrink-0" />}
-                  </DropdownMenuItem>
-                )
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+      {canEdit && (
+        <div className={cn("flex items-center gap-0.5 shrink-0 transition-opacity")}>
+          {/* Add to group */}
+          {groups.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  className="text-muted-foreground hover:text-foreground"
+                  disabled={isBusy}
+                  aria-label="Add to group"
+                >
+                  <FolderPlus className="size-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                  Add to group
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {groups.map((group) => {
+                  const inGroup = memberGroupIds.has(group.id)
+                  return (
+                    <DropdownMenuItem
+                      key={group.id}
+                      onClick={() => handleToggleGroup(group)}
+                      className="flex items-center justify-between gap-2 cursor-pointer"
+                    >
+                      <span className="truncate text-sm">{group.name}</span>
+                      {inGroup && <Check className="size-3.5 text-primary shrink-0" />}
+                    </DropdownMenuItem>
+                  )
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
-        {/* Delete */}
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-          onClick={handleDelete}
-          disabled={deleting}
-          aria-label="Delete resource"
-        >
-          <Trash2 className="size-3.5" />
-        </Button>
-      </div>
+          {/* Delete */}
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            onClick={handleDelete}
+            disabled={deleting}
+            aria-label="Delete resource"
+          >
+            <Trash2 className="size-3.5" />
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

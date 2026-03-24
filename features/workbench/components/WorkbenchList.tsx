@@ -7,6 +7,8 @@ import { Skeleton } from "@/shared/ui/skeleton"
 import { useGetWorkbenches } from "../queries/use-get-workbenches"
 import { WorkbenchCard } from "./WorkbenchCard"
 import { CreateWorkbenchDialog } from "./CreateWorkbenchDialog"
+import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
+import { can } from "@/lib/permissions"
 
 interface WorkbenchListProps {
   workspaceId: number
@@ -15,6 +17,8 @@ interface WorkbenchListProps {
 export function WorkbenchList({ workspaceId }: WorkbenchListProps) {
   const [createOpen, setCreateOpen] = useState(false)
   const { data: workbenches, isLoading } = useGetWorkbenches(workspaceId)
+  const { role } = useWorkspaceRole()
+  const canEdit = role !== undefined && can.editContent(role)
 
   return (
     <div className="flex flex-col gap-4">
@@ -29,10 +33,12 @@ export function WorkbenchList({ workspaceId }: WorkbenchListProps) {
             </>
           )}
         </span>
-        <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
-          <Plus className="size-3.5" />
-          New Workbench
-        </Button>
+        {canEdit && (
+          <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
+            <Plus className="size-3.5" />
+            New Workbench
+          </Button>
+        )}
       </div>
 
       {/* List */}
@@ -70,9 +76,11 @@ export function WorkbenchList({ workspaceId }: WorkbenchListProps) {
               Create a workbench to organize your study sessions
             </p>
           </div>
-          <Button size="sm" variant="outline" onClick={() => setCreateOpen(true)} className="mt-1">
-            Create a workbench
-          </Button>
+          {canEdit && (
+            <Button size="sm" variant="outline" onClick={() => setCreateOpen(true)} className="mt-1">
+              Create a workbench
+            </Button>
+          )}
         </div>
       )}
 

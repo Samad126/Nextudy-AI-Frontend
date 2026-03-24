@@ -8,25 +8,29 @@ import { QuizGrid } from "@/features/quizzes/components/QuizGrid"
 import { QuizEmptyState } from "@/features/quizzes/components/QuizEmptyState"
 import { QuizzesSkeleton } from "@/features/quizzes/components/QuizzesSkeleton"
 import { CreateQuizModal } from "@/features/quizzes/components/CreateQuizModal"
+import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
+import { can } from "@/lib/permissions"
 
 export default function QuizzesPage() {
   const { id } = useParams<{ id: string }>()
   const workspaceId = Number(id)
   const [createOpen, setCreateOpen] = useState(false)
   const { data: quizzes, isLoading } = useGetQuizzes(workspaceId)
+  const { role } = useWorkspaceRole()
+  const canEdit = role !== undefined && can.editContent(role)
 
   return (
     <>
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold tracking-tight">Quizzes</h1>
-          <Button onClick={() => setCreateOpen(true)}>Create Quiz</Button>
+          {canEdit && <Button onClick={() => setCreateOpen(true)}>Create Quiz</Button>}
         </div>
 
         {isLoading ? (
           <QuizzesSkeleton />
         ) : !quizzes || quizzes.length === 0 ? (
-          <QuizEmptyState onCreateClick={() => setCreateOpen(true)} />
+          <QuizEmptyState onCreateClick={canEdit ? () => setCreateOpen(true) : undefined} />
         ) : (
           <QuizGrid quizzes={quizzes} workspaceId={workspaceId} />
         )}

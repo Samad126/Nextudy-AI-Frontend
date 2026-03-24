@@ -14,6 +14,8 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu"
 import { DeleteQuizDialog } from "./DeleteQuizDialog"
+import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
+import { can } from "@/lib/permissions"
 
 interface QuizCardProps {
   quiz: QuizSummary
@@ -22,6 +24,8 @@ interface QuizCardProps {
 
 export function QuizCard({ quiz, workspaceId }: QuizCardProps) {
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const { role } = useWorkspaceRole()
+  const canEdit = role !== undefined && can.editContent(role)
 
   const relativeDate = formatDistanceToNow(new Date(quiz.created_at), { addSuffix: true })
 
@@ -29,29 +33,31 @@ export function QuizCard({ quiz, workspaceId }: QuizCardProps) {
     <>
       <div className="group relative rounded-xl border border-border bg-card overflow-hidden transition-all duration-200 hover:border-primary/30 hover:shadow-sm">
         {/* Kebab menu */}
-        <div className="absolute top-2.5 right-2.5 z-10">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                className="opacity-0 group-hover:opacity-100 transition-opacity bg-card/80 backdrop-blur-sm"
-                onClick={(e) => e.preventDefault()}
-              >
-                <MoreVertical className="size-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive"
-                onClick={() => setDeleteOpen(true)}
-              >
-                <Trash2 className="size-3.5 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        {canEdit && (
+          <div className="absolute top-2.5 right-2.5 z-10">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity bg-card/80 backdrop-blur-sm"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <MoreVertical className="size-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onClick={() => setDeleteOpen(true)}
+                >
+                  <Trash2 className="size-3.5 mr-2" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
 
         {/* Card body */}
         <Link

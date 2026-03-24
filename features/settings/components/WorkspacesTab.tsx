@@ -30,14 +30,9 @@ import { useCreateWorkspace } from "@/features/workspace/mutations/use-create-wo
 import { useUpdateWorkspace } from "@/features/workspace/mutations/use-update-workspace"
 import { useDeleteWorkspace } from "@/features/workspace/mutations/use-delete-workspace"
 import { useLeaveWorkspace } from "@/features/workspace/mutations/use-leave-workspace"
+import { useMyRoleInWorkspace } from "@/features/workspace/hooks/use-workspace-role"
+import { can } from "@/lib/permissions"
 import type { Workspace } from "@/features/workspace/types/workspace"
-
-// We don't have the role from the workspaces list endpoint directly,
-// so we use a heuristic: if the user is the member, they could be any role.
-// The spec shows role on the card — this comes from the workspaces list.
-// For now we render all workspaces and show manage only when we can confirm ownership.
-// Since GET /workspaces doesn't return the role, we handle it via UI only showing
-// manage actions (they will fail on server if the user isn't owner).
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -262,6 +257,9 @@ function WorkspaceCard({ workspace, contextId }: { workspace: Workspace; context
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [leaveOpen, setLeaveOpen] = useState(false)
+  const role = useMyRoleInWorkspace(workspace.id)
+  const isAdmin = role !== undefined && can.adminWorkspace(role)
+  const canLeave = role !== undefined && can.leaveWorkspace(role)
 
   return (
     <div className="rounded-lg border border-border bg-card p-4">
@@ -277,48 +275,51 @@ function WorkspaceCard({ workspace, contextId }: { workspace: Workspace; context
             Created {formatDate(workspace.created_at)}
           </p>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Settings className="size-3.5 mr-1.5" />
-              Manage
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
-              <Link href={`/workspaces/${contextId}/settings/workspaces/${workspace.id}/members`}>
-                <Users className="size-4 mr-2" />
-                Manage Members
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setEditOpen(true)}>
-              <Pencil className="size-4 mr-2" />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() => setDeleteOpen(true)}
-            >
-              <Trash2 className="size-4 mr-2" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {isAdmin && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Settings className="size-3.5 mr-1.5" />
+                Manage
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href={`/workspaces/${contextId}/settings/workspaces/${workspace.id}/members`}>
+                  <Users className="size-4 mr-2" />
+                  Manage Members
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setEditOpen(true)}>
+                <Pencil className="size-4 mr-2" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onClick={() => setDeleteOpen(true)}
+              >
+                <Trash2 className="size-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
-      {/* Leave button for non-owner — shown as secondary action */}
-      <div className="mt-3 flex justify-end">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-muted-foreground text-xs h-7"
-          onClick={() => setLeaveOpen(true)}
-        >
-          <LogOut className="size-3 mr-1" />
-          Leave workspace
-        </Button>
-      </div>
+      {canLeave && (
+        <div className="mt-3 flex justify-end">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground text-xs h-7"
+            onClick={() => setLeaveOpen(true)}
+          >
+            <LogOut className="size-3 mr-1" />
+            Leave workspace
+          </Button>
+        </div>
+      )}
 
       {editOpen && (
         <EditWorkspaceDialog workspace={workspace} open onClose={() => setEditOpen(false)} />

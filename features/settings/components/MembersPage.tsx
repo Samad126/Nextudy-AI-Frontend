@@ -31,6 +31,8 @@ import { useInviteMember } from "@/features/workspace/mutations/use-invite-membe
 import { useUpdateMemberRole } from "@/features/workspace/mutations/use-update-member-role"
 import { useRemoveMember } from "@/features/workspace/mutations/use-remove-member"
 import { useGetProfile } from "@/features/settings/queries/use-get-profile"
+import { useMyRoleInWorkspace } from "@/features/workspace/hooks/use-workspace-role"
+import { can } from "@/lib/permissions"
 import type { WorkspaceMember, Role } from "@/features/workspace/types/workspace"
 
 const ROLE_COLORS: Record<Role, string> = {
@@ -104,16 +106,18 @@ function MemberRow({
   member,
   workspaceId,
   isSelf,
+  viewerIsOwner,
 }: {
   member: WorkspaceMember
   workspaceId: number
   isSelf: boolean
+  viewerIsOwner: boolean
 }) {
   const [removeOpen, setRemoveOpen] = useState(false)
   const { mutate: updateRole, isPending: updatingRole } = useUpdateMemberRole()
 
-  const canChangeRole = !isSelf && member.role !== "owner"
-  const canRemove = !isSelf
+  const canChangeRole = viewerIsOwner && !isSelf && member.role !== "owner"
+  const canRemove = viewerIsOwner && !isSelf
 
   return (
     <div className="flex items-center gap-3 py-3 border-b border-border last:border-0">
@@ -189,6 +193,8 @@ export function MembersPage({ workspaceId, contextId }: { workspaceId: number; c
   const { data: workspaces = [] } = useGetWorkspaces()
   const { data: profile } = useGetProfile()
   const { mutate: inviteMember, isPending: inviting } = useInviteMember()
+  const viewerRole = useMyRoleInWorkspace(workspaceId)
+  const viewerIsOwner = viewerRole !== undefined && can.adminWorkspace(viewerRole)
 
   const workspace = workspaces.find((w) => w.id === workspaceId)
 
@@ -234,8 +240,8 @@ export function MembersPage({ workspaceId, contextId }: { workspaceId: number; c
         </h1>
       </div>
 
-      {/* Invite */}
-      <div className="rounded-lg border border-border p-4 mb-6">
+      {/* Invite — owner only */}
+      {viewerIsOwner && <div className="rounded-lg border border-border p-4 mb-6">
         <p className="text-sm font-medium text-foreground mb-3">Invite new member</p>
         <form onSubmit={handleInvite} className="flex gap-2">
           <div className="flex-1 space-y-1">
@@ -259,7 +265,7 @@ export function MembersPage({ workspaceId, contextId }: { workspaceId: number; c
             )}
           </Button>
         </form>
-      </div>
+      </div>}
 
       {/* Members List */}
       <div className="rounded-lg border border-border">
@@ -277,6 +283,7 @@ export function MembersPage({ workspaceId, contextId }: { workspaceId: number; c
                 member={m}
                 workspaceId={workspaceId}
                 isSelf={profile ? m.user.id === profile.id : false}
+                viewerIsOwner={viewerIsOwner}
               />
             ))}
           </div>

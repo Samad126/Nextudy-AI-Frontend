@@ -13,6 +13,8 @@ import { useUploadResource } from "../mutations/use-upload-resource"
 import { ResourceCard } from "./ResourceCard"
 import { UploadDialog } from "./UploadDialog"
 import { toast } from "sonner"
+import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
+import { can } from "@/lib/permissions"
 
 interface ResourcesTabProps {
   workspaceId: number
@@ -23,6 +25,8 @@ export function ResourcesTab({ workspaceId }: ResourcesTabProps) {
   const { data: resources, isLoading } = useGetResources(workspaceId)
   const { data: groups = [] } = useGetResourceGroups(workspaceId)
   const { mutate: upload } = useUploadResource(workspaceId)
+  const { role } = useWorkspaceRole()
+  const canEdit = role !== undefined && can.editContent(role)
 
   const [{ isOver }, dropRef] = useDrop({
     accept: [NativeTypes.FILE],
@@ -50,10 +54,12 @@ export function ResourcesTab({ workspaceId }: ResourcesTabProps) {
             <>{resources?.length ?? 0} resource{resources?.length !== 1 ? "s" : ""}</>
           )}
         </span>
-        <Button size="sm" onClick={() => setUploadOpen(true)} className="gap-1.5">
-          <Upload className="size-3.5" />
-          Upload
-        </Button>
+        {canEdit && (
+          <Button size="sm" onClick={() => setUploadOpen(true)} className="gap-1.5">
+            <Upload className="size-3.5" />
+            Upload
+          </Button>
+        )}
       </div>
 
       {/* Grid */}
@@ -75,7 +81,7 @@ export function ResourcesTab({ workspaceId }: ResourcesTabProps) {
             <ResourceCard key={resource.id} resource={resource} workspaceId={workspaceId} groups={groups} />
           ))}
         </div>
-      ) : (
+      ) : canEdit ? (
         <div
           ref={dropRef as unknown as React.RefObject<HTMLDivElement>}
           className={cn(
@@ -104,6 +110,16 @@ export function ResourcesTab({ workspaceId }: ResourcesTabProps) {
               Upload a file
             </Button>
           )}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border py-16 text-center">
+          <div className="flex size-14 items-center justify-center rounded-full bg-muted">
+            <Upload className="size-6 text-muted-foreground" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-foreground">No resources yet</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Resources will appear here once added</p>
+          </div>
         </div>
       )}
 

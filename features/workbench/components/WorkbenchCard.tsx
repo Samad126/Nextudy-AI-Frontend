@@ -8,6 +8,8 @@ import { Workbench } from "@/types"
 import { Button } from "@/shared/ui/button"
 import { useDeleteWorkbench } from "../mutations/use-delete-workbench"
 import { EditWorkbenchDialog } from "./EditWorkbenchDialog"
+import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
+import { can } from "@/lib/permissions"
 
 interface WorkbenchCardProps {
   workbench: Workbench
@@ -17,6 +19,8 @@ interface WorkbenchCardProps {
 export function WorkbenchCard({ workbench, workspaceId }: WorkbenchCardProps) {
   const [editOpen, setEditOpen] = useState(false)
   const { mutate: deleteWorkbench, isPending: deleting } = useDeleteWorkbench(workspaceId)
+  const { role } = useWorkspaceRole()
+  const canEdit = role !== undefined && can.editContent(role)
 
   function handleDelete(e: React.MouseEvent) {
     e.preventDefault()
@@ -43,27 +47,29 @@ export function WorkbenchCard({ workbench, workspaceId }: WorkbenchCardProps) {
     <>
       <div className="group relative rounded-xl border border-border bg-card overflow-hidden transition-all duration-200 hover:border-primary/20 hover:shadow-sm">
         {/* Action buttons — top right */}
-        <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            className="text-muted-foreground hover:text-foreground bg-card/80 backdrop-blur-sm"
-            onClick={handleEdit}
-            aria-label="Edit workbench"
-          >
-            <Pencil className="size-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 bg-card/80 backdrop-blur-sm"
-            onClick={handleDelete}
-            disabled={deleting}
-            aria-label="Delete workbench"
-          >
-            <Trash2 className="size-3.5" />
-          </Button>
-        </div>
+        {canEdit && (
+          <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              className="text-muted-foreground hover:text-foreground bg-card/80 backdrop-blur-sm"
+              onClick={handleEdit}
+              aria-label="Edit workbench"
+            >
+              <Pencil className="size-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 bg-card/80 backdrop-blur-sm"
+              onClick={handleDelete}
+              disabled={deleting}
+              aria-label="Delete workbench"
+            >
+              <Trash2 className="size-3.5" />
+            </Button>
+          </div>
+        )}
 
         {/* Card body — clickable link */}
         <Link

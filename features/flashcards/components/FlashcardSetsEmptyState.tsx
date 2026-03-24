@@ -2,7 +2,7 @@ import { Layers } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 
 interface FlashcardSetsEmptyStateProps {
-  onCreateClick: () => void
+  onCreateClick?: () => void
 }
 
 export function FlashcardSetsEmptyState({ onCreateClick }: FlashcardSetsEmptyStateProps) {
@@ -17,7 +17,7 @@ export function FlashcardSetsEmptyState({ onCreateClick }: FlashcardSetsEmptySta
           Create your first set and let AI generate cards from your study materials.
         </p>
       </div>
-      <Button onClick={onCreateClick}>Create your first set</Button>
+      {onCreateClick && <Button onClick={onCreateClick}>Create your first set</Button>}
     </div>
   )
 }
