@@ -1,18 +1,21 @@
-import type { User } from "../../../types/user"
-
 export type Role = "owner" | "editor" | "member"
 
 export interface Workspace {
   id: number
   name: string
-  description: string
+  description: string | null
   created_at: string
-  updated_at: Date
+  updated_at: string
 }
 
 export interface WorkspaceMember {
-  id: string
-  user: Pick<User, "id" | "firstName" | "lastName" | "email" | "avatarUrl">
+  id: number
   role: Role
-  joinedAt: string
+  joined_at: string
+  user: {
+    id: number
+    firstName: string
+    lastName: string
+    email: string
+  }
 }

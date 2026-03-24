@@ -1,12 +1,23 @@
-export type NotificationType = "workspace_invite" | "system"
+export type NotificationType = "workspace_invite" | "system" | "reminder"
+export type InviteStatus = "pending" | "accepted" | "rejected"
+
+export interface WorkspaceInviteDetail {
+  id: number
+  status: InviteStatus
+  workspaceId: number
+  invitee_email: string
+  workspace: { id: number; name: string }
+  inviter: { id: number; firstName: string; lastName: string }
+}
 
 export interface Notification {
-  id: string
+  id: number
+  userId: number
   type: NotificationType
-  read: boolean
-  createdAt: string
-  workspaceId?: string
-  workspaceName?: string
-  invitedByName?: string
-  message?: string
+  title: string
+  message: string
+  is_read: boolean
+  created_at: string
+  read_at: string | null
+  workspaceInvite: WorkspaceInviteDetail | null
 }

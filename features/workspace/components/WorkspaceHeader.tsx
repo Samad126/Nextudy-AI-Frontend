@@ -7,6 +7,7 @@ import { Logo } from "@/shared/components/logo"
 import { useAuth } from "@/shared/providers/auth-provider"
 import { useGetWorkspaces } from "@/features/workspace/queries/use-get-workspaces"
 import { useGetUserProfile } from "@/features/landing/queries/useGetUserProfile"
+import { NotificationBell } from "@/features/notifications/components/NotificationBell"
 import { cn } from "@/lib/utils"
 import { WorkspacePill } from "./WorkspacePill"
 import { UserMenu } from "./UserMenu"
@@ -54,12 +55,15 @@ export function WorkspaceHeader() {
               onSwitch={(wsId) => router.push(`/workspaces/${wsId}`)}
               onAllWorkspaces={() => router.push("/workspaces")}
             />
-            <UserMenu
-              user={user}
-              onSettings={() => {}}
-              onSwitchWorkspace={() => router.push("/workspaces")}
-              onLogout={handleLogout}
-            />
+            <div className="flex items-center gap-1">
+              <NotificationBell />
+              <UserMenu
+                user={user}
+                onSettings={() => router.push(`/workspaces/${id}/settings/profile`)}
+                onSwitchWorkspace={() => router.push("/workspaces")}
+                onLogout={handleLogout}
+              />
+            </div>
           </div>
 
           {/* Desktop: Logo + pill | centered nav | name + avatar */}
@@ -105,10 +109,11 @@ export function WorkspaceHeader() {
             </nav>
 
             {/* Right */}
-            <div>
+            <div className="flex items-center gap-2">
+              <NotificationBell />
               <UserMenu
                 user={user}
-                onSettings={() => {}}
+                onSettings={() => router.push(`/workspaces/${id}/settings/profile`)}
                 onSwitchWorkspace={() => router.push("/workspaces")}
                 onLogout={handleLogout}
               />
