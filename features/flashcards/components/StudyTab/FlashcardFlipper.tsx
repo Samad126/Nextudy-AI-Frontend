@@ -30,18 +30,20 @@ export function FlashcardFlipper({ cards }: FlashcardFlipperProps) {
   const current = deck[index]
 
   const goNext = useCallback(() => {
-    if (index < deck.length - 1) {
-      setIndex((i) => i + 1)
+    setIndex((i) => {
+      if (i >= deck.length - 1) return i
       setFlipped(false)
-    }
-  }, [index, deck.length])
+      return i + 1
+    })
+  }, [deck.length])
 
   const goPrev = useCallback(() => {
-    if (index > 0) {
-      setIndex((i) => i - 1)
+    setIndex((i) => {
+      if (i <= 0) return i
       setFlipped(false)
-    }
-  }, [index])
+      return i - 1
+    })
+  }, [])
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {

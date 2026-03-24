@@ -21,6 +21,13 @@ const EMPTY_MESSAGES: Record<FilterTab, string> = {
   system: "No system notifications.",
 }
 
+const TABS: { key: FilterTab; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "unread", label: "Unread" },
+  { key: "invites", label: "Invites" },
+  { key: "system", label: "System" },
+]
+
 function filterNotifications(notifications: Notification[], tab: FilterTab) {
   switch (tab) {
     case "unread": return notifications.filter((n) => !n.is_read)
@@ -45,13 +52,6 @@ export function NotificationsPage() {
       onError: () => toast.error("Failed to mark all as read"),
     })
   }
-
-  const TABS: { key: FilterTab; label: string }[] = [
-    { key: "all", label: "All" },
-    { key: "unread", label: "Unread" },
-    { key: "invites", label: "Invites" },
-    { key: "system", label: "System" },
-  ]
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-8">

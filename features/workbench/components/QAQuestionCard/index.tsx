@@ -54,7 +54,10 @@ export function QAQuestionCard({
         selectMode && selected ? "border-primary bg-primary/5" : "border-border",
         selectMode && "cursor-pointer"
       )}
+      role={selectMode ? "button" : undefined}
+      tabIndex={selectMode ? 0 : undefined}
       onClick={selectMode ? onToggleSelect : undefined}
+      onKeyDown={selectMode ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggleSelect?.() } } : undefined}
     >
       {/* Card header row */}
       <div className="flex items-center gap-2 px-4 pt-3 pb-2">

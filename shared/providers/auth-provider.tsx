@@ -43,8 +43,6 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children, hasSession: initialHasSession }: AuthProviderProps) {
-  console.log("AUTH PROVIDER RE-RENDERED")
-
   const [hasSession, setHasSession] = useState(initialHasSession)
   const [isAccessTokenHydrated, setAccessTokenHydrated] = useState(false)
   const router = useRouter()
@@ -55,10 +53,6 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
 
   useEffect(() => {
     async function restoreToken() {
-      console.log("TRIGGERED RESTORE TOKEN");
-      console.log("HAS SESSION IN RESTORE TOKEN", hasSession);
-      console.log("getAccessToken()", getAccessToken());
-
       if (!hasSession) {
         return
       }
@@ -69,7 +63,6 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
       }
 
       try {
-        console.log("TRYING TO REFRESH TOKEN");
         const { data } =
           await axiosBase.post<ApiSuccess<RefreshTokenResponse>>(
             "/auth/refresh"
@@ -106,13 +99,13 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
     })
   }, [])
 
-  const handleLogout = async() => {
-    triggerLogout();
+  const handleLogout = useCallback(async () => {
+    triggerLogout()
     await clearToken()
     setHasSession(false)
-    queryClient.removeQueries();
+    queryClient.removeQueries()
     handleRedirect()
-  }
+  }, [triggerLogout, clearToken, queryClient, handleRedirect])
 
   const handleSessionExpire = useCallback(async () => {
     await clearToken()
@@ -121,9 +114,9 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
   }, [clearToken, handleRedirect]);
 
   useEffect(() => {
-    addEventListener("auth:session-expired", handleSessionExpire)
+    window.addEventListener("auth:session-expired", handleSessionExpire)
     return () =>
-      removeEventListener("auth:session-expired", handleSessionExpire)
+      window.removeEventListener("auth:session-expired", handleSessionExpire)
   }, [pathname, router, handleSessionExpire])
 
   const markSessionActive = useCallback(() => setHasSession(true), [])

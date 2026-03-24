@@ -66,9 +66,6 @@ export function WorkbenchDetailLayout({ workbenchId, workspaceId }: WorkbenchDet
         onOpenSelectSource={() => setSourceDialogOpen(true)}
         layout={layout}
         onLayoutChange={setLayout}
-        onNew={() => {}}
-        onHistory={() => {}}
-        onSettings={() => {}}
       />
 
       {/*

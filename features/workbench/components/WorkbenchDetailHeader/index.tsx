@@ -1,7 +1,6 @@
 "use client"
 
-import { Minus, Plus, Clock, SlidersHorizontal, AlignLeft, Columns2, PanelRight } from "lucide-react"
-import { ActionButton } from "./ActionButton"
+import { Minus, AlignLeft, Columns2, PanelRight } from "lucide-react"
 import { LayoutButton } from "./LayoutButton"
 
 export type LayoutMode = "left" | "split" | "right"
@@ -11,9 +10,6 @@ interface WorkbenchDetailHeaderProps {
   onOpenSelectSource: () => void
   layout: LayoutMode
   onLayoutChange: (layout: LayoutMode) => void
-  onNew: () => void
-  onHistory: () => void
-  onSettings: () => void
 }
 
 export function WorkbenchDetailHeader({
@@ -21,9 +17,6 @@ export function WorkbenchDetailHeader({
   onOpenSelectSource,
   layout,
   onLayoutChange,
-  onNew,
-  onHistory,
-  onSettings,
 }: WorkbenchDetailHeaderProps) {
   return (
     <div className="flex items-center justify-between border-b border-border pb-3 mb-0">
@@ -38,17 +31,6 @@ export function WorkbenchDetailHeader({
           <span className="size-2 rounded-full bg-primary shrink-0" />
         )}
       </button>
-
-      {/* Center: Action buttons */}
-      <div className="flex items-center gap-0.5">
-        <ActionButton icon={<Plus className="size-3.5" />} label="New" onClick={onNew} />
-        <ActionButton icon={<Clock className="size-3.5" />} label="History" onClick={onHistory} />
-        <ActionButton
-          icon={<SlidersHorizontal className="size-3.5" />}
-          label="Settings"
-          onClick={onSettings}
-        />
-      </div>
 
       {/* Right: Layout toggle — hidden on mobile, visible on md+ */}
       <div className="hidden md:flex items-center gap-0.5 rounded-lg border border-border p-0.5">

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { PackageOpen } from "lucide-react"
 import { Resource, SourceCitation } from "@/types"
 import { ResourceTabBar } from "./ResourceTabBar"
@@ -12,18 +12,13 @@ interface ResourcePreviewPanelProps {
 }
 
 export function ResourcePreviewPanel({ resources, activeCitation }: ResourcePreviewPanelProps) {
-  const [activeId, setActiveId] = useState<number | null>(
-    resources.length > 0 ? resources[0].id : null
-  )
+  // Tracks the user's explicit tab selection. null means "no override yet".
+  const [selectedId, setSelectedId] = useState<number | null>(null)
 
-  // When a source citation is triggered, switch to that resource tab
-  useEffect(() => {
-    if (activeCitation) setActiveId(activeCitation.resourceId)
-  }, [activeCitation])
-
-  // Sync active tab when resources change
-  const activeResource =
-    resources.find((r) => r.id === activeId) ?? resources[0] ?? null
+  // Citation overrides the user's tab selection; fall back to user pick or first resource.
+  const validSelectedId = resources.some((r) => r.id === selectedId) ? selectedId : null
+  const resolvedId = activeCitation?.resourceId ?? validSelectedId
+  const activeResource = resources.find((r) => r.id === resolvedId) ?? resources[0] ?? null
 
   if (resources.length === 0) {
     return (
@@ -47,7 +42,7 @@ export function ResourcePreviewPanel({ resources, activeCitation }: ResourcePrev
       <ResourceTabBar
         resources={resources}
         activeId={activeResource?.id ?? null}
-        onTabClick={setActiveId}
+        onTabClick={setSelectedId}
       />
 
       {/* Preview content */}
@@ -61,7 +56,7 @@ export function ResourcePreviewPanel({ resources, activeCitation }: ResourcePrev
           }
           highlightPage={
             activeCitation?.resourceId === activeResource.id
-              ? activeCitation.page
+              ? (activeCitation.page ?? undefined)
               : undefined
           }
         />
@@ -69,4 +64,3 @@ export function ResourcePreviewPanel({ resources, activeCitation }: ResourcePrev
     </div>
   )
 }
-
