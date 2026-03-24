@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Resource, SourceCitation } from "@/types"
+import { useSocket } from "@/shared/providers/socket-provider"
 import { useGetWorkbenchResources } from "../../queries/use-get-workbench-resources"
 import { useGetResources } from "@/features/resources/queries/use-get-resources"
 import { WorkbenchDetailHeader, LayoutMode } from "../WorkbenchDetailHeader"
@@ -21,8 +22,23 @@ interface WorkbenchDetailLayoutProps {
 }
 
 export function WorkbenchDetailLayout({ workbenchId, workspaceId }: WorkbenchDetailLayoutProps) {
+  const { socket } = useSocket()
+  const socketRef = useRef(socket)
+  useEffect(() => { socketRef.current = socket }, [socket])
+
   const [layout, setLayout] = useState<LayoutMode>("split")
   const [activeTab, setActiveTab] = useState<ActiveTab>("qa")
+
+  // Connect when the chat tab is active
+  useEffect(() => {
+    if (activeTab !== "chat" || !socket) return
+    socket.connect()
+  }, [activeTab, socket])
+
+  // Disconnect only when leaving the page
+  useEffect(() => {
+    return () => { socketRef.current?.disconnect() }
+  }, [])
   const [sourceDialogOpen, setSourceDialogOpen] = useState(false)
   const [questionsDialogOpen, setQuestionsDialogOpen] = useState(false)
   const [questionsDialogIsRegen, setQuestionsDialogIsRegen] = useState(false)
@@ -95,7 +111,13 @@ export function WorkbenchDetailLayout({ workbenchId, workspaceId }: WorkbenchDet
                 }}
               />
             ) : (
-              <WorkbenchChatView hasResources={hasResources} />
+              <WorkbenchChatView
+                workbenchId={workbenchId}
+                onSourceClick={(citation) => {
+                  setActiveCitation(citation)
+                  setLayout("split")
+                }}
+              />
             )}
           </div>
         </div>
