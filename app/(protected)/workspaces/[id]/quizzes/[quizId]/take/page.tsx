@@ -2,18 +2,18 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { useGetQuiz } from "@/features/quizzes/queries/use-get-quiz"
-import { OverviewTab } from "@/features/quizzes/components/OverviewTab"
+import { TakeQuizTab } from "@/features/quizzes/components/TakeQuizTab"
 
-export default function QuizOverviewPage() {
+export default function QuizTakePage() {
   const { id, quizId } = useParams<{ id: string; quizId: string }>()
   const router = useRouter()
   const { data: quiz } = useGetQuiz(Number(quizId))
 
   if (!quiz) return null
   return (
-    <OverviewTab
+    <TakeQuizTab
       quiz={quiz}
-      onTakeQuiz={() => router.push(`/workspaces/${id}/quizzes/${quizId}/take`)}
+      onOverview={() => router.push(`/workspaces/${id}/quizzes/${quizId}`)}
     />
   )
 }

@@ -6,6 +6,8 @@ import { DifficultyBadge } from "./DifficultyBadge"
 import { SourceButton } from "./SourceButton"
 import { AnswerOption } from "./AnswerOption"
 import { IconButton } from "./IconButton"
+import { Checkbox } from "@/shared/ui/checkbox"
+import { cn } from "@/lib/utils"
 import type { SourceCitation } from "@/types"
 
 export interface QAOption {
@@ -31,13 +33,39 @@ interface QAQuestionCardProps {
   onEdit?: () => void
   onRegenerate?: () => void
   onSourceClick?: (citation: SourceCitation) => void
+  selectMode?: boolean
+  selected?: boolean
+  onToggleSelect?: () => void
 }
 
-export function QAQuestionCard({ question, onEdit, onRegenerate, onSourceClick }: QAQuestionCardProps) {
+export function QAQuestionCard({
+  question,
+  onEdit,
+  onRegenerate,
+  onSourceClick,
+  selectMode,
+  selected,
+  onToggleSelect,
+}: QAQuestionCardProps) {
   return (
-    <div className="rounded-xl border border-border bg-card">
+    <div
+      className={cn(
+        "rounded-xl border bg-card transition-colors",
+        selectMode && selected ? "border-primary bg-primary/5" : "border-border",
+        selectMode && "cursor-pointer"
+      )}
+      onClick={selectMode ? onToggleSelect : undefined}
+    >
       {/* Card header row */}
       <div className="flex items-center gap-2 px-4 pt-3 pb-2">
+        {selectMode && (
+          <Checkbox
+            checked={selected}
+            onCheckedChange={onToggleSelect}
+            onClick={(e) => e.stopPropagation()}
+            className="shrink-0"
+          />
+        )}
         <span className="text-[11px] font-medium text-muted-foreground/60">
           #{question.number}
         </span>
@@ -46,14 +74,16 @@ export function QAQuestionCard({ question, onEdit, onRegenerate, onSourceClick }
         {question.hasSource && question.sourceCitation && (
           <SourceButton onClick={() => onSourceClick?.(question.sourceCitation!)} />
         )}
-        <div className="ml-auto flex items-center gap-1">
-          <IconButton onClick={onEdit} label="Edit question">
-            <Pencil className="size-3.5" />
-          </IconButton>
-          <IconButton onClick={onRegenerate} label="Regenerate question">
-            <RefreshCw className="size-3.5" />
-          </IconButton>
-        </div>
+        {!selectMode && (
+          <div className="ml-auto flex items-center gap-1">
+            <IconButton onClick={onEdit} label="Edit question">
+              <Pencil className="size-3.5" />
+            </IconButton>
+            <IconButton onClick={onRegenerate} label="Regenerate question">
+              <RefreshCw className="size-3.5" />
+            </IconButton>
+          </div>
+        )}
       </div>
 
       {/* Question text */}

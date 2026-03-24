@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Sparkles } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { Skeleton } from "@/shared/ui/skeleton"
@@ -7,6 +8,7 @@ import { QAQuestion, QAQuestionCard } from "../QAQuestionCard"
 import { QAToolbar } from "./QAToolbar"
 import { QAEmptyState } from "./QAEmptyState"
 import { useGetQuestions } from "../../queries/use-get-questions"
+import { CreateQuizFromSelectionDialog } from "@/features/quizzes/components/CreateQuizFromSelectionDialog"
 import type { ApiQuestion, SourceCitation } from "@/types"
 
 function mapApiQuestion(q: ApiQuestion, index: number): QAQuestion {
@@ -47,6 +49,7 @@ function mapApiQuestion(q: ApiQuestion, index: number): QAQuestion {
 interface QAGeneratorViewProps {
   hasResources: boolean
   workbenchId: number
+  workspaceId: number
   onGenerate: () => void
   onRegenerate: () => void
   onSourceClick: (citation: SourceCitation) => void
@@ -55,11 +58,34 @@ interface QAGeneratorViewProps {
 export function QAGeneratorView({
   hasResources,
   workbenchId,
+  workspaceId,
   onGenerate,
   onRegenerate,
   onSourceClick,
 }: QAGeneratorViewProps) {
   const { data: questions, isLoading } = useGetQuestions(workbenchId)
+  const [selectMode, setSelectMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+  const [createQuizOpen, setCreateQuizOpen] = useState(false)
+
+  function toggleSelectMode() {
+    setSelectMode((m) => !m)
+    setSelectedIds(new Set())
+  }
+
+  function toggleQuestion(id: number) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function handleQuizCreated() {
+    setSelectMode(false)
+    setSelectedIds(new Set())
+  }
 
   if (!hasResources) {
     return <QAEmptyState />
@@ -95,17 +121,39 @@ export function QAGeneratorView({
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <QAToolbar onRegenerate={onRegenerate} />
-      <div className="flex flex-col gap-3 overflow-y-auto flex-1 pr-0.5">
-        {questions.map((q, i) => (
-          <QAQuestionCard
-            key={q.id}
-            question={mapApiQuestion(q, i)}
-            onSourceClick={onSourceClick}
-          />
-        ))}
+    <>
+      <div className="flex flex-col h-full">
+        <QAToolbar
+          onRegenerate={onRegenerate}
+          selectMode={selectMode}
+          selectedCount={selectedIds.size}
+          onToggleSelectMode={toggleSelectMode}
+          onCreateQuiz={() => setCreateQuizOpen(true)}
+        />
+        <div className="flex flex-col gap-3 overflow-y-auto flex-1 pr-0.5">
+          {questions.map((q, i) => {
+            const mapped = mapApiQuestion(q, i)
+            return (
+              <QAQuestionCard
+                key={q.id}
+                question={mapped}
+                selectMode={selectMode}
+                selected={selectedIds.has(q.id)}
+                onToggleSelect={() => toggleQuestion(q.id)}
+                onSourceClick={onSourceClick}
+              />
+            )
+          })}
+        </div>
       </div>
-    </div>
+
+      <CreateQuizFromSelectionDialog
+        open={createQuizOpen}
+        setOpen={setCreateQuizOpen}
+        workspaceId={workspaceId}
+        questionIds={Array.from(selectedIds)}
+        onSuccess={handleQuizCreated}
+      />
+    </>
   )
 }

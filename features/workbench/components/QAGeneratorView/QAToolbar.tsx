@@ -1,13 +1,23 @@
-import { ChevronDown, MousePointerClick, RefreshCw } from "lucide-react"
+import { ChevronDown, MousePointerClick, RefreshCw, X, ClipboardList } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 
 interface QAToolbarProps {
   onRegenerate: () => void
+  selectMode: boolean
+  selectedCount: number
+  onToggleSelectMode: () => void
+  onCreateQuiz: () => void
 }
 
-export function QAToolbar({ onRegenerate }: QAToolbarProps) {
+export function QAToolbar({
+  onRegenerate,
+  selectMode,
+  selectedCount,
+  onToggleSelectMode,
+  onCreateQuiz,
+}: QAToolbarProps) {
   return (
-    <div className="flex items-center justify-between mb-3 shrink-0">
+    <div className="flex items-center justify-between mb-3 shrink-0 gap-2">
       <div className="flex items-center gap-1.5">
         <Button variant="outline" size="sm" className="gap-1.5 text-xs h-7 px-3">
           <ChevronDown className="size-3.5" />
@@ -23,10 +33,37 @@ export function QAToolbar({ onRegenerate }: QAToolbarProps) {
           REGENERATE
         </Button>
       </div>
-      <Button variant="outline" size="sm" className="gap-1.5 text-xs h-7 px-3">
-        <MousePointerClick className="size-3.5" />
-        SELECT
-      </Button>
+
+      <div className="flex items-center gap-1.5">
+        {selectMode && selectedCount > 0 && (
+          <Button
+            size="sm"
+            className="gap-1.5 text-xs h-7 px-3"
+            onClick={onCreateQuiz}
+          >
+            <ClipboardList className="size-3.5" />
+            Create Quiz ({selectedCount})
+          </Button>
+        )}
+        <Button
+          variant={selectMode ? "secondary" : "outline"}
+          size="sm"
+          className="gap-1.5 text-xs h-7 px-3"
+          onClick={onToggleSelectMode}
+        >
+          {selectMode ? (
+            <>
+              <X className="size-3.5" />
+              CANCEL
+            </>
+          ) : (
+            <>
+              <MousePointerClick className="size-3.5" />
+              SELECT
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   )
 }

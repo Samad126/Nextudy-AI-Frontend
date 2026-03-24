@@ -80,6 +80,7 @@ export function WorkbenchDetailLayout({ workbenchId, workspaceId }: WorkbenchDet
               <QAGeneratorView
                 hasResources={hasResources}
                 workbenchId={workbenchId}
+                workspaceId={workspaceId}
                 onGenerate={() => {
                   setQuestionsDialogIsRegen(false)
                   setQuestionsDialogOpen(true)

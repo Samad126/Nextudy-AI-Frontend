@@ -1,9 +1,42 @@
-import React from 'react'
+"use client"
 
-function page() {
+import { useState } from "react"
+import { useParams } from "next/navigation"
+import { Button } from "@/shared/ui/button"
+import { useGetFlashcardSets } from "@/features/flashcards/queries/use-get-flashcard-sets"
+import { FlashcardSetGrid } from "@/features/flashcards/components/FlashcardSetGrid"
+import { FlashcardSetsEmptyState } from "@/features/flashcards/components/FlashcardSetsEmptyState"
+import { FlashcardSetsSkeleton } from "@/features/flashcards/components/FlashcardSetsSkeleton"
+import { CreateFlashcardSetModal } from "@/features/flashcards/components/CreateFlashcardSetModal"
+
+export default function FlashcardsPage() {
+  const { id } = useParams<{ id: string }>()
+  const workspaceId = Number(id)
+  const [createOpen, setCreateOpen] = useState(false)
+  const { data: sets, isLoading } = useGetFlashcardSets(workspaceId)
+
   return (
-    <div>page</div>
+    <>
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-semibold tracking-tight">Flashcards</h1>
+          <Button onClick={() => setCreateOpen(true)}>Create Set</Button>
+        </div>
+
+        {isLoading ? (
+          <FlashcardSetsSkeleton />
+        ) : !sets || sets.length === 0 ? (
+          <FlashcardSetsEmptyState onCreateClick={() => setCreateOpen(true)} />
+        ) : (
+          <FlashcardSetGrid sets={sets} workspaceId={workspaceId} />
+        )}
+      </div>
+
+      <CreateFlashcardSetModal
+        open={createOpen}
+        setOpen={setCreateOpen}
+        workspaceId={workspaceId}
+      />
+    </>
   )
 }
-
-export default page
