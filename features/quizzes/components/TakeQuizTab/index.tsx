@@ -116,7 +116,7 @@ export function TakeQuizTab({ quiz, onOverview }: TakeQuizTabProps) {
   const currentAnswer = answers[currentQQ.id]
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
+    <div className="flex flex-col gap-6 max-w-2xl mx-auto w-full">
       {/* Progress */}
       <div className="flex items-center gap-3">
         <span className="text-sm text-muted-foreground whitespace-nowrap">

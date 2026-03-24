@@ -1,4 +1,4 @@
-import { Workspace } from "@/types"
+import { Workspace } from "../types/workspace"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { formatDate } from "../util/util"

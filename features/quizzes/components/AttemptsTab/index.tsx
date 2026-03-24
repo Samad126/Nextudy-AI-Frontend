@@ -100,7 +100,7 @@ export function AttemptsTab({ quiz }: AttemptsTabProps) {
   }
 
   return (
-    <div className="rounded-lg border border-border overflow-hidden max-w-2xl">
+    <div className="rounded-lg border border-border overflow-hidden max-w-2xl mx-auto w-full">
       <Table>
         <TableHeader>
           <TableRow>

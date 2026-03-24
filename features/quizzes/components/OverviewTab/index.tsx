@@ -9,7 +9,7 @@ interface OverviewTabProps {
 
 export function OverviewTab({ quiz, onTakeQuiz }: OverviewTabProps) {
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
+    <div className="flex flex-col gap-6 max-w-2xl mx-auto w-full">
       {quiz.description && (
         <p className="text-sm text-muted-foreground">{quiz.description}</p>
       )}

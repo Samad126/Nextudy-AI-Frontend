@@ -7,6 +7,8 @@ import { Skeleton } from "@/shared/ui/skeleton"
 import { QAQuestion, QAQuestionCard } from "../QAQuestionCard"
 import { QAToolbar } from "./QAToolbar"
 import { QAEmptyState } from "./QAEmptyState"
+import { EditQuestionDrawer } from "../EditQuestionDrawer"
+import { RegenerateQuestionDialog } from "../RegenerateQuestionDialog"
 import { useGetQuestions } from "../../queries/use-get-questions"
 import { CreateQuizFromSelectionDialog } from "@/features/quizzes/components/CreateQuizFromSelectionDialog"
 import type { ApiQuestion, SourceCitation } from "@/types"
@@ -67,6 +69,8 @@ export function QAGeneratorView({
   const [selectMode, setSelectMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const [createQuizOpen, setCreateQuizOpen] = useState(false)
+  const [editQuestion, setEditQuestion] = useState<ApiQuestion | null>(null)
+  const [regenerateQuestion, setRegenerateQuestion] = useState<ApiQuestion | null>(null)
 
   function toggleSelectMode() {
     setSelectMode((m) => !m)
@@ -141,6 +145,8 @@ export function QAGeneratorView({
                 selected={selectedIds.has(q.id)}
                 onToggleSelect={() => toggleQuestion(q.id)}
                 onSourceClick={onSourceClick}
+                onEdit={() => setEditQuestion(q)}
+                onRegenerate={() => setRegenerateQuestion(q)}
               />
             )
           })}
@@ -153,6 +159,20 @@ export function QAGeneratorView({
         workspaceId={workspaceId}
         questionIds={Array.from(selectedIds)}
         onSuccess={handleQuizCreated}
+      />
+
+      <EditQuestionDrawer
+        open={!!editQuestion}
+        onOpenChange={(open) => { if (!open) setEditQuestion(null) }}
+        question={editQuestion}
+        workbenchId={workbenchId}
+      />
+
+      <RegenerateQuestionDialog
+        open={!!regenerateQuestion}
+        onOpenChange={(open) => { if (!open) setRegenerateQuestion(null) }}
+        question={regenerateQuestion}
+        workbenchId={workbenchId}
       />
     </>
   )

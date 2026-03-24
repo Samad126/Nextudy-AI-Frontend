@@ -20,7 +20,7 @@ export function QuizResult({ quiz, attempt, onRetake, onOverview }: QuizResultPr
   const answerMap = new Map(attempt.answers.map((a) => [a.quizQuestionId, a]))
 
   return (
-    <div className="flex flex-col gap-8 max-w-2xl">
+    <div className="flex flex-col gap-8 max-w-2xl mx-auto w-full">
       {/* Score */}
       <div className="flex flex-col items-center gap-3 py-6">
         <div

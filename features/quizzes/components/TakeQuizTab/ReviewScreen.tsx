@@ -17,7 +17,7 @@ interface ReviewScreenProps {
 
 export function ReviewScreen({ questions, answers, onGoBack, onSubmit, isSubmitting }: ReviewScreenProps) {
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
+    <div className="flex flex-col gap-6 max-w-2xl mx-auto w-full">
       <div>
         <h3 className="font-medium mb-1">Review your answers</h3>
         <p className="text-sm text-muted-foreground">Check your answers before submitting.</p>

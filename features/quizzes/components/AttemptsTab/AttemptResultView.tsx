@@ -19,7 +19,7 @@ export function AttemptResultView({ quiz, attempt, onBack }: AttemptResultViewPr
   const answerMap = new Map(attempt.answers.map((a) => [a.quizQuestionId, a]))
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
+    <div className="flex flex-col gap-6 max-w-2xl mx-auto w-full">
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon-sm" onClick={onBack} className="-ml-1">
           <ArrowLeft className="size-4" />

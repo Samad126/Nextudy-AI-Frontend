@@ -1,6 +1,7 @@
 import { axiosPrivate } from "@/lib/api/client"
-import { ApiSuccess, Workspace } from "@/types"
+import { ApiSuccess } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { Workspace } from "../types/workspace"
 
 interface CreateWorkspaceInput {
   name: string

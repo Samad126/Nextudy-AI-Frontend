@@ -1,6 +1,7 @@
 import { axiosPrivate } from "@/lib/api/client"
-import { ApiSuccess, Workspace } from "@/types"
+import { ApiSuccess } from "@/types"
 import { useQuery } from "@tanstack/react-query"
+import { Workspace } from "../types/workspace"
 
 async function getWorkspaces() {
   const { data } =
