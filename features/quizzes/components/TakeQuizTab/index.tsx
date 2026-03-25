@@ -16,16 +16,27 @@ import { useSubmitQuizAttempt } from "../../mutations/use-submit-quiz-attempt"
 type Answers = Record<number, string | number>
 type Phase = "taking" | "review" | "result"
 
+interface QuizState {
+  phase: Phase
+  currentIndex: number
+  answers: Answers
+  attempt: QuizAttempt | null
+}
+
 interface TakeQuizTabProps {
   quiz: Quiz
   onOverview: () => void
 }
 
 export function TakeQuizTab({ quiz, onOverview }: TakeQuizTabProps) {
-  const [phase, setPhase] = useState<Phase>("taking")
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [answers, setAnswers] = useState<Answers>({})
-  const [attempt, setAttempt] = useState<QuizAttempt | null>(null)
+  const [state, setState] = useState<QuizState>({
+    phase: "taking",
+    currentIndex: 0,
+    answers: {},
+    attempt: null,
+  })
+
+  const { phase, currentIndex, answers, attempt } = state
 
   const { mutate: submit, isPending: isSubmitting } = useSubmitQuizAttempt(quiz.id)
 
@@ -35,24 +46,26 @@ export function TakeQuizTab({ quiz, onOverview }: TakeQuizTabProps) {
   const isLast = currentIndex === questions.length - 1
 
   function setAnswer(quizQuestionId: number, value: string | number) {
-    setAnswers((prev) => ({ ...prev, [quizQuestionId]: value }))
+    setState((prev) => ({
+      ...prev,
+      answers: { ...prev.answers, [quizQuestionId]: value },
+    }))
   }
 
   function goNext() {
-    if (isLast) {
-      setPhase("review")
-    } else {
-      setCurrentIndex((i) => i + 1)
-    }
+    setState((prev) =>
+      isLast
+        ? { ...prev, phase: "review" }
+        : { ...prev, currentIndex: prev.currentIndex + 1 }
+    )
   }
 
   function goPrev() {
-    setCurrentIndex((i) => i - 1)
+    setState((prev) => ({ ...prev, currentIndex: prev.currentIndex - 1 }))
   }
 
   function handleGoBackFromReview(index: number) {
-    setCurrentIndex(index)
-    setPhase("taking")
+    setState((prev) => ({ ...prev, currentIndex: index, phase: "taking" }))
   }
 
   function handleSubmit() {
@@ -65,8 +78,7 @@ export function TakeQuizTab({ quiz, onOverview }: TakeQuizTabProps) {
       { quizId: quiz.id, answers: answerPayload },
       {
         onSuccess: (data) => {
-          setAttempt(data)
-          setPhase("result")
+          setState((prev) => ({ ...prev, attempt: data, phase: "result" }))
         },
         onError: () => toast.error("Failed to submit quiz"),
       }
@@ -74,10 +86,7 @@ export function TakeQuizTab({ quiz, onOverview }: TakeQuizTabProps) {
   }
 
   function handleRetake() {
-    setAnswers({})
-    setCurrentIndex(0)
-    setAttempt(null)
-    setPhase("taking")
+    setState({ phase: "taking", currentIndex: 0, answers: {}, attempt: null })
   }
 
   if (phase === "review") {

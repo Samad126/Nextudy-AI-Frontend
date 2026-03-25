@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
+import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
@@ -9,6 +10,12 @@ import { Label } from "@/shared/ui/label"
 import { Skeleton } from "@/shared/ui/skeleton"
 import { useGetProfile } from "../queries/use-get-profile"
 import { useUpdateProfile } from "../mutations/use-update-profile"
+
+interface FormValues {
+  firstName: string
+  lastName: string
+  email: string
+}
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -26,32 +33,28 @@ export function ProfileTab() {
   const { data: profile, isLoading } = useGetProfile()
   const { mutate: updateProfile, isPending } = useUpdateProfile()
 
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [email, setEmail] = useState("")
+  const form = useForm<FormValues>({
+    defaultValues: { firstName: "", lastName: "", email: "" },
+  })
 
   useEffect(() => {
     if (profile) {
-      setFirstName(profile.firstName)
-      setLastName(profile.lastName)
-      setEmail(profile.email)
+      form.reset({
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        email: profile.email,
+      })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile])
 
-  const isDirty =
-    profile &&
-    (firstName !== profile.firstName ||
-      lastName !== profile.lastName ||
-      email !== profile.email)
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!profile || !isDirty) return
+  function onSubmit(data: FormValues) {
+    if (!profile) return
 
     const patch: Record<string, string> = {}
-    if (firstName !== profile.firstName) patch.firstName = firstName
-    if (lastName !== profile.lastName) patch.lastName = lastName
-    if (email !== profile.email) patch.email = email
+    if (data.firstName !== profile.firstName) patch.firstName = data.firstName
+    if (data.lastName !== profile.lastName) patch.lastName = data.lastName
+    if (data.email !== profile.email) patch.email = data.email
 
     updateProfile(patch, {
       onSuccess: () => toast.success("Profile updated"),
@@ -71,7 +74,7 @@ export function ProfileTab() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-md">
       {/* Avatar */}
       <div className="flex items-center gap-4">
         <div className="flex size-16 items-center justify-center rounded-full bg-primary text-xl font-bold text-primary-foreground select-none">
@@ -91,33 +94,20 @@ export function ProfileTab() {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label htmlFor="firstName">First Name</Label>
-            <Input
-              id="firstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
+            <Input id="firstName" {...form.register("firstName")} />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="lastName">Last Name</Label>
-            <Input
-              id="lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
+            <Input id="lastName" {...form.register("lastName")} />
           </div>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <Input id="email" type="email" {...form.register("email")} />
         </div>
       </div>
 
-      <Button type="submit" disabled={!isDirty || isPending}>
+      <Button type="submit" disabled={!form.formState.isDirty || isPending}>
         {isPending && <Loader2 className="size-4 mr-2 animate-spin" />}
         Save Changes
       </Button>

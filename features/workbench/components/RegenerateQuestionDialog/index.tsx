@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect } from "react"
+import { useForm, Controller } from "react-hook-form"
 import { Sparkles, Loader2 } from "lucide-react"
 import {
   Dialog,
@@ -22,6 +23,13 @@ import {
 import { useRegenerateQuestion } from "../../mutations/use-regenerate-question"
 import type { ApiQuestion, ApiQuestionDifficulty, ApiQuestionType, AnswerSource } from "@/types"
 
+interface FormValues {
+  regenerateFromScratch: boolean
+  questionType: ApiQuestionType
+  answerSource: AnswerSource
+  difficulty: ApiQuestionDifficulty | ""
+}
+
 interface RegenerateQuestionDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -37,24 +45,40 @@ export function RegenerateQuestionDialog({
 }: RegenerateQuestionDialogProps) {
   const { mutate: regenerate, isPending } = useRegenerateQuestion(workbenchId)
 
-  const [regenerateFromScratch, setRegenerateFromScratch] = useState(false)
-  const [questionType, setQuestionType] = useState<ApiQuestionType>(question?.question_type ?? "mcq")
-  const [answerSource, setAnswerSource] = useState<AnswerSource>(question?.answer_source ?? "ai")
-  const [difficulty, setDifficulty] = useState<ApiQuestionDifficulty | "">(question?.difficulty ?? "")
+  const { control, handleSubmit, watch, reset } = useForm<FormValues>({
+    defaultValues: {
+      regenerateFromScratch: false,
+      questionType: question?.question_type ?? "mcq",
+      answerSource: (question?.answer_source ?? "ai") as AnswerSource,
+      difficulty: (question?.difficulty ?? "") as ApiQuestionDifficulty | "",
+    },
+  })
+
+  useEffect(() => {
+    if (!question) return
+    reset({
+      regenerateFromScratch: false,
+      questionType: question.question_type,
+      answerSource: (question.answer_source ?? "ai") as AnswerSource,
+      difficulty: (question.difficulty ?? "") as ApiQuestionDifficulty | "",
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question?.id])
 
   if (!question) return null
 
+  const questionType = watch("questionType")
+  const answerSource = watch("answerSource")
   const fileDisabled = questionType === "mcq"
 
-  function handleRegenerate() {
-    if (!question) return
+  function onSubmit(data: FormValues) {
     regenerate(
       {
-        id: question.id,
-        regenerateFromScratch,
-        answerSource: fileDisabled && answerSource === "file" ? "ai" : answerSource,
-        questionType,
-        difficulty: (difficulty as ApiQuestionDifficulty) || undefined,
+        id: question!.id,
+        regenerateFromScratch: data.regenerateFromScratch,
+        answerSource: fileDisabled && data.answerSource === "file" ? "ai" : data.answerSource,
+        questionType: data.questionType,
+        difficulty: (data.difficulty as ApiQuestionDifficulty) || undefined,
       },
       { onSuccess: () => onOpenChange(false) }
     )
@@ -73,65 +97,83 @@ export function RegenerateQuestionDialog({
             <p className="text-sm text-muted-foreground">Regenerating with AI…</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-5 py-2">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-2">
             {/* Regeneration mode */}
             <div className="flex flex-col gap-2">
               <Label>Regeneration mode</Label>
-              <RadioGroup
-                value={regenerateFromScratch ? "scratch" : "answers"}
-                onValueChange={(v) => setRegenerateFromScratch(v === "scratch")}
-                className="flex flex-col gap-2"
-              >
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="answers" id="mode-answers" />
-                  <label htmlFor="mode-answers" className="text-sm cursor-pointer">
-                    Keep title, regenerate answers only
-                  </label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="scratch" id="mode-scratch" />
-                  <label htmlFor="mode-scratch" className="text-sm cursor-pointer">
-                    Full regeneration (new topic + answers)
-                  </label>
-                </div>
-              </RadioGroup>
+              <Controller
+                control={control}
+                name="regenerateFromScratch"
+                render={({ field }) => (
+                  <RadioGroup
+                    value={field.value ? "scratch" : "answers"}
+                    onValueChange={(v) => field.onChange(v === "scratch")}
+                    className="flex flex-col gap-2"
+                  >
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="answers" id="mode-answers" />
+                      <label htmlFor="mode-answers" className="text-sm cursor-pointer">
+                        Keep title, regenerate answers only
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="scratch" id="mode-scratch" />
+                      <label htmlFor="mode-scratch" className="text-sm cursor-pointer">
+                        Full regeneration (new topic + answers)
+                      </label>
+                    </div>
+                  </RadioGroup>
+                )}
+              />
             </div>
 
             {/* Question type */}
             <div className="flex flex-col gap-1.5">
               <Label>Question type</Label>
-              <Select
-                value={questionType}
-                onValueChange={(v) => setQuestionType(v as ApiQuestionType)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="mcq">Multiple Choice (MCQ)</SelectItem>
-                  <SelectItem value="open_ended">Open Ended</SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                control={control}
+                name="questionType"
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(v) => field.onChange(v as ApiQuestionType)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mcq">Multiple Choice (MCQ)</SelectItem>
+                      <SelectItem value="open_ended">Open Ended</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
 
             {/* Answer source */}
             <div className="flex flex-col gap-1.5">
               <Label>Answer source</Label>
-              <Select
-                value={answerSource}
-                onValueChange={(v) => setAnswerSource(v as AnswerSource)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ai">AI</SelectItem>
-                  <SelectItem value="mixed">Mixed</SelectItem>
-                  <SelectItem value="file" disabled={fileDisabled}>
-                    File {fileDisabled ? "(unavailable for MCQ)" : ""}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                control={control}
+                name="answerSource"
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(v) => field.onChange(v as AnswerSource)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ai">AI</SelectItem>
+                      <SelectItem value="mixed">Mixed</SelectItem>
+                      <SelectItem value="file" disabled={fileDisabled}>
+                        File {fileDisabled ? "(unavailable for MCQ)" : ""}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
               {fileDisabled && answerSource === "file" && (
                 <p className="text-xs text-destructive">
                   File-verbatim answers are not supported for MCQ
@@ -142,37 +184,42 @@ export function RegenerateQuestionDialog({
             {/* Difficulty */}
             <div className="flex flex-col gap-1.5">
               <Label>Difficulty (optional)</Label>
-              <Select
-                value={difficulty}
-                onValueChange={(v) => setDifficulty(v as ApiQuestionDifficulty)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Same as current" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="EASY">Easy</SelectItem>
-                  <SelectItem value="MEDIUM">Medium</SelectItem>
-                  <SelectItem value="HARD">Hard</SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                control={control}
+                name="difficulty"
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(v) => field.onChange(v as ApiQuestionDifficulty)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Same as current" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="EASY">Easy</SelectItem>
+                      <SelectItem value="MEDIUM">Medium</SelectItem>
+                      <SelectItem value="HARD">Hard</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
-          </div>
-        )}
 
-        {!isPending && (
-          <DialogFooter className="gap-2 flex-row">
-            <Button
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleRegenerate} className="flex-1 gap-1.5">
-              <Sparkles className="size-3.5" />
-              Regenerate with AI
-            </Button>
-          </DialogFooter>
+            <DialogFooter className="gap-2 flex-row">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button type="submit" className="flex-1 gap-1.5">
+                <Sparkles className="size-3.5" />
+                Regenerate with AI
+              </Button>
+            </DialogFooter>
+          </form>
         )}
       </DialogContent>
     </Dialog>

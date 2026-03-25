@@ -32,14 +32,24 @@ export function WorkbenchDetailLayout({
     socketRef.current = socket
   }, [socket])
 
-  const [layout, setLayout] = useState<LayoutMode>("split")
-  const [activeTab, setActiveTab] = useState<ActiveTab>("qa")
+  const [ui, setUi] = useState<{ layout: LayoutMode; activeTab: ActiveTab }>({
+    layout: "split",
+    activeTab: "qa",
+  })
+  const [questionsDialog, setQuestionsDialog] = useState({
+    open: false,
+    isRegen: false,
+  })
+  const [sourceDialogOpen, setSourceDialogOpen] = useState(false)
+  // null means "not overridden yet" — derive from server data instead
+  const [localSelectedIds, setLocalSelectedIds] = useState<Set<number> | null>(null)
+  const [activeCitation, setActiveCitation] = useState<SourceCitation | null>(null)
 
   // Connect when the chat tab is active
   useEffect(() => {
-    if (activeTab !== "chat" || !socket) return
+    if (ui.activeTab !== "chat" || !socket) return
     socket.connect()
-  }, [activeTab, socket])
+  }, [ui.activeTab, socket])
 
   // Disconnect only when leaving the page
   useEffect(() => {
@@ -47,19 +57,8 @@ export function WorkbenchDetailLayout({
       socketRef.current?.disconnect()
     }
   }, [])
-  const [sourceDialogOpen, setSourceDialogOpen] = useState(false)
-  const [questionsDialogOpen, setQuestionsDialogOpen] = useState(false)
-  const [questionsDialogIsRegen, setQuestionsDialogIsRegen] = useState(false)
-  // null means "not overridden yet" — derive from server data instead
-  const [localSelectedIds, setLocalSelectedIds] = useState<Set<number> | null>(
-    null
-  )
-  const [activeCitation, setActiveCitation] = useState<SourceCitation | null>(
-    null
-  )
 
-  const { data: workbenchResources = [] } =
-    useGetWorkbenchResources(workbenchId)
+  const { data: workbenchResources = [] } = useGetWorkbenchResources(workbenchId)
   const { data: allResources = [] } = useGetResources(workspaceId)
 
   // Use local override if the user has confirmed a selection; otherwise derive from server
@@ -72,23 +71,21 @@ export function WorkbenchDetailLayout({
   const hasResources = selectedIds.size > 0
 
   const handleGenerate = useCallback(() => {
-    setQuestionsDialogIsRegen(false)
-    setQuestionsDialogOpen(true)
+    setQuestionsDialog({ open: true, isRegen: false })
   }, [])
 
   const handleRegenerate = useCallback(() => {
-    setQuestionsDialogIsRegen(true)
-    setQuestionsDialogOpen(true)
+    setQuestionsDialog({ open: true, isRegen: true })
   }, [])
 
   const handleSourceClick = useCallback((citation: SourceCitation) => {
     setActiveCitation(citation)
-    setLayout("split")
+    setUi((prev) => ({ ...prev, layout: "split" }))
   }, [])
 
   // On desktop, respect the layout toggle. On mobile, always show both panels stacked.
-  const showLeft = layout === "left" || layout === "split"
-  const showRight = layout === "right" || layout === "split"
+  const showLeft = ui.layout === "left" || ui.layout === "split"
+  const showRight = ui.layout === "right" || ui.layout === "split"
 
   return (
     <CitationProvider value={handleSourceClick}>
@@ -96,8 +93,8 @@ export function WorkbenchDetailLayout({
         <WorkbenchDetailHeader
           resourceCount={selectedIds.size}
           onOpenSelectSource={() => setSourceDialogOpen(true)}
-          layout={layout}
-          onLayoutChange={setLayout}
+          layout={ui.layout}
+          onLayoutChange={(layout) => setUi((prev) => ({ ...prev, layout }))}
         />
 
         {/*
@@ -116,15 +113,15 @@ export function WorkbenchDetailLayout({
               "md:h-auto",
               // Desktop visibility and sizing
               showLeft ? "md:flex" : "md:hidden",
-              layout === "split" ? "md:min-w-0 md:flex-1" : "md:w-full"
+              ui.layout === "split" ? "md:min-w-0 md:flex-1" : "md:w-full"
             )}
           >
             <WorkbenchPanelTabs
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
+              activeTab={ui.activeTab}
+              onTabChange={(activeTab) => setUi((prev) => ({ ...prev, activeTab }))}
             />
             <div className="flex-1 overflow-hidden px-4 pt-3 pb-4">
-              {activeTab === "qa" ? (
+              {ui.activeTab === "qa" ? (
                 <QAGeneratorView
                   hasResources={hasResources}
                   workbenchId={workbenchId}
@@ -148,7 +145,7 @@ export function WorkbenchDetailLayout({
               "md:h-auto",
               // Desktop visibility and sizing
               showRight ? "md:flex" : "md:hidden",
-              layout === "split" ? "md:min-w-0 md:flex-1" : "md:w-full"
+              ui.layout === "split" ? "md:min-w-0 md:flex-1" : "md:w-full"
             )}
           >
             <ResourcePreviewPanel
@@ -159,10 +156,10 @@ export function WorkbenchDetailLayout({
         </div>
 
         <QuestionsDialog
-          open={questionsDialogOpen}
-          setOpen={setQuestionsDialogOpen}
+          open={questionsDialog.open}
+          setOpen={(open) => setQuestionsDialog((prev) => ({ ...prev, open }))}
           workbenchId={workbenchId}
-          isRegenerate={questionsDialogIsRegen}
+          isRegenerate={questionsDialog.isRegen}
         />
 
         <SelectSourceDialog

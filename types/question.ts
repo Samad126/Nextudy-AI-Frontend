@@ -1,3 +1,6 @@
+import type { SourceCitation } from "./chat"
+export type { SourceCitation }
+
 export type ApiQuestionType = "mcq" | "open_ended"
 export type ApiQuestionDifficulty = "EASY" | "MEDIUM" | "HARD"
 export type ApiQuestionDifficultyMixed = "EASY" | "MEDIUM" | "HARD" | "MIXED"
@@ -27,13 +30,6 @@ export interface OpenEndedAnswer {
   question_id: number
   sample_answer: string
   gradingKeywords: ApiGradingKeyword[]
-}
-
-export interface SourceCitation {
-  page: number
-  snippet: string
-  fileName: string
-  resourceId: number
 }
 
 export interface ApiQuestion {

@@ -11,37 +11,46 @@ interface FlashcardFlipperProps {
   cards: Flashcard[]
 }
 
+interface DeckState {
+  deck: Flashcard[]
+  index: number
+  flipped: boolean
+  hasFlippedOnce: boolean
+  shuffled: boolean
+}
+
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr]
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]]
   }
   return a
 }
 
 export function FlashcardFlipper({ cards }: FlashcardFlipperProps) {
-  const [deck, setDeck] = useState(cards)
-  const [index, setIndex] = useState(0)
-  const [flipped, setFlipped] = useState(false)
-  const [hasFlippedOnce, setHasFlippedOnce] = useState(false)
-  const [shuffled, setShuffled] = useState(false)
+  const [state, setState] = useState<DeckState>({
+    deck: cards,
+    index: 0,
+    flipped: false,
+    hasFlippedOnce: false,
+    shuffled: false,
+  })
 
+  const { deck, index, flipped, hasFlippedOnce, shuffled } = state
   const current = deck[index]
 
   const goNext = useCallback(() => {
-    setIndex((i) => {
-      if (i >= deck.length - 1) return i
-      setFlipped(false)
-      return i + 1
+    setState((prev) => {
+      if (prev.index >= prev.deck.length - 1) return prev
+      return { ...prev, index: prev.index + 1, flipped: false }
     })
-  }, [deck.length])
+  }, [])
 
   const goPrev = useCallback(() => {
-    setIndex((i) => {
-      if (i <= 0) return i
-      setFlipped(false)
-      return i - 1
+    setState((prev) => {
+      if (prev.index <= 0) return prev
+      return { ...prev, index: prev.index - 1, flipped: false }
     })
   }, [])
 
@@ -55,21 +64,26 @@ export function FlashcardFlipper({ cards }: FlashcardFlipperProps) {
   }, [goNext, goPrev])
 
   function handleFlip() {
-    setFlipped((f) => !f)
-    if (!hasFlippedOnce) setHasFlippedOnce(true)
+    setState((prev) => ({ ...prev, flipped: !prev.flipped, hasFlippedOnce: true }))
   }
 
   function handleShuffle() {
-    setDeck(shuffleArray(deck))
-    setIndex(0)
-    setFlipped(false)
-    setShuffled(true)
+    setState((prev) => ({
+      ...prev,
+      deck: shuffleArray(prev.deck),
+      index: 0,
+      flipped: false,
+      shuffled: true,
+    }))
   }
 
   function handleRestart() {
-    setDeck(shuffled ? shuffleArray(cards) : cards)
-    setIndex(0)
-    setFlipped(false)
+    setState((prev) => ({
+      ...prev,
+      deck: prev.shuffled ? shuffleArray(cards) : cards,
+      index: 0,
+      flipped: false,
+    }))
   }
 
   if (!current) return null
