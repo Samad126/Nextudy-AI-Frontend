@@ -11,7 +11,7 @@ import { EditQuestionDrawer } from "../EditQuestionDrawer"
 import { RegenerateQuestionDialog } from "../RegenerateQuestionDialog"
 import { useGetQuestions } from "../../queries/use-get-questions"
 import { CreateQuizFromSelectionDialog } from "@/features/quizzes/components/CreateQuizFromSelectionDialog"
-import type { ApiQuestion, SourceCitation } from "@/types"
+import type { ApiQuestion } from "@/types"
 
 function mapApiQuestion(q: ApiQuestion, index: number): QAQuestion {
   const isMCQ = q.question_type === "mcq"
@@ -54,7 +54,6 @@ interface QAGeneratorViewProps {
   workspaceId: number
   onGenerate: () => void
   onRegenerate: () => void
-  onSourceClick: (citation: SourceCitation) => void
 }
 
 export function QAGeneratorView({
@@ -63,7 +62,6 @@ export function QAGeneratorView({
   workspaceId,
   onGenerate,
   onRegenerate,
-  onSourceClick,
 }: QAGeneratorViewProps) {
   const { data: questions, isLoading } = useGetQuestions(workbenchId)
   const [selectMode, setSelectMode] = useState(false)
@@ -144,7 +142,7 @@ export function QAGeneratorView({
                 selectMode={selectMode}
                 selected={selectedIds.has(q.id)}
                 onToggleSelect={() => toggleQuestion(q.id)}
-                onSourceClick={onSourceClick}
+
                 onEdit={() => setEditQuestion(q)}
                 onRegenerate={() => setRegenerateQuestion(q)}
               />

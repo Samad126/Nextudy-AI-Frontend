@@ -9,15 +9,13 @@ import { useCreateChat } from "@/features/chat/mutations/use-create-chat"
 import { useDeleteChat } from "@/features/chat/mutations/use-delete-chat"
 import { Loader2 } from "lucide-react"
 import type { LocalChatMessage } from "@/features/chat/hooks/use-chat"
-import type { SourceCitation } from "@/types/chat"
 
 interface WorkbenchChatViewProps {
   workbenchId: number
   userName?: string
-  onSourceClick?: (citation: SourceCitation) => void
 }
 
-export function WorkbenchChatView({ workbenchId, userName = "You", onSourceClick }: WorkbenchChatViewProps) {
+export function WorkbenchChatView({ workbenchId, userName = "You" }: WorkbenchChatViewProps) {
   const { isConnected } = useSocket()
 
   const { data: chats, isLoading: isLoadingChats } = useGetWorkbenchChats(workbenchId)
@@ -101,7 +99,6 @@ export function WorkbenchChatView({ workbenchId, userName = "You", onSourceClick
           autoSend={chatId && pendingFirstMessage ? pendingFirstMessage : undefined}
           onAutoSendComplete={() => setPendingFirstMessage(null)}
           onFirstMessage={!chatId ? handleFirstMessage : undefined}
-          onSourceClick={onSourceClick}
         />
       )}
     </div>

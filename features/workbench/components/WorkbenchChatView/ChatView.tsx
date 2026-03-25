@@ -5,7 +5,7 @@ import { ChatMessageBubble } from "./ChatMessageBubble"
 import { TypingIndicator } from "./TypingIndicator"
 import { ChatInput } from "./ChatInput"
 import { useChat, type LocalChatMessage } from "@/features/chat/hooks/use-chat"
-import type { SourceCitation } from "@/types/chat"
+
 
 export interface ChatViewProps {
   chatId: number | undefined
@@ -14,7 +14,6 @@ export interface ChatViewProps {
   autoSend?: string
   onAutoSendComplete?: () => void
   onFirstMessage?: (content: string) => void
-  onSourceClick?: (citation: SourceCitation) => void
 }
 
 export function ChatView({
@@ -24,7 +23,6 @@ export function ChatView({
   autoSend,
   onAutoSendComplete,
   onFirstMessage,
-  onSourceClick,
 }: ChatViewProps) {
   const [input, setInput] = useState("")
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -87,7 +85,6 @@ export function ChatView({
             message={msg}
             userName={userName}
             onEdit={msg.role === "user" ? handleEditRequest : undefined}
-            onSourceClick={onSourceClick}
           />
         ))}
         {isTyping && !isStreaming && <TypingIndicator />}

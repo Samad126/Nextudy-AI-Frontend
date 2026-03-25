@@ -8,6 +8,7 @@ import { AnswerOption } from "./AnswerOption"
 import { IconButton } from "./IconButton"
 import { Checkbox } from "@/shared/ui/checkbox"
 import { cn } from "@/lib/utils"
+import { useCitation } from "../../context/citation-context"
 import type { SourceCitation } from "@/types"
 
 export interface QAOption {
@@ -32,7 +33,6 @@ interface QAQuestionCardProps {
   question: QAQuestion
   onEdit?: () => void
   onRegenerate?: () => void
-  onSourceClick?: (citation: SourceCitation) => void
   selectMode?: boolean
   selected?: boolean
   onToggleSelect?: () => void
@@ -42,11 +42,11 @@ export function QAQuestionCard({
   question,
   onEdit,
   onRegenerate,
-  onSourceClick,
   selectMode,
   selected,
   onToggleSelect,
 }: QAQuestionCardProps) {
+  const onSourceClick = useCitation()
   return (
     <div
       className={cn(
@@ -75,7 +75,7 @@ export function QAQuestionCard({
         <TypeBadge type={question.type} />
         <DifficultyBadge difficulty={question.difficulty} />
         {question.hasSource && question.sourceCitation && (
-          <SourceButton onClick={() => onSourceClick?.(question.sourceCitation!)} />
+          <SourceButton onClick={() => onSourceClick(question.sourceCitation!)} />
         )}
         {!selectMode && (
           <div className="ml-auto flex items-center gap-1">
