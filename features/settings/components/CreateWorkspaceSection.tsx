@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 import { Plus, Loader2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
@@ -11,7 +11,7 @@ import { useCreateWorkspace } from "@/features/workspace/mutations/use-create-wo
 
 export function CreateWorkspaceSection() {
   const [open, setOpen] = useState(false)
-  const { register, handleSubmit, reset, watch } = useForm({
+  const { register, handleSubmit, reset, control } = useForm({
     defaultValues: { name: "", desc: "" },
   })
   const { mutate, isPending } = useCreateWorkspace()
@@ -30,7 +30,7 @@ export function CreateWorkspaceSection() {
     )
   }
 
-  const nameValue = watch("name")
+  const nameValue = useWatch({ control, name: "name" }) 
 
   return (
     <div>

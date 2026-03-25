@@ -1,9 +1,7 @@
-import React from 'react'
+"use client"
 
-function page() {
-  return (
-    <div>page</div>
-  )
+import { WorkspaceOverview } from "@/features/workspace/components/WorkspaceOverview"
+
+export default function WorkspacePage() {
+  return <WorkspaceOverview />
 }
-
-export default page

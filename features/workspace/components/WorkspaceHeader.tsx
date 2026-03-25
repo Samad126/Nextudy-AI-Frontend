@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useCallback } from "react"
 import { useParams, usePathname, useRouter } from "next/navigation"
-import { BookOpen, FileText, LayoutDashboard, Shuffle, BarChart2, Layers } from "lucide-react"
+import { BookOpen, FileText, LayoutDashboard, Shuffle, Layers } from "lucide-react"
 import { Logo } from "@/shared/components/logo"
 import { useAuth } from "@/shared/providers/auth-provider"
 import { useGetWorkspaces } from "@/features/workspace/queries/use-get-workspaces"
@@ -19,7 +19,6 @@ const NAV_LINKS = [
   { label: "Cards",     href: "/flashcards",  icon: Layers },
   { label: "Quizzes",   href: "/quizzes",     icon: Shuffle },
   { label: "Workbench", href: "/workbenches", icon: BookOpen },
-  { label: "Stats",     href: "/stats",       icon: BarChart2 },
 ]
 
 function isLinkActive(href: string, pathname: string, baseUrl: string) {
