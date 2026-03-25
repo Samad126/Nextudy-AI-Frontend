@@ -9,19 +9,21 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/shared/ui/button"
 import { FormField } from "@/shared/components/form-field"
 import { forgotPasswordSchema, type ForgotPasswordFormValues } from "@/lib/validations/auth"
+import { useForgotPassword } from "@/features/auth/mutations/use-forgot-password"
 
 const RESEND_COOLDOWN = 30
 
 export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false)
   const [countdown, setCountdown] = useState(0)
-  const [resending, setResending] = useState(false)
+
+  const { mutate: requestReset, isPending } = useForgotPassword()
 
   const {
     register,
     handleSubmit,
     getValues,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ForgotPasswordFormValues>({ resolver: zodResolver(forgotPasswordSchema) })
 
   useEffect(() => {
@@ -30,18 +32,31 @@ export default function ForgotPasswordPage() {
     return () => clearTimeout(t)
   }, [countdown])
 
-  async function onSubmit() {
-    await new Promise((r) => setTimeout(r, 1500))
-    setSent(true)
-    setCountdown(RESEND_COOLDOWN)
+  function onSubmit(data: ForgotPasswordFormValues) {
+    requestReset(data, {
+      onSuccess: () => {
+        setSent(true)
+        setCountdown(RESEND_COOLDOWN)
+      },
+      onError: () => {
+        toast.error("Something went wrong. Please try again.")
+      },
+    })
   }
 
-  async function handleResend() {
-    setResending(true)
-    await new Promise((r) => setTimeout(r, 1200))
-    setResending(false)
-    setCountdown(RESEND_COOLDOWN)
-    toast.success("Reset link resent.")
+  function handleResend() {
+    requestReset(
+      { email: getValues("email") },
+      {
+        onSuccess: () => {
+          setCountdown(RESEND_COOLDOWN)
+          toast.success("Reset link resent.")
+        },
+        onError: () => {
+          toast.error("Failed to resend. Please try again.")
+        },
+      }
+    )
   }
 
   return (
@@ -80,11 +95,11 @@ export default function ForgotPasswordPage() {
 
           <Button
             variant="outline"
-            disabled={countdown > 0 || resending}
+            disabled={countdown > 0 || isPending}
             onClick={handleResend}
             className="h-10 w-full cursor-pointer disabled:cursor-not-allowed"
           >
-            {resending ? (
+            {isPending ? (
               <><Loader2 className="size-4 animate-spin" /> Sending…</>
             ) : countdown > 0 ? (
               `Resend in ${countdown}s`
@@ -118,10 +133,10 @@ export default function ForgotPasswordPage() {
             />
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isPending}
               className="h-10 w-full cursor-pointer bg-teal text-white hover:bg-teal/90"
             >
-              {isSubmitting ? (
+              {isPending ? (
                 <><Loader2 className="size-4 animate-spin" /> Sending reset link…</>
               ) : (
                 "Send reset link"

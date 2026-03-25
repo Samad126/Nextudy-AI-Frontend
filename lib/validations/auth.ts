@@ -29,6 +29,18 @@ export const registerSchema = z
 
 export type RegisterFormValues = z.infer<typeof registerSchema>
 
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, "Password must be at least 8 characters."),
+    confirmPassword: z.string().min(1, "Please confirm your password."),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  })
+
+export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>
+
 export type PasswordStrength = { level: 1 | 2 | 3; label: "Weak" | "Medium" | "Strong" }
 
 export function getPasswordStrength(password: string): PasswordStrength | null {
