@@ -6,10 +6,7 @@ import { BookOpen, FileText, Shuffle, Layers, Users, Calendar, ArrowRight } from
 import { format } from "date-fns"
 import { useGetWorkspaces } from "../queries/use-get-workspaces"
 import { useGetMembers } from "../queries/use-get-members"
-import { useGetWorkbenches } from "@/features/workbench/queries/use-get-workbenches"
-import { useGetQuizzes } from "@/features/quizzes/queries/use-get-quizzes"
-import { useGetFlashcardSets } from "@/features/flashcards/queries/use-get-flashcard-sets"
-import { useGetResources } from "@/features/resources/queries/use-get-resources"
+import { useGetWorkspaceOverview } from "../queries/use-get-workspace-overview"
 import { WorkspaceTutorial } from "./WorkspaceTutorial"
 import { cn } from "@/lib/utils"
 
@@ -106,16 +103,13 @@ export function WorkspaceOverview() {
 
   const { data: workspaces } = useGetWorkspaces()
   const { data: members } = useGetMembers(workspaceId)
-  const { data: workbenches } = useGetWorkbenches(workspaceId)
-  const { data: quizzes } = useGetQuizzes(workspaceId)
-  const { data: flashcardSets } = useGetFlashcardSets(workspaceId)
-  const { data: resources } = useGetResources(workspaceId)
+  const { data: overview } = useGetWorkspaceOverview(workspaceId)
 
   const workspace = workspaces?.find((ws) => ws.id === workspaceId)
 
-  const recentWorkbenches = workbenches?.slice(0, 3) ?? []
-  const recentQuizzes = quizzes?.slice(0, 3) ?? []
-  const recentFlashcardSets = flashcardSets?.slice(0, 3) ?? []
+  const recentWorkbenches = overview?.recentWorkbenches ?? []
+  const recentQuizzes = overview?.recentQuizzes ?? []
+  const recentFlashcardSets = overview?.recentFlashcardSets ?? []
 
   return (
     <>
@@ -150,28 +144,28 @@ export function WorkspaceOverview() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard
             label="Resources"
-            value={resources?.length}
+            value={overview?.counts.resources}
             icon={FileText}
             href={`${base}/resources`}
             colorClass="bg-sky-500/10 text-sky-500"
           />
           <StatCard
             label="Workbenches"
-            value={workbenches?.length}
+            value={overview?.counts.workbenches}
             icon={BookOpen}
             href={`${base}/workbenches`}
             colorClass="bg-teal-500/10 text-teal-500"
           />
           <StatCard
             label="Quizzes"
-            value={quizzes?.length}
+            value={overview?.counts.quizzes}
             icon={Shuffle}
             href={`${base}/quizzes`}
             colorClass="bg-green-500/10 text-green-500"
           />
           <StatCard
             label="Flashcard Sets"
-            value={flashcardSets?.length}
+            value={overview?.counts.flashcardSets}
             icon={Layers}
             href={`${base}/flashcards`}
             colorClass="bg-amber-500/10 text-amber-500"
@@ -186,10 +180,7 @@ export function WorkspaceOverview() {
                 <RecentItem
                   key={wb.id}
                   title={wb.name}
-                  subtitle={
-                    wb.description ??
-                    format(new Date(wb.created_at), "MMM d, yyyy")
-                  }
+                  subtitle={format(new Date(wb.created_at), "MMM d, yyyy")}
                   href={`${base}/workbenches/${wb.id}`}
                 />
               ))
@@ -204,7 +195,7 @@ export function WorkspaceOverview() {
                 <RecentItem
                   key={q.id}
                   title={q.title}
-                  subtitle={`${q.questionCount} question${q.questionCount !== 1 ? "s" : ""} · ${q.attemptCount} attempt${q.attemptCount !== 1 ? "s" : ""}`}
+                  subtitle={format(new Date(q.created_at), "MMM d, yyyy")}
                   href={`${base}/quizzes/${q.id}`}
                 />
               ))
@@ -219,7 +210,7 @@ export function WorkspaceOverview() {
                 <RecentItem
                   key={fs.id}
                   title={fs.title}
-                  subtitle={`${fs.cardCount} card${fs.cardCount !== 1 ? "s" : ""}`}
+                  subtitle={format(new Date(fs.created_at), "MMM d, yyyy")}
                   href={`${base}/flashcards/${fs.id}`}
                 />
               ))
