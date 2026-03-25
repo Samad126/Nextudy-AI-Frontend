@@ -1,34 +1,39 @@
 "use client"
 
-import { Button } from "@/shared/ui/button"
+import { useRouter } from "next/navigation"
+import { useQueryClient } from "@tanstack/react-query"
 import { useGoogleLogin } from "@react-oauth/google"
+import { Button } from "@/shared/ui/button"
+import { axiosBase, setAccessToken } from "@/lib/api/client"
+import { useAuth } from "@/shared/providers/auth-provider"
 import { GoogleIcon } from "./google-icon"
+import type { ApiSuccess } from "@/types"
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+interface GoogleAuthData {
+  accessToken: string
+  refreshToken: string
+}
 
 export function GoogleButton({
   label = "Continue with Google",
 }: {
   label?: string
 }) {
+  const router = useRouter()
+  const queryClient = useQueryClient()
+  const { markSessionActive } = useAuth()
+
   const login = useGoogleLogin({
     onSuccess: async ({ access_token }) => {
-      console.log("Access Token: ", access_token)
-      const res = await fetch(`${API_URL}/auth/google`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ accessToken: access_token }),
+      const res = await axiosBase.post<ApiSuccess<GoogleAuthData>>("/auth/google", {
+        accessToken: access_token,
       })
-
-      console.log(await res.json());
-      // const { accessToken, refreshToken } = await res.json()
-      // localStorage.setItem("accessToken", accessToken)
-      // localStorage.setItem("refreshToken", refreshToken)
+      setAccessToken(res.data.data.accessToken)
+      markSessionActive()
+      queryClient.resetQueries()
+      router.push("/")
     },
-
-    onError: (errResponse => {
-      console.log(errResponse);
-    })
+    onError: () => {},
   })
 
   return (

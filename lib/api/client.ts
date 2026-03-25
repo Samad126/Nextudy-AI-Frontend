@@ -106,7 +106,6 @@ axiosPrivate.interceptors.response.use(
       processQueue(refreshError, null)
       accessToken = null
       if (typeof window !== "undefined") {
-        console.log("DISPATCHED")
         window.dispatchEvent(new CustomEvent("auth:session-expired"))
       }
       return Promise.reject(refreshError)

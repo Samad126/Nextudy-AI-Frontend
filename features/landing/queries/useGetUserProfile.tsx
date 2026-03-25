@@ -11,9 +11,6 @@ async function getUser(): Promise<User> {
 export function useGetUserProfile() {
   const { hasSession, isAccessTokenHydrated } = useAuth()
 
-  console.log("HAS SESSION ", hasSession);
-  console.log("IS HYDRATED ", isAccessTokenHydrated);
-
   return useQuery({
     queryFn: getUser,
     queryKey: ["user-profile"],
