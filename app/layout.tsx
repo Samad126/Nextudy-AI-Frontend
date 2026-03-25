@@ -52,10 +52,12 @@ export default async function RootLayout({
       className={cn(fontSans.variable, fontMono.variable)}
     >
       <head>
-        <Script
-          src="https://unpkg.com/react-scan/dist/auto.global.js"
-          strategy="beforeInteractive"
-        />
+        {process.env.NODE_ENV === "development" && (
+          <Script
+            src="https://unpkg.com/react-scan/dist/auto.global.js"
+            strategy="beforeInteractive"
+          />
+        )}
       </head>
       <body className="font-sans antialiased">
         <QueryProvider>
