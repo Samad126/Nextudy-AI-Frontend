@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { getApiErrorMessage } from "@/lib/api/get-api-error"
@@ -15,15 +15,18 @@ import { OpenEndedQuestion } from "@/features/quizzes/components/TakeQuizTab/Ope
 import { ReviewScreen } from "@/features/quizzes/components/TakeQuizTab/ReviewScreen"
 import { QuizResult } from "@/features/quizzes/components/TakeQuizTab/QuizResult"
 import { useSubmitQuizAttempt } from "@/features/quizzes/mutations/use-submit-quiz-attempt"
+import Countdown from "@/features/quizzes/components/TakeQuizTab/Countdown"
 
 type Answers = Record<number, string | number>
-type Phase = "taking" | "review" | "result"
+type Phase = "countdown" | "taking" | "review" | "result"
 
 interface QuizState {
   phase: Phase
   currentIndex: number
   answers: Answers
   attempt: QuizAttempt | null
+  startedAt: Date | null
+  completedAt: Date | null
 }
 
 export default function QuizTakePage() {
@@ -32,14 +35,38 @@ export default function QuizTakePage() {
   const { data: quiz } = useGetQuiz(Number(quizId))
 
   const [state, setState] = useState<QuizState>({
-    phase: "taking",
+    phase: "countdown",
     currentIndex: 0,
     answers: {},
     attempt: null,
-  });
+    startedAt: null,
+    completedAt: null,
+  })
+  const [countdown, setCountdown] = useState(3)
+  const [timePassed, setTimePassed] = useState(0);
+
+  useEffect(() => {
+    if (state.phase !== "countdown" && state.phase !== "taking") return
+
+    const countdownTimer = setTimeout(() => {
+      if (state.phase === "taking") {
+        setTimePassed((prev) => prev + 1)
+      } else if (state.phase === "countdown") {
+        if (countdown === 0) {
+          setState((prev) => ({ ...prev, phase: "taking", startedAt: new Date() }))
+        } else {
+          setCountdown((prev) => prev - 1)
+        }
+      }
+    }, 1000)
+
+    return () => clearTimeout(countdownTimer)
+  }, [state.phase, countdown, timePassed])
 
   const { phase, currentIndex, answers, attempt } = state
-  const { mutate: submit, isPending: isSubmitting } = useSubmitQuizAttempt(Number(quizId))
+  const { mutate: submit, isPending: isSubmitting } = useSubmitQuizAttempt(
+    Number(quizId)
+  )
 
   if (!quiz) return null
 
@@ -58,7 +85,7 @@ export default function QuizTakePage() {
   function goNext() {
     setState((prev) =>
       isLast
-        ? { ...prev, phase: "review" }
+        ? { ...prev, phase: "review", completedAt: new Date() }
         : { ...prev, currentIndex: prev.currentIndex + 1 }
     )
   }
@@ -78,21 +105,40 @@ export default function QuizTakePage() {
     }))
 
     submit(
-      { quizId: Number(quizId), answers: answerPayload },
+      {
+        quizId: Number(quizId),
+        answers: answerPayload,
+        startedAt: state.startedAt!,
+        completedAt: state.completedAt!,
+      },
       {
         onSuccess: (data) => {
           setState((prev) => ({ ...prev, attempt: data, phase: "result" }))
         },
-        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to submit quiz")),
+        onError: (err) =>
+          toast.error(getApiErrorMessage(err, "Failed to submit quiz")),
       }
     )
   }
 
   function handleRetake() {
-    setState({ phase: "taking", currentIndex: 0, answers: {}, attempt: null })
+    setCountdown(3)
+    setTimePassed(0)
+    setState({
+      phase: "countdown",
+      currentIndex: 0,
+      answers: {},
+      attempt: null,
+      startedAt: null,
+      completedAt: null,
+    })
   }
 
   const onOverview = () => router.push(`/workspaces/${id}/quizzes/${quizId}`)
+
+  if (phase === "countdown") {
+    return <Countdown countdown={countdown} />
+  }
 
   if (phase === "review") {
     return (
@@ -130,29 +176,39 @@ export default function QuizTakePage() {
   const currentAnswer = answers[currentQQ.id]
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl mx-auto w-full">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
       <div>
-        <Button variant="ghost" size="sm" onClick={onOverview} className="-ml-2">
-          <ArrowLeft className="size-4 mr-1" /> Back to overview
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onOverview}
+          className="-ml-2"
+        >
+          <ArrowLeft className="mr-1 size-4" /> Back to overview
         </Button>
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="text-sm text-muted-foreground whitespace-nowrap">
+        <span className="text-sm whitespace-nowrap text-muted-foreground">
           Question {currentIndex + 1} of {questions.length}
         </span>
-        <Progress value={progress} className="flex-1 h-1.5" />
+        <Progress value={progress} className="h-1.5 flex-1" />
+        <span className="text-sm whitespace-nowrap tabular-nums text-muted-foreground">
+          {Math.floor(timePassed / 60)}:{String(timePassed % 60).padStart(2, "0")}
+        </span>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4">
+      <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6">
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+          <Badge variant="outline" className="px-1.5 py-0 text-[10px]">
             {currentQ.question_type === "mcq" ? "MCQ" : "Open-ended"}
           </Badge>
-          <span className="text-xs text-muted-foreground">#{currentIndex + 1}</span>
+          <span className="text-xs text-muted-foreground">
+            #{currentIndex + 1}
+          </span>
         </div>
 
-        <p className="text-base font-medium text-foreground leading-relaxed">
+        <p className="text-base leading-relaxed font-medium text-foreground">
           {currentQ.title}
         </p>
 
@@ -176,13 +232,13 @@ export default function QuizTakePage() {
           onClick={goPrev}
           disabled={currentIndex === 0}
         >
-          <ChevronLeft className="size-4 mr-1" />
+          <ChevronLeft className="mr-1 size-4" />
           Previous
         </Button>
 
         <Button onClick={goNext}>
           {isLast ? "Review & Submit" : "Next"}
-          {!isLast && <ChevronRight className="size-4 ml-1" />}
+          {!isLast && <ChevronRight className="ml-1 size-4" />}
         </Button>
       </div>
     </div>

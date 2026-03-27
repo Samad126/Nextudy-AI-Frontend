@@ -11,12 +11,14 @@ export interface SubmitAnswer {
 interface SubmitQuizAttemptInput {
   quizId: number
   answers: SubmitAnswer[]
+  startedAt: Date
+  completedAt: Date
 }
 
-async function submitQuizAttempt({ quizId, answers }: SubmitQuizAttemptInput) {
+async function submitQuizAttempt({ quizId, ...datas }: SubmitQuizAttemptInput) {
   const { data } = await axiosPrivate.post<ApiSuccess<QuizAttempt>>(
     `/quizzes/${quizId}/attempts/submit`,
-    { answers }
+    { ...datas }
   )
   return data.data
 }
