@@ -6,7 +6,8 @@ import { toast } from "sonner"
 import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { ArrowLeft, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { useGetQuiz } from "@/features/quizzes/queries/use-get-quiz"
-import { QuizAttempt, QuizQuestion } from "@/features/quizzes/types/quiz"
+import { useTakeQuiz } from "@/features/quizzes/hooks/use-take-quiz"
+import { useSubmitQuizAttempt } from "@/features/quizzes/mutations/use-submit-quiz-attempt"
 import { Button } from "@/shared/ui/button"
 import { Progress } from "@/shared/ui/progress"
 import { Badge } from "@/shared/ui/badge"
@@ -14,107 +15,70 @@ import { MCQQuestion } from "@/features/quizzes/components/TakeQuizTab/MCQQuesti
 import { OpenEndedQuestion } from "@/features/quizzes/components/TakeQuizTab/OpenEndedQuestion"
 import { ReviewScreen } from "@/features/quizzes/components/TakeQuizTab/ReviewScreen"
 import { QuizResult } from "@/features/quizzes/components/TakeQuizTab/QuizResult"
-import { useSubmitQuizAttempt } from "@/features/quizzes/mutations/use-submit-quiz-attempt"
 import Countdown from "@/features/quizzes/components/TakeQuizTab/Countdown"
-
-type Answers = Record<number, string | number>
-type Phase = "countdown" | "taking" | "review" | "result"
-
-interface QuizState {
-  phase: Phase
-  currentIndex: number
-  answers: Answers
-  attempt: QuizAttempt | null
-  startedAt: Date | null
-  completedAt: Date | null
-}
 
 export default function QuizTakePage() {
   const { id, quizId } = useParams<{ id: string; quizId: string }>()
   const router = useRouter()
   const { data: quiz } = useGetQuiz(Number(quizId))
+  const questions = quiz?.questions ?? []
 
-  const [state, setState] = useState<QuizState>({
-    phase: "countdown",
-    currentIndex: 0,
-    answers: {},
-    attempt: null,
-    startedAt: null,
-    completedAt: null,
-  })
+  const session = useTakeQuiz(questions)
+  const {
+    phase,
+    currentIndex,
+    answers,
+    attempt,
+    currentQQ,
+    isLast,
+    startedAt,
+    completedAt,
+    start,
+    reset,
+    setResult,
+    goBackFromReview,
+    goPrev,
+    setAnswer,
+    goNext,
+  } = session
+
   const [countdown, setCountdown] = useState(3)
-  const [timePassed, setTimePassed] = useState(0);
+  const [timePassed, setTimePassed] = useState(0)
 
-  useEffect(() => {
-    if (state.phase !== "countdown" && state.phase !== "taking") return
-
-    const countdownTimer = setTimeout(() => {
-      if (state.phase === "taking") {
-        setTimePassed((prev) => prev + 1)
-      } else if (state.phase === "countdown") {
-        if (countdown === 0) {
-          setState((prev) => ({ ...prev, phase: "taking", startedAt: new Date() }))
-        } else {
-          setCountdown((prev) => prev - 1)
-        }
-      }
-    }, 1000)
-
-    return () => clearTimeout(countdownTimer)
-  }, [state.phase, countdown, timePassed])
-
-  const { phase, currentIndex, answers, attempt } = state
   const { mutate: submit, isPending: isSubmitting } = useSubmitQuizAttempt(
     Number(quizId)
   )
 
-  if (!quiz) return null
+  const onOverview = () => router.push(`/workspaces/${id}/quizzes/${quizId}`)
 
-  const questions = quiz.questions ?? []
-  const currentQQ: QuizQuestion = questions[currentIndex]
-  const currentQ = currentQQ?.question
-  const isLast = currentIndex === questions.length - 1
+  useEffect(() => {
+    if (phase !== "countdown") return
+    const timer = setTimeout(() => {
+      if (countdown === 0) start()
+      else setCountdown((prev) => prev - 1)
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [phase, countdown, start])
 
-  function setAnswer(quizQuestionId: number, value: string | number) {
-    setState((prev) => ({
-      ...prev,
-      answers: { ...prev.answers, [quizQuestionId]: value },
-    }))
-  }
-
-  function goNext() {
-    setState((prev) =>
-      isLast
-        ? { ...prev, phase: "review", completedAt: new Date() }
-        : { ...prev, currentIndex: prev.currentIndex + 1 }
-    )
-  }
-
-  function goPrev() {
-    setState((prev) => ({ ...prev, currentIndex: prev.currentIndex - 1 }))
-  }
-
-  function handleGoBackFromReview(index: number) {
-    setState((prev) => ({ ...prev, currentIndex: index, phase: "taking" }))
-  }
+  useEffect(() => {
+    if (phase !== "taking") return
+    const timer = setTimeout(() => setTimePassed((prev) => prev + 1), 1000)
+    return () => clearTimeout(timer)
+  }, [phase, timePassed])
 
   function handleSubmit() {
-    const answerPayload = questions.map((qq) => ({
-      quizQuestionId: qq.id,
-      userAnswer: answers[qq.id] ?? "",
-    }))
-
     submit(
       {
         quizId: Number(quizId),
-        answers: answerPayload,
-        startedAt: state.startedAt!,
-        completedAt: state.completedAt!,
+        answers: questions.map((qq) => ({
+          quizQuestionId: qq.id,
+          userAnswer: answers[qq.id] ?? "",
+        })),
+        startedAt: startedAt!,
+        completedAt: completedAt!,
       },
       {
-        onSuccess: (data) => {
-          setState((prev) => ({ ...prev, attempt: data, phase: "result" }))
-        },
+        onSuccess: (data) => setResult(data),
         onError: (err) =>
           toast.error(getApiErrorMessage(err, "Failed to submit quiz")),
       }
@@ -124,17 +88,8 @@ export default function QuizTakePage() {
   function handleRetake() {
     setCountdown(3)
     setTimePassed(0)
-    setState({
-      phase: "countdown",
-      currentIndex: 0,
-      answers: {},
-      attempt: null,
-      startedAt: null,
-      completedAt: null,
-    })
+    reset()
   }
-
-  const onOverview = () => router.push(`/workspaces/${id}/quizzes/${quizId}`)
 
   if (phase === "countdown") {
     return <Countdown countdown={countdown} />
@@ -145,7 +100,7 @@ export default function QuizTakePage() {
       <ReviewScreen
         questions={questions}
         answers={answers}
-        onGoBack={handleGoBackFromReview}
+        onGoBack={goBackFromReview}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />
@@ -155,7 +110,7 @@ export default function QuizTakePage() {
   if (phase === "result" && attempt) {
     return (
       <QuizResult
-        quiz={quiz}
+        quiz={quiz!}
         attempt={attempt}
         onRetake={handleRetake}
         onOverview={onOverview}
@@ -172,6 +127,7 @@ export default function QuizTakePage() {
     )
   }
 
+  const currentQ = currentQQ?.question
   const progress = ((currentIndex + 1) / questions.length) * 100
   const currentAnswer = answers[currentQQ.id]
 
@@ -193,8 +149,9 @@ export default function QuizTakePage() {
           Question {currentIndex + 1} of {questions.length}
         </span>
         <Progress value={progress} className="h-1.5 flex-1" />
-        <span className="text-sm whitespace-nowrap tabular-nums text-muted-foreground">
-          {Math.floor(timePassed / 60)}:{String(timePassed % 60).padStart(2, "0")}
+        <span className="text-sm whitespace-nowrap text-muted-foreground tabular-nums">
+          {Math.floor(timePassed / 60)}:
+          {String(timePassed % 60).padStart(2, "0")}
         </span>
       </div>
 
@@ -216,7 +173,7 @@ export default function QuizTakePage() {
           <MCQQuestion
             choices={currentQ.mcqChoices}
             selected={typeof currentAnswer === "number" ? currentAnswer : null}
-            onSelect={(id) => setAnswer(currentQQ.id, id)}
+            onSelect={(choiceId) => setAnswer(currentQQ.id, choiceId)}
           />
         ) : (
           <OpenEndedQuestion
