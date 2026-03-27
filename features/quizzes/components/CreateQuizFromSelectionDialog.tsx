@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { useRouter } from "next/navigation"
 import {
   Dialog,
@@ -66,7 +67,7 @@ export function CreateQuizFromSelectionDialog({
           onSuccess?.()
           router.push(`/workspaces/${workspaceId}/quizzes/${data.id}`)
         },
-        onError: () => toast.error("Failed to create quiz"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to create quiz")),
       }
     )
   }

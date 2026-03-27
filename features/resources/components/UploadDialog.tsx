@@ -5,6 +5,7 @@ import { useDrop } from "react-dnd"
 import { NativeTypes } from "react-dnd-html5-backend"
 import { CloudUpload } from "lucide-react"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { cn } from "@/lib/utils"
 import { Button } from "@/shared/ui/button"
 import {
@@ -49,7 +50,7 @@ export function UploadDialog({ open, setOpen, workspaceId }: UploadDialogProps) 
         setFile(null)
         setOpen(false)
       },
-      onError: () => toast.error("Failed to upload resource"),
+      onError: (err) => toast.error(getApiErrorMessage(err, "Failed to upload resource")),
     })
   }
 

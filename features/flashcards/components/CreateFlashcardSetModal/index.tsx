@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Loader2, Sparkles } from "lucide-react"
 import { useRouter } from "next/navigation"
 import {
@@ -76,7 +77,7 @@ export function CreateFlashcardSetModal({ open, setOpen, workspaceId }: CreateFl
           handleOpenChange(false)
           router.push(`/workspaces/${workspaceId}/flashcards/${data.id}`)
         },
-        onError: () => toast.error("Failed to create flashcard set"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to create flashcard set")),
       }
     )
   }

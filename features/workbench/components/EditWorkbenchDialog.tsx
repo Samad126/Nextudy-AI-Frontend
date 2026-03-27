@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import {
   Dialog,
   DialogContent,
@@ -62,7 +63,7 @@ export function EditWorkbenchDialog({
           toast.success("Workbench updated")
           setOpen(false)
         },
-        onError: () => toast.error("Failed to update workbench"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to update workbench")),
       }
     )
   }

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Button } from "@/shared/ui/button"
 import { ResourceGroup } from "@/types"
 import { useGetResources } from "@/features/resources/queries/use-get-resources"
@@ -71,7 +72,7 @@ export function SelectSourceDialogContent({
           onConfirm(localSelected)
           onClose()
         },
-        onError: () => toast.error("Failed to update study context"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to update study context")),
       }
     )
   }

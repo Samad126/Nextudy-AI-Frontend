@@ -2,6 +2,7 @@
 
 import { useForm, Controller } from "react-hook-form"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import {
   Dialog,
   DialogContent,
@@ -150,7 +151,7 @@ export function QuestionsDialog({
         toast.success(isRegenerate ? "Questions regenerated" : "Questions generated")
         setOpen(false)
       },
-      onError: () => toast.error("Failed to generate questions"),
+      onError: (err) => toast.error(getApiErrorMessage(err, "Failed to generate questions")),
     })
   }
 

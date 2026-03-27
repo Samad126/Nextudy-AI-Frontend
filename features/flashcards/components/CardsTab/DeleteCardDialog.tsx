@@ -1,6 +1,7 @@
 "use client"
 
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import {
   Dialog,
   DialogContent,
@@ -29,7 +30,7 @@ export function DeleteCardDialog({ open, setOpen, setId, cardId }: DeleteCardDia
           toast.success("Card deleted")
           setOpen(false)
         },
-        onError: () => toast.error("Failed to delete card"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to delete card")),
       }
     )
   }

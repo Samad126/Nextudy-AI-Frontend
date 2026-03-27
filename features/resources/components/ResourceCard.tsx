@@ -2,6 +2,7 @@
 
 import { Trash2, FolderPlus, Check } from "lucide-react"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Resource, ResourceGroup } from "@/types"
 import { Button } from "@/shared/ui/button"
 import {
@@ -55,7 +56,7 @@ export function ResourceCard({ resource, workspaceId, groups }: ResourceCardProp
   function handleDelete() {
     deleteResource(resource.id, {
       onSuccess: () => toast.success("Resource deleted"),
-      onError: () => toast.error("Failed to delete resource"),
+      onError: (err) => toast.error(getApiErrorMessage(err, "Failed to delete resource")),
     })
   }
 
@@ -66,7 +67,7 @@ export function ResourceCard({ resource, workspaceId, groups }: ResourceCardProp
         { groupId: group.id, resourceId: resource.id },
         {
           onSuccess: () => toast.success(`Removed from "${group.name}"`),
-          onError: () => toast.error("Failed to remove from group"),
+          onError: (err) => toast.error(getApiErrorMessage(err, "Failed to remove from group")),
         }
       )
     } else {
@@ -74,7 +75,7 @@ export function ResourceCard({ resource, workspaceId, groups }: ResourceCardProp
         { groupId: group.id, resourceId: resource.id },
         {
           onSuccess: () => toast.success(`Added to "${group.name}"`),
-          onError: () => toast.error("Failed to add to group"),
+          onError: (err) => toast.error(getApiErrorMessage(err, "Failed to add to group")),
         }
       )
     }

@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
@@ -39,7 +40,7 @@ export function EditWorkspaceDialog({ workspace, open, onClose }: EditWorkspaceD
       { id: workspace.id, ...patch },
       {
         onSuccess: () => { toast.success("Workspace updated"); onClose() },
-        onError: () => toast.error("Failed to update workspace"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to update workspace")),
       }
     )
   }

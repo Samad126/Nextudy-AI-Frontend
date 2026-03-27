@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Trash2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import {
@@ -56,7 +57,7 @@ export function MemberRow({ member, workspaceId, isSelf, viewerIsOwner }: Member
                 { workspaceId, memberId: member.id, role: value as Exclude<Role, "owner"> },
                 {
                   onSuccess: () => toast.success("Role updated"),
-                  onError: () => toast.error("Failed to update role"),
+                  onError: (err) => toast.error(getApiErrorMessage(err, "Failed to update role")),
                 }
               )
             }}

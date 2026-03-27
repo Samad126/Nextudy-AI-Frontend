@@ -1,6 +1,7 @@
 "use client"
 
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import {
@@ -26,7 +27,7 @@ export function DeleteWorkspaceDialog({ workspace, open, onClose }: DeleteWorksp
   function handleDelete() {
     mutate(workspace.id, {
       onSuccess: () => { toast.success("Workspace deleted"); onClose() },
-      onError: () => toast.error("Failed to delete workspace"),
+      onError: (err) => toast.error(getApiErrorMessage(err, "Failed to delete workspace")),
     })
   }
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { Quiz, QuizAttempt, QuizQuestion } from "../../types/quiz"
 import { Button } from "@/shared/ui/button"
@@ -80,7 +81,7 @@ export function TakeQuizTab({ quiz, onOverview }: TakeQuizTabProps) {
         onSuccess: (data) => {
           setState((prev) => ({ ...prev, attempt: data, phase: "result" }))
         },
-        onError: () => toast.error("Failed to submit quiz"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to submit quiz")),
       }
     )
   }

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Pencil, Trash2, X, Plus, ChevronDown, ChevronUp } from "lucide-react"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Resource, ResourceGroup } from "@/types"
 import { Button } from "@/shared/ui/button"
 import { Badge } from "@/shared/ui/badge"
@@ -39,7 +40,7 @@ export function ResourceGroupCard({ group, workspaceId, allResources }: Resource
   function handleDelete() {
     deleteGroup(group.id, {
       onSuccess: () => toast.success("Group deleted"),
-      onError: () => toast.error("Failed to delete group"),
+      onError: (err) => toast.error(getApiErrorMessage(err, "Failed to delete group")),
     })
   }
 
@@ -48,7 +49,7 @@ export function ResourceGroupCard({ group, workspaceId, allResources }: Resource
       { groupId: group.id, resourceId },
       {
         onSuccess: () => toast.success("Removed from group"),
-        onError: () => toast.error("Failed to remove resource"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to remove resource")),
       }
     )
   }
@@ -61,7 +62,7 @@ export function ResourceGroupCard({ group, workspaceId, allResources }: Resource
           toast.success("Added to group")
           setAddOpen(false)
         },
-        onError: () => toast.error("Failed to add resource"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to add resource")),
       }
     )
   }

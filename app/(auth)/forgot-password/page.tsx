@@ -10,6 +10,7 @@ import { Button } from "@/shared/ui/button"
 import { FormField } from "@/shared/components/form-field"
 import { forgotPasswordSchema, type ForgotPasswordFormValues } from "@/lib/validations/auth"
 import { useForgotPassword } from "@/features/auth/mutations/use-forgot-password"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 
 const RESEND_COOLDOWN = 30
 
@@ -38,8 +39,8 @@ export default function ForgotPasswordPage() {
         setSent(true)
         setCountdown(RESEND_COOLDOWN)
       },
-      onError: () => {
-        toast.error("Something went wrong. Please try again.")
+      onError: (err) => {
+        toast.error(getApiErrorMessage(err, "Something went wrong. Please try again."))
       },
     })
   }
@@ -52,8 +53,8 @@ export default function ForgotPasswordPage() {
           setCountdown(RESEND_COOLDOWN)
           toast.success("Reset link resent.")
         },
-        onError: () => {
-          toast.error("Failed to resend. Please try again.")
+        onError: (err) => {
+          toast.error(getApiErrorMessage(err, "Failed to resend. Please try again."))
         },
       }
     )

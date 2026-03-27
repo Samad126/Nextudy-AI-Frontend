@@ -10,6 +10,7 @@ import { PasswordField } from "@/shared/components/password-field"
 import { GoogleButton, OrDivider } from "@/features/auth/components"
 import { loginSchema, type LoginFormValues } from "@/lib/validations/auth"
 import { useLogin } from "@/features/auth/mutations/use-login"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 
 export default function LoginPage() {
   const { mutate: login, isPending, error } = useLogin();
@@ -62,7 +63,7 @@ export default function LoginPage() {
 
         {error && (
           <p className="text-sm text-destructive" role="alert">
-            {error.response?.data?.error?.message ?? "Something went wrong."}
+            {getApiErrorMessage(error, "Something went wrong.")}
           </p>
         )}
 

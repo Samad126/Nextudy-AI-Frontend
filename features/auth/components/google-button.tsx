@@ -4,9 +4,11 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
 import { useGoogleLogin } from "@react-oauth/google"
+import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { axiosBase, setAccessToken } from "@/lib/api/client"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { useAuth } from "@/shared/providers/auth-provider"
 import { GoogleIcon } from "./google-icon"
 import type { ApiSuccess } from "@/types"
@@ -36,6 +38,8 @@ export function GoogleButton({
         markSessionActive()
         queryClient.resetQueries()
         router.push("/")
+      } catch (err) {
+        toast.error(getApiErrorMessage(err, "Failed to sign in with Google"))
       } finally {
         setIsLoading(false)
       }

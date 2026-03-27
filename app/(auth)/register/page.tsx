@@ -12,6 +12,7 @@ import { PasswordField } from "@/shared/components/password-field"
 import { GoogleButton, OrDivider } from "@/features/auth/components"
 import { registerSchema, type RegisterFormValues, getPasswordStrength } from "@/lib/validations/auth"
 import { useRegister } from "@/features/auth/mutations/use-register"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 
 const STRENGTH_COLOR = { 1: "#ef4444", 2: "#f59e0b", 3: "var(--color-sage)" }
 
@@ -163,7 +164,7 @@ export default function RegisterPage() {
 
         {error && (
           <p className="text-sm text-destructive" role="alert">
-            {error.response?.data?.error.message ?? "Something went wrong."}
+            {getApiErrorMessage(error, "Something went wrong.")}
           </p>
         )}
 

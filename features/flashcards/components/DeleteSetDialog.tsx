@@ -1,6 +1,7 @@
 "use client"
 
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import {
   Dialog,
   DialogContent,
@@ -29,7 +30,7 @@ export function DeleteSetDialog({ open, setOpen, setId, workspaceId, onDeleted }
         setOpen(false)
         onDeleted?.()
       },
-      onError: () => toast.error("Failed to delete flashcard set"),
+      onError: (err) => toast.error(getApiErrorMessage(err, "Failed to delete flashcard set")),
     })
   }
 

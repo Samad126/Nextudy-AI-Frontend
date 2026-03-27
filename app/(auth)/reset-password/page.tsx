@@ -15,6 +15,7 @@ import {
   getPasswordStrength,
 } from "@/lib/validations/auth"
 import { useResetPassword } from "@/features/auth/mutations/use-reset-password"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 
 const STRENGTH_COLOR = { 1: "#ef4444", 2: "#f59e0b", 3: "var(--color-sage)" }
 
@@ -52,7 +53,7 @@ function ResetPasswordForm() {
         },
         onError: (err) => {
           toast.error(
-            err.response?.data?.message ?? "Something went wrong. Please request a new reset link."
+            getApiErrorMessage(err, "Something went wrong. Please request a new reset link.")
           )
         },
       }

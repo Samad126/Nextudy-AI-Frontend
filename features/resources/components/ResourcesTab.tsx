@@ -13,6 +13,7 @@ import { useUploadResource } from "../mutations/use-upload-resource"
 import { ResourceCard } from "./ResourceCard"
 import { UploadDialog } from "./UploadDialog"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
 import { can } from "@/lib/permissions"
 
@@ -35,7 +36,7 @@ export function ResourcesTab({ workspaceId }: ResourcesTabProps) {
       if (!file) return
       upload(file, {
         onSuccess: () => toast.success("Resource uploaded"),
-        onError: () => toast.error("Failed to upload resource"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to upload resource")),
       })
     },
     collect: (monitor) => ({

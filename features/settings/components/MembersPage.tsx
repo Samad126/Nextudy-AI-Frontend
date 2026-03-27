@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { ArrowLeft, Loader2, Mail } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
@@ -47,9 +48,9 @@ export function MembersPage({ workspaceId, contextId }: { workspaceId: number; c
         onError: (err: unknown) => {
           const status = (err as { response?: { status?: number } })?.response?.status
           if (status === 404) {
-            setEmailError("No account found with this email")
+            setEmailError(getApiErrorMessage(err, "No account found with this email"))
           } else {
-            toast.error("Failed to send invitation")
+            toast.error(getApiErrorMessage(err, "Failed to send invitation"))
           }
         },
       }

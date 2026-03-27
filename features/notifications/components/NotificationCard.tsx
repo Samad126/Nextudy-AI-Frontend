@@ -2,7 +2,9 @@
 
 import { useState } from "react"
 import { Loader2, Check } from "lucide-react"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Badge } from "@/shared/ui/badge"
 import { Button } from "@/shared/ui/button"
 import type { Notification } from "@/types/notification"
@@ -53,6 +55,9 @@ export function NotificationCard({ notification }: NotificationCardProps) {
       {
         onSuccess: () => {
           setActionDone(action === "accept" ? "accepted" : "rejected")
+        },
+        onError: (err) => {
+          toast.error(getApiErrorMessage(err, `Failed to ${action} invitation`))
         },
       }
     )

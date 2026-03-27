@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 import { Textarea } from "@/shared/ui/textarea"
@@ -57,7 +58,7 @@ export function EditSetTab({ set, workspaceId }: EditSetTabProps) {
       },
       {
         onSuccess: () => toast.success("Set updated"),
-        onError: () => toast.error("Failed to update set"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to update set")),
       }
     )
   }

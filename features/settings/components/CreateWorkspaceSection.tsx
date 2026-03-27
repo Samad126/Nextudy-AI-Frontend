@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Plus, Loader2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
@@ -25,7 +26,7 @@ export function CreateWorkspaceSection() {
           reset()
           setOpen(false)
         },
-        onError: () => toast.error("Failed to create workspace"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to create workspace")),
       }
     )
   }

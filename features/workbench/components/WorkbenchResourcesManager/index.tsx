@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Save, PackageOpen } from "lucide-react"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Button } from "@/shared/ui/button"
 import { Skeleton } from "@/shared/ui/skeleton"
 import { Separator } from "@/shared/ui/separator"
@@ -51,7 +52,7 @@ export function WorkbenchResourcesManager({
       { workbenchId, resourceIds: Array.from(selectedIds) },
       {
         onSuccess: () => toast.success("Resources saved"),
-        onError: () => toast.error("Failed to save resources"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to save resources")),
       }
     )
   }

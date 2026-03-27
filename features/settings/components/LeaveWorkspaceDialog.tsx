@@ -1,6 +1,7 @@
 "use client"
 
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import {
@@ -40,7 +41,7 @@ export function LeaveWorkspaceDialog({ workspace, open, onClose }: LeaveWorkspac
             onClick={() =>
               mutate(workspace.id, {
                 onSuccess: () => { toast.success("Left workspace"); onClose() },
-                onError: () => toast.error("Failed to leave workspace"),
+                onError: (err) => toast.error(getApiErrorMessage(err, "Failed to leave workspace")),
               })
             }
           >

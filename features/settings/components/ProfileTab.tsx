@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
@@ -58,7 +59,7 @@ export function ProfileTab() {
 
     updateProfile(patch, {
       onSuccess: () => toast.success("Profile updated"),
-      onError: () => toast.error("Failed to update profile"),
+      onError: (err) => toast.error(getApiErrorMessage(err, "Failed to update profile")),
     })
   }
 

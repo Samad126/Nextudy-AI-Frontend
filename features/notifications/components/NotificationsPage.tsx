@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Bell } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { Badge } from "@/shared/ui/badge"
@@ -49,7 +50,7 @@ export function NotificationsPage() {
   function handleMarkAll() {
     markAllRead(undefined, {
       onSuccess: () => toast.success("All notifications marked as read"),
-      onError: () => toast.error("Failed to mark all as read"),
+      onError: (err) => toast.error(getApiErrorMessage(err, "Failed to mark all as read")),
     })
   }
 

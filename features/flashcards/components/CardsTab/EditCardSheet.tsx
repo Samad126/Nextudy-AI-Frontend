@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import {
   Sheet,
   SheetContent,
@@ -62,7 +63,7 @@ export function EditCardSheet({ open, setOpen, card, setId }: EditCardSheetProps
           toast.success("Card updated")
           setOpen(false)
         },
-        onError: () => toast.error("Failed to update card"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to update card")),
       }
     )
   }

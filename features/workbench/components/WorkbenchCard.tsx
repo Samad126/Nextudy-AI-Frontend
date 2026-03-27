@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Pencil, Trash2 } from "lucide-react"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Workbench } from "@/types"
 import { Button } from "@/shared/ui/button"
 import { useDeleteWorkbench } from "../mutations/use-delete-workbench"
@@ -27,7 +28,7 @@ export function WorkbenchCard({ workbench, workspaceId }: WorkbenchCardProps) {
     e.stopPropagation()
     deleteWorkbench(workbench.id, {
       onSuccess: () => toast.success("Workbench deleted"),
-      onError: () => toast.error("Failed to delete workbench"),
+      onError: (err) => toast.error(getApiErrorMessage(err, "Failed to delete workbench")),
     })
   }
 

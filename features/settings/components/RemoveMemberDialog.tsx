@@ -1,6 +1,7 @@
 "use client"
 
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import {
@@ -43,7 +44,7 @@ export function RemoveMemberDialog({ member, workspaceId, open, onClose }: Remov
                 { workspaceId, memberId: member.id },
                 {
                   onSuccess: () => { toast.success("Member removed"); onClose() },
-                  onError: () => toast.error("Failed to remove member"),
+                  onError: (err) => toast.error(getApiErrorMessage(err, "Failed to remove member")),
                 }
               )
             }

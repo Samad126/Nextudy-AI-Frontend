@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import {
   Dialog,
   DialogContent,
@@ -56,7 +57,7 @@ export function RenameGroupDialog({
           toast.success("Group renamed")
           setOpen(false)
         },
-        onError: () => toast.error("Failed to rename group"),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to rename group")),
       }
     )
   }
