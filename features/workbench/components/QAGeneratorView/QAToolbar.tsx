@@ -1,8 +1,10 @@
-import { ChevronDown, MousePointerClick, RefreshCw, X, ClipboardList, CheckSquare } from "lucide-react"
+import { Loader2, MousePointerClick, RefreshCw, X, ClipboardList, CheckSquare, FileDown } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 
 interface QAToolbarProps {
   onRegenerate: () => void
+  onExport: () => void
+  isExporting: boolean
   selectMode: boolean
   selectedCount: number
   totalCount: number
@@ -13,6 +15,8 @@ interface QAToolbarProps {
 
 export function QAToolbar({
   onRegenerate,
+  onExport,
+  isExporting,
   selectMode,
   selectedCount,
   totalCount,
@@ -25,8 +29,18 @@ export function QAToolbar({
   return (
     <div className="flex flex-wrap items-center justify-between mb-3 shrink-0 gap-2">
       <div className="flex items-center gap-1.5">
-        <Button variant="outline" size="sm" className="gap-1.5 text-xs h-7 px-3">
-          <ChevronDown className="size-3.5" />
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 text-xs h-7 px-3"
+          onClick={onExport}
+          disabled={isExporting}
+        >
+          {isExporting ? (
+            <Loader2 className="size-3.5 animate-spin" />
+          ) : (
+            <FileDown className="size-3.5" />
+          )}
           EXPORT
         </Button>
         <Button

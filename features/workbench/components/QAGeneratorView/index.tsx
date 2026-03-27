@@ -11,6 +11,9 @@ import { EditQuestionDrawer } from "../EditQuestionDrawer"
 import { RegenerateQuestionDialog } from "../RegenerateQuestionDialog"
 import { useGetQuestions } from "../../queries/use-get-questions"
 import { CreateQuizFromSelectionDialog } from "@/features/quizzes/components/CreateQuizFromSelectionDialog"
+import { useExportQuestionsPdf } from "../../mutations/use-export-questions-pdf"
+import { toast } from "sonner"
+import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import type { ApiQuestion } from "@/types"
 
 function mapApiQuestion(q: ApiQuestion, index: number): QAQuestion {
@@ -64,6 +67,7 @@ export function QAGeneratorView({
   onRegenerate,
 }: QAGeneratorViewProps) {
   const { data: questions, isLoading } = useGetQuestions(workbenchId)
+  const { mutate: exportPdf, isPending: isExporting } = useExportQuestionsPdf(workbenchId)
   const [selectMode, setSelectMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const [createQuizOpen, setCreateQuizOpen] = useState(false)
@@ -134,6 +138,10 @@ export function QAGeneratorView({
       <div className="flex flex-col h-full">
         <QAToolbar
           onRegenerate={onRegenerate}
+          onExport={() => exportPdf(undefined, {
+            onError: (err) => toast.error(getApiErrorMessage(err, "Failed to export PDF")),
+          })}
+          isExporting={isExporting}
           selectMode={selectMode}
           selectedCount={selectedIds.size}
           totalCount={questions.length}
