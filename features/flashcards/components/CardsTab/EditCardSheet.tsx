@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
@@ -42,7 +42,7 @@ interface EditCardSheetProps {
 export function EditCardSheet({ open, setOpen, card, setId }: EditCardSheetProps) {
   const { mutate: update, isPending } = useUpdateFlashcard(setId)
 
-  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, reset, setValue, control, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       question: card.question,
@@ -50,6 +50,8 @@ export function EditCardSheet({ open, setOpen, card, setId }: EditCardSheetProps
       difficulty: card.difficulty,
     },
   })
+
+  const difficulty = useWatch({ control, name: "difficulty" })
 
   useEffect(() => {
     reset({ question: card.question, answer: card.answer, difficulty: card.difficulty })
@@ -99,7 +101,7 @@ export function EditCardSheet({ open, setOpen, card, setId }: EditCardSheetProps
           <div className="flex flex-col gap-1.5">
             <Label>Difficulty</Label>
             <Select
-              value={watch("difficulty") ?? ""}
+              value={difficulty ?? ""}
               onValueChange={(v) =>
                 setValue("difficulty", v as "EASY" | "MEDIUM" | "HARD" | undefined)
               }
