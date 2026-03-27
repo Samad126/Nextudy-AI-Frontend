@@ -84,6 +84,13 @@ export function QAGeneratorView({
     })
   }
 
+  function handleSelectAll() {
+    if (!questions) return
+    const allIds = new Set(questions.map((q) => q.id))
+    const allSelected = questions.every((q) => selectedIds.has(q.id))
+    setSelectedIds(allSelected ? new Set() : allIds)
+  }
+
   function handleQuizCreated() {
     setSelectMode(false)
     setSelectedIds(new Set())
@@ -129,8 +136,10 @@ export function QAGeneratorView({
           onRegenerate={onRegenerate}
           selectMode={selectMode}
           selectedCount={selectedIds.size}
+          totalCount={questions.length}
           onToggleSelectMode={toggleSelectMode}
           onCreateQuiz={() => setCreateQuizOpen(true)}
+          onSelectAll={handleSelectAll}
         />
         <div className="flex flex-col gap-3 overflow-y-auto flex-1 pr-0.5">
           {questions.map((q, i) => {

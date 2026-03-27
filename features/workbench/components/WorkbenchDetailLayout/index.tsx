@@ -9,11 +9,11 @@ import { WorkbenchDetailHeader, LayoutMode } from "../WorkbenchDetailHeader"
 import { SelectSourceDialog } from "../SelectSourceDialog"
 import { QAGeneratorView } from "../QAGeneratorView"
 import { QuestionsDialog } from "../QuestionsDialog"
-import { WorkbenchChatView } from "../WorkbenchChatView"
 import { ResourcePreviewPanel } from "../ResourcePreviewPanel"
 import { WorkbenchPanelTabs } from "./WorkbenchPanelTabs"
 import { CitationProvider } from "../../context/citation-context"
 import { cn } from "@/lib/utils"
+import { WorkbenchChatView } from "@/features/chat/components"
 
 type ActiveTab = "qa" | "chat"
 
@@ -108,7 +108,7 @@ export function WorkbenchDetailLayout({
             className={cn(
               "flex flex-col overflow-hidden rounded-xl border border-border bg-card",
               // Mobile: fixed height so both panels are visible
-              "h-[50vh]",
+              "h-[70dvh]",
               // Desktop: fill available space according to layout mode, override mobile height
               "md:h-auto",
               // Desktop visibility and sizing
@@ -140,7 +140,7 @@ export function WorkbenchDetailLayout({
             className={cn(
               "flex flex-col overflow-hidden",
               // Mobile: fixed height so both panels are visible
-              "h-[50vh]",
+              "h-[70dvh]",
               // Desktop: fill available space according to layout mode, override mobile height
               "md:h-auto",
               // Desktop visibility and sizing

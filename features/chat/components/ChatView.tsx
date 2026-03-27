@@ -78,7 +78,7 @@ export function ChatView({
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden px-4 pb-4 pt-3">
-      <div className="flex-1 overflow-y-auto flex flex-col gap-3 pb-3 pr-0.5">
+      <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-3 pb-3 pr-0.5">
         {messages.map((msg) => (
           <ChatMessageBubble
             key={msg.id}

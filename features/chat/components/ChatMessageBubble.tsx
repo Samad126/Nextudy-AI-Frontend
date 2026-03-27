@@ -1,7 +1,7 @@
 import { Bot, FileText, Pencil, TriangleAlert } from "lucide-react"
 import { UserAvatar } from "./UserAvatar"
-import { useCitation } from "../../context/citation-context"
 import type { LocalChatMessage } from "@/features/chat/hooks/use-chat"
+import { useCitation } from "@/features/workbench/context/citation-context"
 
 export type { LocalChatMessage as ChatMessage }
 
@@ -15,12 +15,13 @@ export function ChatMessageBubble({
   onEdit?: (id: string, currentContent: string) => void
 }) {
   const onSourceClick = useCitation()
+
   if (message.role === "system") {
     return (
       <div className="flex justify-start">
         <div className={`max-w-[80%] rounded-xl px-4 py-2.5 flex items-start gap-2 ${message.isError ? "bg-destructive/10" : "bg-muted/60"}`}>
           {message.isError && <TriangleAlert className="size-3.5 shrink-0 mt-0.5 text-destructive" />}
-          <p className={`text-xs leading-relaxed ${message.isError ? "text-destructive" : "text-muted-foreground"}`}>
+          <p className={`text-xs leading-relaxed ${message.isError ? "text-destructive" : "text-muted-foreground"} whitespace-pre-wrap truncate`}>
             {message.content}
           </p>
         </div>
@@ -61,7 +62,7 @@ export function ChatMessageBubble({
         <Bot className="size-3.5 text-muted-foreground" />
       </div>
       <div className="max-w-[80%] rounded-2xl rounded-bl-sm border border-border bg-card px-4 py-2.5">
-        <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+        <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap truncate">
           {message.content}
         </p>
         {message.sources && message.sources.length > 0 && (
@@ -69,9 +70,9 @@ export function ChatMessageBubble({
             <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
               Sources
             </span>
-            {message.sources.map((source) => (
+            {message.sources.map((source, index) => (
               <button
-                key={`${source.resourceId}-${source.page ?? "no-page"}`}
+                key={`${index}`}
                 onClick={() => onSourceClick(source)}
                 className="w-full text-left rounded-lg bg-muted/50 px-3 py-2 hover:bg-muted/80 transition-colors flex items-center gap-2"
               >
