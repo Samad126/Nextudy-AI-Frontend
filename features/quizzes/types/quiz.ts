@@ -8,6 +8,31 @@ export interface MCQChoice {
   id: number
   choice_text: string
   choice_order: number
+  is_correct?: boolean
+}
+
+export interface AttemptQuestionDetail {
+  id: number
+  title: string
+  explanation?: string
+  mcqChoices: MCQChoice[]
+  openEndedAnswer: { id: number; sample_answer: string } | null
+}
+
+export interface AttemptAnswer {
+  id: number
+  quizQuestionId: number
+  userAnswer: string
+  isCorrect: boolean
+  question: AttemptQuestionDetail
+}
+
+export interface AttemptDetail {
+  id: number
+  score: number
+  started_at: string
+  completed_at?: string
+  answers: AttemptAnswer[]
 }
 
 export interface Question {

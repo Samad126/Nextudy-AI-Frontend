@@ -1,10 +1,10 @@
 import { axiosPrivate } from "@/lib/api/client"
 import { ApiSuccess } from "@/types"
 import { useQuery } from "@tanstack/react-query"
-import { QuizAttempt, quizKeys } from "../types/quiz"
+import { AttemptDetail, quizKeys } from "../types/quiz"
 
 async function getQuizAttempt(quizId: number, attemptId: number) {
-  const { data } = await axiosPrivate.get<ApiSuccess<QuizAttempt>>(
+  const { data } = await axiosPrivate.get<ApiSuccess<AttemptDetail>>(
     `/quizzes/${quizId}/attempts/${attemptId}`
   )
   return data.data

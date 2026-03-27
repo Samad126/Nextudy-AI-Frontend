@@ -2,7 +2,6 @@
 
 import FullpageSpinner from "@/shared/components/FullpageSpinner"
 import { useAuth } from "@/shared/providers/auth-provider"
-import { SocketProvider } from "@/shared/providers/socket-provider"
 
 function WorkspaceAuthWrapper({ children }: { children: React.ReactNode }) {
   const { isAccessTokenHydrated } = useAuth()
@@ -11,7 +10,7 @@ function WorkspaceAuthWrapper({ children }: { children: React.ReactNode }) {
     return <FullpageSpinner />
   }
 
-  return <SocketProvider>{children}</SocketProvider>
+  return <>{children}</>
 }
 
 export default WorkspaceAuthWrapper

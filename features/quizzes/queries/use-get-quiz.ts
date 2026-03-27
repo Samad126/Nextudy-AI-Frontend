@@ -11,6 +11,7 @@ async function getQuiz(id: number) {
 export function useGetQuiz(id: number) {
   return useQuery({
     queryKey: quizKeys.detail(id),
-    queryFn: () => getQuiz(id),
+    queryFn: () => getQuiz(id),    
+    staleTime: Infinity
   })
 }

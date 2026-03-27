@@ -1,19 +1,20 @@
 "use client"
 
 import { useState } from "react"
-import { useParams, useRouter, usePathname } from "next/navigation"
-import Link from "next/link"
+import { useParams, useRouter } from "next/navigation"
 import { ArrowLeft, Trash2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { Skeleton } from "@/shared/ui/skeleton"
-import { cn } from "@/lib/utils"
 import { useGetQuiz } from "@/features/quizzes/queries/use-get-quiz"
 import { DeleteQuizDialog } from "@/features/quizzes/components/DeleteQuizDialog"
 
-export default function QuizLayout({ children }: { children: React.ReactNode }) {
+export default function QuizLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const { id, quizId } = useParams<{ id: string; quizId: string }>()
   const router = useRouter()
-  const pathname = usePathname()
   const [deleteOpen, setDeleteOpen] = useState(false)
 
   const { data: quiz, isLoading } = useGetQuiz(Number(quizId))
@@ -33,14 +34,13 @@ export default function QuizLayout({ children }: { children: React.ReactNode }) 
     )
   }
 
-  if (!quiz) return null
-
-  const base = `/workspaces/${id}/quizzes/${quizId}`
-  const navItems = [
-    { label: "Overview", href: base },
-    { label: "Take Quiz", href: `${base}/take` },
-    { label: "Attempts", href: `${base}/attempts` },
-  ]
+  if (!quiz) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-sm text-muted-foreground">Quiz not found</p>
+      </div>
+    )
+  }
 
   return (
     <>
@@ -52,47 +52,33 @@ export default function QuizLayout({ children }: { children: React.ReactNode }) 
               variant="ghost"
               size="icon-sm"
               onClick={() => router.push(`/workspaces/${id}/quizzes`)}
-              className="-ml-1 mt-0.5 shrink-0"
+              className="mt-0.5 -ml-1 shrink-0"
             >
               <ArrowLeft className="size-4" />
             </Button>
             <div className="flex flex-col gap-0.5">
-              <h1 className="text-xl font-semibold tracking-tight">{quiz.title}</h1>
+              <h1 className="text-xl font-semibold tracking-tight">
+                {quiz.title}
+              </h1>
               {quiz.description && (
-                <p className="text-sm text-muted-foreground">{quiz.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {quiz.description}
+                </p>
               )}
             </div>
           </div>
           <Button
             variant="ghost"
             size="icon-sm"
-            className="hover:text-destructive hover:bg-destructive/10 shrink-0"
+            className="shrink-0 hover:bg-destructive/10 hover:text-destructive"
             onClick={() => setDeleteOpen(true)}
           >
             <Trash2 className="size-4" />
           </Button>
         </div>
 
-        {/* Page nav */}
-        <div className="flex gap-1 border-b border-border">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "px-3 pb-2.5 pt-1 text-sm font-medium border-b-2 -mb-px transition-colors",
-                pathname === item.href
-                  ? "border-primary text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-
         {/* Page content */}
-        <div>{children}</div>
+        {quiz && <div>{children}</div>}
       </div>
 
       <DeleteQuizDialog

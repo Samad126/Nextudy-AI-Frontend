@@ -77,7 +77,7 @@ export function EditCardSheet({ open, setOpen, card, setId }: EditCardSheetProps
           <SheetTitle>Edit card</SheetTitle>
         </SheetHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-5 flex-1 overflow-y-auto">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-5 px-4 flex-1 overflow-y-auto">
           <div className="flex flex-col gap-1.5">
             <Label>Question <span className="text-destructive">*</span></Label>
             <Textarea
