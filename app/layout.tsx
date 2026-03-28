@@ -69,6 +69,14 @@ export const metadata: Metadata = {
       "Study smarter with AI-generated questions, smart flashcards, and collaborative workspaces.",
     images: ["/og-image.png"],
   },
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+    other: [{ rel: "manifest", url: "/site.webmanifest" }],
+  },
   robots: {
     index: true,
     follow: true,
