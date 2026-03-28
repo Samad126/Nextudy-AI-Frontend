@@ -102,7 +102,7 @@ export function Header() {
               <Link href="/register">
                 <Button
                   size="sm"
-                  className="cursor-pointer bg-teal text-white hover:bg-teal/90"
+                  className="cursor-pointer bg-accent-green text-white hover:bg-accent-green/90"
                 >
                   Get started <ChevronRight className="size-3.5" />
                 </Button>
@@ -177,7 +177,7 @@ export function Header() {
                 <Link href="/register" className="flex-1">
                   <Button
                     size="sm"
-                    className="w-full cursor-pointer bg-teal text-white hover:bg-teal/90"
+                    className="w-full cursor-pointer bg-accent-green text-white hover:bg-accent-green/90"
                   >
                     Get started
                   </Button>

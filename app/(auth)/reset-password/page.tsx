@@ -67,14 +67,14 @@ function ResetPasswordForm() {
           <ShieldAlert className="size-8 text-destructive" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-navy dark:text-foreground">Invalid link</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-dark-grey dark:text-foreground">Invalid link</h1>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             This reset link is missing or invalid. Please request a new one.
           </p>
         </div>
         <Link
           href="/forgot-password"
-          className="inline-flex h-10 items-center justify-center rounded-md bg-teal px-4 text-sm font-medium text-white transition-colors hover:bg-teal/90"
+          className="inline-flex h-10 items-center justify-center rounded-md bg-accent-green px-4 text-sm font-medium text-white transition-colors hover:bg-accent-green/90"
         >
           Request new link
         </Link>
@@ -85,7 +85,7 @@ function ResetPasswordForm() {
   return (
     <>
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-navy dark:text-foreground">Set new password</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-dark-grey dark:text-foreground">Set new password</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Choose a strong password for your account.
         </p>
@@ -127,14 +127,14 @@ function ResetPasswordForm() {
           label="Confirm new password"
           autoComplete="new-password"
           error={errors.confirmPassword?.message}
-          adornment={passwordsMatch ? <CheckCircle2 className="size-4 text-sage" /> : undefined}
+          adornment={passwordsMatch ? <CheckCircle2 className="size-4 text-accent-green" /> : undefined}
           {...register("confirmPassword")}
         />
 
         <Button
           type="submit"
           disabled={isPending}
-          className="mt-1 h-10 w-full cursor-pointer bg-teal text-white hover:bg-teal/90"
+          className="mt-1 h-10 w-full cursor-pointer bg-accent-green text-white hover:bg-accent-green/90"
         >
           {isPending ? (
             <><Loader2 className="size-4 animate-spin" /> Updating password…</>
@@ -146,7 +146,7 @@ function ResetPasswordForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Remember your password?{" "}
-        <Link href="/login" className="font-medium text-teal hover:underline dark:text-sky">
+        <Link href="/login" className="font-medium text-accent-green hover:underline dark:text-accent-green">
           Sign in
         </Link>
       </p>

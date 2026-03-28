@@ -10,15 +10,13 @@ export const metadata: Metadata = {
 const HIGHLIGHTS = [
   {
     icon: BrainCircuit,
-    color: "sky",
     text: "AI-generated questions from your own materials",
   },
   {
     icon: FlipHorizontal2,
-    color: "sage",
     text: "Smart flashcards with study mode",
   },
-  { icon: Users, color: "yellow", text: "Collaborative workspaces for teams" },
+  { icon: Users, text: "Collaborative workspaces for teams" },
 ]
 
 export default function AuthLayout({
@@ -30,7 +28,7 @@ export default function AuthLayout({
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
       <div className="flex min-h-screen">
         {/* Left panel */}
-        <div className="hidden shrink-0 flex-col justify-between bg-navy p-10 lg:flex lg:w-[42%]">
+        <div className="hidden shrink-0 flex-col justify-between bg-dark-grey p-10 lg:flex lg:w-[42%]">
           <Logo inverted />
 
           <div>
@@ -39,12 +37,10 @@ export default function AuthLayout({
               not just re-read it.&quot;
             </blockquote>
             <ul className="flex flex-col gap-4">
-              {HIGHLIGHTS.map(({ icon: Icon, color, text }) => (
+              {HIGHLIGHTS.map(({ icon: Icon, text }) => (
                 <li key={text} className="flex items-start gap-3">
-                  <div
-                    className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-${color}/20`}
-                  >
-                    <Icon className={`size-4 text-${color}`} />
+                  <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent-green/20">
+                    <Icon className="size-4 text-accent-green" />
                   </div>
                   <p className="text-sm leading-relaxed text-white/75">
                     {text}

@@ -57,7 +57,7 @@ export function PrivacyPolicyContent() {
         <h3 className="text-sm font-semibold text-foreground mb-1">7. Contact</h3>
         <p className="text-sm">
           If you have questions about this policy, please contact us at{" "}
-          <span className="text-teal dark:text-sky">{PRIVACY_POLICY_EMAIL}</span>.
+          <span className="text-accent-green dark:text-accent-green">{PRIVACY_POLICY_EMAIL}</span>.
         </p>
       </section>
     </div>

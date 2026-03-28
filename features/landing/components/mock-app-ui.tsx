@@ -31,7 +31,7 @@ export function MockAppUI() {
       <div className="flex h-10 items-center justify-between border-b border-border bg-background/80 px-3">
         {/* Logo placeholder */}
         <div className="flex items-center gap-1.5">
-          <div className="size-5 rounded-md bg-teal" />
+          <div className="size-5 rounded-md bg-accent-green" />
           <span className="text-[10px] font-bold text-foreground hidden xs:block">Nextudy</span>
         </div>
 
@@ -42,22 +42,22 @@ export function MockAppUI() {
               key={label}
               className={cn(
                 "relative cursor-pointer rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors",
-                active ? "text-teal" : "text-muted-foreground"
+                active ? "text-accent-green" : "text-muted-foreground"
               )}
             >
               {label}
               {active && (
-                <span className="absolute inset-x-1.5 bottom-0 h-px rounded-full bg-teal" />
+                <span className="absolute inset-x-1.5 bottom-0 h-px rounded-full bg-accent-green" />
               )}
             </span>
           ))}
         </nav>
 
         {/* Mobile: just show active nav label */}
-        <span className="sm:hidden text-[10px] font-medium text-teal">Workbench</span>
+        <span className="sm:hidden text-[10px] font-medium text-accent-green">Workbench</span>
 
         {/* Avatar */}
-        <div className="size-6 rounded-full bg-sky/30 border border-sky/50" />
+        <div className="size-6 rounded-full bg-accent-green/30 border border-accent-green/50" />
       </div>
 
       {/* Content area */}
@@ -69,7 +69,7 @@ export function MockAppUI() {
               key={tab}
               className={cn(
                 "cursor-pointer rounded-md px-2.5 py-1 text-[10px] sm:text-xs transition-colors",
-                i === 2 ? "bg-teal text-white" : "text-muted-foreground"
+                i === 2 ? "bg-accent-green text-white" : "text-muted-foreground"
               )}
             >
               {tab}
@@ -80,13 +80,13 @@ export function MockAppUI() {
         {/* Chat messages */}
         <div className="flex flex-col gap-2">
           <div className="flex justify-end">
-            <div className="max-w-[75%] rounded-xl rounded-tr-sm bg-navy px-3 py-2 text-[10px] sm:text-xs text-white">
+            <div className="max-w-[75%] rounded-xl rounded-tr-sm bg-dark-grey px-3 py-2 text-[10px] sm:text-xs text-white">
               What are the key differences between mitosis and meiosis?
             </div>
           </div>
 
           <div className="flex gap-2">
-            <div className="mt-0.5 flex size-5 sm:size-6 shrink-0 items-center justify-center rounded-full bg-sky">
+            <div className="mt-0.5 flex size-5 sm:size-6 shrink-0 items-center justify-center rounded-full bg-accent-green">
               <Sparkles className="size-2.5 sm:size-3 text-white" />
             </div>
             <div className="max-w-[80%] rounded-xl rounded-tl-sm bg-muted px-3 py-2 text-[10px] sm:text-xs leading-relaxed">
@@ -96,13 +96,13 @@ export function MockAppUI() {
           </div>
 
           <div className="flex justify-end">
-            <div className="rounded-xl rounded-tr-sm bg-navy px-3 py-2 text-[10px] sm:text-xs text-white">
+            <div className="rounded-xl rounded-tr-sm bg-dark-grey px-3 py-2 text-[10px] sm:text-xs text-white">
               Generate 5 MCQ questions from this topic
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex size-5 sm:size-6 shrink-0 items-center justify-center rounded-full bg-sky">
+            <div className="flex size-5 sm:size-6 shrink-0 items-center justify-center rounded-full bg-accent-green">
               <Sparkles className="size-2.5 sm:size-3 text-white" />
             </div>
             <div className="flex gap-1 rounded-xl rounded-tl-sm bg-muted px-3 py-2">

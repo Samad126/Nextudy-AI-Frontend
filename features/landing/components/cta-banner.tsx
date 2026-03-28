@@ -8,13 +8,13 @@ export function CtaBanner() {
   return (
     <section className="px-6 py-20">
       <div className="mx-auto max-w-3xl text-center">
-        <div className="rounded-2xl bg-navy px-8 py-12 dark:bg-card dark:ring-1 dark:ring-border">
+        <div className="rounded-2xl bg-dark-grey px-8 py-12 dark:bg-card dark:ring-1 dark:ring-border">
           <h2 className="mb-3 text-3xl font-bold tracking-tight text-white dark:text-foreground">Ready to study smarter?</h2>
           <p className="mb-6 text-base text-white/70 dark:text-muted-foreground">Join thousands of students transforming how they learn with AI.</p>
 
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link href="/register">
-              <Button size="lg" className="h-11 cursor-pointer bg-yellow px-6 font-semibold text-navy hover:bg-yellow/90">
+              <Button size="lg" className="h-11 cursor-pointer bg-accent-green px-6 font-semibold text-dark-grey hover:bg-accent-green/90">
                 Get started free <ArrowRight className="size-4" aria-hidden="true" />
               </Button>
             </Link>

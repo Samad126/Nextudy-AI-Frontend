@@ -72,21 +72,21 @@ export default function ForgotPasswordPage() {
 
       {sent ? (
         <div className="flex flex-col items-center gap-4 text-center">
-          <div className="flex size-16 items-center justify-center rounded-2xl bg-sage/10">
-            <CheckCircle2 className="size-8 text-sage" />
+          <div className="flex size-16 items-center justify-center rounded-2xl bg-accent-green/10">
+            <CheckCircle2 className="size-8 text-accent-green" />
           </div>
 
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-navy dark:text-foreground">Check your email</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-dark-grey dark:text-foreground">Check your email</h1>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               We sent a reset link to{" "}
               <span className="font-medium text-foreground">{getValues("email")}</span>. It expires in 15 minutes.
             </p>
           </div>
 
-          <div className="w-full rounded-xl border border-sage/30 bg-sage/5 p-4 text-left">
+          <div className="w-full rounded-xl border border-accent-green/30 bg-accent-green/5 p-4 text-left">
             <div className="flex items-start gap-3">
-              <Mail className="mt-0.5 size-4 shrink-0 text-sage" />
+              <Mail className="mt-0.5 size-4 shrink-0 text-accent-green" />
               <p className="text-xs leading-relaxed text-muted-foreground">
                 <span className="font-medium text-foreground">Didn&apos;t see it? </span>
                 Check your spam folder, or verify the email address you entered.
@@ -109,14 +109,14 @@ export default function ForgotPasswordPage() {
             )}
           </Button>
 
-          <Link href="/login" className="text-sm font-medium text-teal hover:underline">
+          <Link href="/login" className="text-sm font-medium text-accent-green hover:underline">
             Back to sign in
           </Link>
         </div>
       ) : (
         <>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-navy dark:text-foreground">Reset your password</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-dark-grey dark:text-foreground">Reset your password</h1>
             <p className="mt-1 text-sm text-muted-foreground">
               Enter your email and we&apos;ll send you a reset link.
             </p>
@@ -135,7 +135,7 @@ export default function ForgotPasswordPage() {
             <Button
               type="submit"
               disabled={isPending}
-              className="h-10 w-full cursor-pointer bg-teal text-white hover:bg-teal/90"
+              className="h-10 w-full cursor-pointer bg-accent-green text-white hover:bg-accent-green/90"
             >
               {isPending ? (
                 <><Loader2 className="size-4 animate-spin" /> Sending reset link…</>
@@ -147,7 +147,7 @@ export default function ForgotPasswordPage() {
 
           <p className="text-center text-sm text-muted-foreground">
             Remember your password?{" "}
-            <Link href="/login" className="font-medium text-teal hover:underline dark:text-sky">Sign in</Link>
+            <Link href="/login" className="font-medium text-accent-green hover:underline dark:text-accent-green">Sign in</Link>
           </p>
         </>
       )}

@@ -21,7 +21,7 @@ export default function GlobalError({
           <h2 className="text-xl font-semibold">Something went wrong</h2>
           <button
             onClick={reset}
-            className="rounded-md bg-teal px-4 py-2 text-sm text-white hover:bg-teal/90"
+            className="rounded-md bg-accent-green px-4 py-2 text-sm text-white hover:bg-accent-green/90"
           >
             Try again
           </button>

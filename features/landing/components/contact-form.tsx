@@ -40,7 +40,7 @@ export function ContactForm() {
   if (isSuccess) {
     return (
       <div className="flex flex-col items-center gap-3 py-10 text-center">
-        <CheckCircle className="size-10 text-teal" />
+        <CheckCircle className="size-10 text-accent-green" />
         <h2 className="text-lg font-semibold text-foreground">Message sent!</h2>
         <p className="max-w-xs text-sm text-muted-foreground">
           Thanks for reaching out. We&apos;ll get back to you as soon as possible.
@@ -99,7 +99,7 @@ export function ContactForm() {
       <Button
         type="submit"
         disabled={isPending}
-        className="h-10 w-full cursor-pointer bg-teal text-white hover:bg-teal/90 sm:w-auto sm:self-end"
+        className="h-10 w-full cursor-pointer bg-accent-green text-white hover:bg-accent-green/90 sm:w-auto sm:self-end"
       >
         {isPending ? (
           <><Loader2 className="size-4 animate-spin" /> Sending…</>

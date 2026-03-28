@@ -5,7 +5,7 @@ export function FeaturesSection() {
     <section id="features" aria-labelledby="features-heading" className="bg-muted/30 px-6 py-20">
       <div className="mx-auto max-w-6xl">
         <div className="mb-12 text-center">
-          <h2 id="features-heading" className="mb-3 text-3xl font-bold tracking-tight text-navy dark:text-foreground">Everything you need to study effectively</h2>
+          <h2 id="features-heading" className="mb-3 text-3xl font-bold tracking-tight text-dark-grey dark:text-foreground">Everything you need to study effectively</h2>
           <p className="mx-auto max-w-xl text-muted-foreground">A complete AI-powered toolkit for students and teams.</p>
         </div>
 
@@ -15,7 +15,7 @@ export function FeaturesSection() {
               <div className={`mb-4 flex size-10 items-center justify-center rounded-lg bg-${color}/15`} aria-hidden="true">
                 <Icon className={`size-5 text-${color}`} />
               </div>
-              <h3 className="mb-2 text-base font-semibold text-navy dark:text-foreground">{title}</h3>
+              <h3 className="mb-2 text-base font-semibold text-dark-grey dark:text-foreground">{title}</h3>
               <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
             </div>
           ))}
