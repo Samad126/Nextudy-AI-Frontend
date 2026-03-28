@@ -51,32 +51,6 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
 
   const { mutate: triggerLogout } = useLogout()
 
-  useEffect(() => {
-    async function restoreToken() {
-      if (!hasSession) {
-        return
-      }
-
-      if (getAccessToken()) {
-        setAccessTokenHydrated(true)
-        return
-      }
-
-      try {
-        const { data } =
-          await axiosBase.post<ApiSuccess<RefreshTokenResponse>>(
-            "/auth/refresh"
-          )
-        setAccessToken(data.data.accessToken)
-        setAccessTokenHydrated(true)
-      } catch {
-        window.dispatchEvent(new CustomEvent("auth:session-expired"))
-      }
-    }
-
-    restoreToken()
-  }, [hasSession])
-
   const handleRedirect = useCallback(() => {
     const isOptional = OPTIONAL_AUTH_PATHS.some(
       (p) => pathname === p || pathname.startsWith(p + "/")
@@ -99,6 +73,38 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
     })
   }, [])
 
+  const handleSessionExpire = useCallback(async () => {
+    await clearToken()
+    setHasSession(false)
+    handleRedirect()
+  }, [clearToken, handleRedirect])
+
+  useEffect(() => {
+    async function restoreToken() {
+      if (!hasSession) {
+        return
+      }
+
+      if (getAccessToken()) {
+        setAccessTokenHydrated(true)
+        return
+      }
+
+      try {
+        const { data } =
+          await axiosBase.post<ApiSuccess<RefreshTokenResponse>>(
+            "/auth/refresh"
+          )
+        setAccessToken(data.data.accessToken)
+        setAccessTokenHydrated(true)
+      } catch {
+        await handleSessionExpire()
+      }
+    }
+
+    restoreToken()
+  }, [hasSession, handleSessionExpire])
+
   const handleLogout = useCallback(async () => {
     triggerLogout()
     await clearToken()
@@ -106,12 +112,6 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
     queryClient.removeQueries()
     handleRedirect()
   }, [triggerLogout, clearToken, queryClient, handleRedirect])
-
-  const handleSessionExpire = useCallback(async () => {
-    await clearToken()
-    setHasSession(false)
-    handleRedirect()
-  }, [clearToken, handleRedirect]);
 
   useEffect(() => {
     window.addEventListener("auth:session-expired", handleSessionExpire)

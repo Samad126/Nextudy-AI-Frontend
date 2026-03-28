@@ -11,6 +11,7 @@ import { Label } from "@/shared/ui/label"
 import { Skeleton } from "@/shared/ui/skeleton"
 import { useGetProfile } from "../queries/use-get-profile"
 import { useUpdateProfile } from "../mutations/use-update-profile"
+import { ThemeSwitcher } from "./ThemeSwitcher"
 
 interface FormValues {
   firstName: string
@@ -112,6 +113,10 @@ export function ProfileTab() {
         {isPending && <Loader2 className="size-4 mr-2 animate-spin" />}
         Save Changes
       </Button>
+
+      <div className="border-t border-border pt-6">
+        <ThemeSwitcher />
+      </div>
     </form>
   )
 }
