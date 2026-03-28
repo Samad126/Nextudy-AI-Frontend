@@ -19,7 +19,6 @@ const SYSTEM_INIT: LocalChatMessage = {
   content: "Workbench initialized. Ask questions about your study materials.",
 }
 
-// Stable placeholder ID for the in-flight streaming message
 const STREAMING_ID = "streaming-assistant"
 
 function toLocal(m: Message): LocalChatMessage {
@@ -41,13 +40,9 @@ export function useChat({ chatId, initialMessages }: UseChatOptions) {
   const [messages, setMessages] = useState<LocalChatMessage[]>(
     initialMessages?.length ? initialMessages : [SYSTEM_INIT]
   )
-  // true while waiting for first chunk (shows typing dots) OR while streaming
   const [isTyping, setIsTyping] = useState(false)
-  // true only during active streaming (first chunk received, final message not yet)
   const [isStreaming, setIsStreaming] = useState(false)
-  // Queue of optimistic IDs in send order — matched FIFO against chat:userMessage confirmations
   const optimisticQueue = useRef<string[]>([])
-  // ID of the message currently being edited — used to replace it when chat:userMessage confirms
   const pendingEditId = useRef<string | null>(null)
 
   useEffect(() => {
@@ -59,7 +54,6 @@ export function useChat({ chatId, initialMessages }: UseChatOptions) {
       setMessages((prev) => {
         const idx = prev.findIndex((m) => m.id === STREAMING_ID)
         if (idx === -1) {
-          // First chunk — add the streaming placeholder
           return [...prev, { id: STREAMING_ID, role: "assistant", content: chunk }]
         }
         const updated = [...prev]
@@ -69,7 +63,6 @@ export function useChat({ chatId, initialMessages }: UseChatOptions) {
     }
 
     function onUserMessage(msg: Message) {
-      // Emitted before streaming starts — replace the optimistic or edited message with the real DB record
       const local = toLocal(msg)
       const editId = pendingEditId.current
       if (editId) {
@@ -86,7 +79,6 @@ export function useChat({ chatId, initialMessages }: UseChatOptions) {
     }
 
     function onMessage(msg: Message) {
-      // Only handles the final assistant message
       const local = toLocal(msg)
       setMessages((prev) => {
         const filtered = prev.filter((m) => m.id !== STREAMING_ID)
