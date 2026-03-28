@@ -1,6 +1,7 @@
 import { axiosPrivate } from "@/lib/api/client"
 import { ApiSuccess, ApiQuestion, CreateQuestionsInput } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { trackQAGenerated } from "@/lib/analytics"
 
 async function createQuestions(input: CreateQuestionsInput) {
   const { data } = await axiosPrivate.post<ApiSuccess<ApiQuestion[]>>("/questions", input)
@@ -12,8 +13,9 @@ export function useCreateQuestions(workbenchId: number) {
 
   return useMutation({
     mutationFn: createQuestions,
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["questions", workbenchId] })
+      trackQAGenerated(data.length)
     },
   })
 }

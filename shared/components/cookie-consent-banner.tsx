@@ -8,7 +8,7 @@ import { useCookieConsent } from "@/shared/hooks/use-cookie-consent"
 
 export function CookieConsentBanner() {
   const { consent, resolved, saveConsent } = useCookieConsent()
-  const [analytics, setAnalytics] = useState(true)
+  const [analytics, setAnalytics] = useState(false)
 
   if (!resolved || consent !== null) return null
 

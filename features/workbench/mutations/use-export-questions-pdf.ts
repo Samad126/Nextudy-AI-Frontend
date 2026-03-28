@@ -1,5 +1,6 @@
 import { axiosPrivate } from "@/lib/api/client"
 import { useMutation } from "@tanstack/react-query"
+import { trackQAExported } from "@/lib/analytics"
 
 async function exportQuestionsPdf(workbenchId: number): Promise<void> {
   const response = await axiosPrivate.get(`/questions/export/pdf`, {
@@ -21,5 +22,6 @@ async function exportQuestionsPdf(workbenchId: number): Promise<void> {
 export function useExportQuestionsPdf(workbenchId: number) {
   return useMutation({
     mutationFn: () => exportQuestionsPdf(workbenchId),
+    onSuccess: () => trackQAExported("pdf"),
   })
 }

@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react"
 import { QuizAttempt, QuizQuestion } from "../types/quiz"
+import { trackQuizStarted, trackQuizCompleted } from "@/lib/analytics"
 
 type Answers = Record<number, string | number>
 export type QuizPhase = "countdown" | "taking" | "review" | "result"
@@ -27,7 +28,8 @@ export function useTakeQuiz(questions: QuizQuestion[]) {
 
   const start = useCallback(() => {
     setState((prev) => ({ ...prev, phase: "taking", startedAt: new Date() }))
-  }, [])
+    trackQuizStarted(questions.length)
+  }, [questions.length])
 
   function setAnswer(quizQuestionId: number, value: string | number) {
     setState((prev) => ({
@@ -54,6 +56,7 @@ export function useTakeQuiz(questions: QuizQuestion[]) {
 
   function setResult(attempt: QuizAttempt) {
     setState((prev) => ({ ...prev, attempt, phase: "result" }))
+    trackQuizCompleted(attempt.score ?? 0, questions.length)
   }
 
   function reset() {

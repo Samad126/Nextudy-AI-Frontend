@@ -12,6 +12,7 @@ import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { useAuth } from "@/shared/providers/auth-provider"
 import { GoogleIcon } from "./google-icon"
 import type { ApiSuccess } from "@/types"
+import { trackLogin } from "@/lib/analytics"
 
 interface GoogleAuthData {
   accessToken: string
@@ -36,6 +37,7 @@ export function GoogleButton({
         })
         setAccessToken(res.data.data.accessToken)
         markSessionActive()
+        trackLogin("google")
         queryClient.resetQueries()
         router.push("/")
       } catch (err) {

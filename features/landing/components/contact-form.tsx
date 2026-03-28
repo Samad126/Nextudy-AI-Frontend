@@ -10,6 +10,7 @@ import { Textarea } from "@/shared/ui/textarea"
 import { FormField } from "@/shared/components/form-field"
 import { useContact } from "../mutations/use-contact"
 import { getApiErrorMessage } from "@/lib/api/get-api-error"
+import { trackContactSubmitted } from "@/lib/analytics"
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -34,7 +35,7 @@ export function ContactForm() {
   })
 
   function onSubmit(data: ContactFormValues) {
-    sendContact(data)
+    sendContact(data, { onSuccess: trackContactSubmitted })
   }
 
   if (isSuccess) {

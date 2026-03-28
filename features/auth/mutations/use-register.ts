@@ -6,6 +6,7 @@ import { axiosBase, setAccessToken } from "@/lib/api/client"
 import type { RegisterFormValues } from "@/lib/validations/auth"
 import type { ApiSuccess, ApiError } from "@/types/api"
 import { useAuth } from "@/shared/providers/auth-provider"
+import { trackSignUp } from "@/lib/analytics"
 
 interface RegisterData {
   accessToken: string
@@ -27,6 +28,7 @@ export function useRegister() {
     onSuccess: (data) => {
       setAccessToken(data.accessToken)
       markSessionActive()
+      trackSignUp("email")
       router.push("/")
     },
   })

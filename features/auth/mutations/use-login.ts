@@ -6,6 +6,7 @@ import { axiosBase, setAccessToken } from "@/lib/api/client"
 import type { LoginFormValues } from "@/lib/validations/auth"
 import type { ApiSuccess, ApiError } from "@/types/api"
 import { useAuth } from "@/shared/providers/auth-provider"
+import { trackLogin } from "@/lib/analytics"
 
 interface LoginData {
   accessToken: string
@@ -27,6 +28,7 @@ export function useLogin() {
     onSuccess: (data) => {
       setAccessToken(data.accessToken)
       markSessionActive()
+      trackLogin("email")
       queryClient.resetQueries();
       router.push("/")
     },
