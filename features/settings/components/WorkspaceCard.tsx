@@ -36,6 +36,7 @@ export function WorkspaceCard({ workspace, contextId }: WorkspaceCardProps) {
   const role = useMyRoleInWorkspace(workspace.id)
   const isAdmin = role !== undefined && can.adminWorkspace(role)
   const canLeave = role !== undefined && can.leaveWorkspace(role)
+  const canViewMembers = role !== undefined
 
   return (
     <div className="rounded-lg border border-border bg-card p-4">
@@ -51,36 +52,40 @@ export function WorkspaceCard({ workspace, contextId }: WorkspaceCardProps) {
             Created {formatDate(workspace.created_at)}
           </p>
         </div>
-        {isAdmin && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Settings className="size-3.5 mr-1.5" />
-                Manage
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href={`/workspaces/${contextId}/settings/workspaces/${workspace.id}/members`}>
-                  <Users className="size-4 mr-2" />
-                  Manage Members
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setActiveDialog("edit")}>
-                <Pencil className="size-4 mr-2" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive"
-                onClick={() => setActiveDialog("delete")}
-              >
-                <Trash2 className="size-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          {canViewMembers && (
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/workspaces/${contextId}/settings/workspaces/${workspace.id}/members`}>
+                <Users className="size-3.5 mr-1.5" />
+                Members
+              </Link>
+            </Button>
+          )}
+          {isAdmin && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Settings className="size-3.5 mr-1.5" />
+                  Manage
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setActiveDialog("edit")}>
+                  <Pencil className="size-4 mr-2" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onClick={() => setActiveDialog("delete")}
+                >
+                  <Trash2 className="size-4 mr-2" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
       </div>
 
       {canLeave && (

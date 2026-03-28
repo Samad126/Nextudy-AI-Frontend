@@ -7,7 +7,6 @@ export interface UpdateFlashcardSetInput {
   id: number
   title?: string
   description?: string
-  resourceIds?: number[]
 }
 
 async function updateFlashcardSet({ id, ...body }: UpdateFlashcardSetInput) {

@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { getApiErrorMessage } from "@/lib/api/get-api-error"
-import { Bell } from "lucide-react"
+import { Bell, ArrowLeft } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { Badge } from "@/shared/ui/badge"
 import { Skeleton } from "@/shared/ui/skeleton"
@@ -39,6 +40,7 @@ function filterNotifications(notifications: Notification[], tab: FilterTab) {
 }
 
 export function NotificationsPage() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState<FilterTab>("all")
   const { data: notifications = [], isLoading } = useGetNotifications()
   const { mutate: markAllRead, isPending: isMarkingAll } = useMarkAllRead()
@@ -57,7 +59,12 @@ export function NotificationsPage() {
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <ArrowLeft className="size-4" />
+          </Button>
+          <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
+        </div>
         <Button
           variant="outline"
           size="sm"

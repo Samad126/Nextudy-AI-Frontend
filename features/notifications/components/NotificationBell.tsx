@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { useParams } from "next/navigation"
 import { Bell } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -47,7 +46,6 @@ function PreviewCard({ n }: { n: Notification }) {
 }
 
 export function NotificationBell() {
-  const { id } = useParams<{ id: string }>()
   const { data: notifications = [], isLoading } = useGetNotifications()
   const unreadCount = notifications.filter((n) => !n.is_read).length
   const preview = notifications.slice(0, 5)
@@ -88,7 +86,7 @@ export function NotificationBell() {
 
         <div className="mt-2 pt-2 border-t border-border">
           <Link
-            href={`/workspaces/${id}/notifications`}
+            href="/notifications"
             className="block w-full rounded-md py-1.5 text-center text-sm font-medium text-primary hover:bg-muted transition-colors"
           >
             View all notifications

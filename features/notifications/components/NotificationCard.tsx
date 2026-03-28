@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Loader2, Check } from "lucide-react"
+import { Loader2, Check, CheckCheck } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { getApiErrorMessage } from "@/lib/api/get-api-error"
@@ -75,7 +75,16 @@ export function NotificationCard({ notification }: NotificationCardProps) {
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3 min-w-0">
+        {!notification.is_read && (
+          <button
+            onClick={(e) => { e.stopPropagation(); markRead(notification.id) }}
+            className="mt-0.5 shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+            title="Mark as read"
+          >
+            <CheckCheck className="size-4" />
+          </button>
+        )}
+        <div className="flex items-start gap-3 min-w-0 flex-1">
           {!notification.is_read && (
             <span className="mt-1 size-2 shrink-0 rounded-full bg-sky-500" />
           )}
