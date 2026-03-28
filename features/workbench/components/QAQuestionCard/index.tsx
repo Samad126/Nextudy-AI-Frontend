@@ -107,7 +107,7 @@ export function QAQuestionCard({
       <div className="px-4 pb-4 flex flex-col gap-1">
         <p className="text-sm">
           <span className="font-semibold text-(--color-accent-green)">Answer: </span>
-          <span className="font-semibold text-(--color-accent-green)">{question.answer}</span>
+          <span className="font-semibold text-foreground">{question.answer}</span>
         </p>
         <p className="text-xs text-muted-foreground leading-relaxed italic">
           {question.explanation}
