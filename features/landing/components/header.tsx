@@ -51,13 +51,13 @@ export function Header() {
 
         <nav aria-label="Primary navigation" className="hidden items-center gap-1 md:flex">
           {NAV_LINKS.map(({ label, href }) => (
-            <a
+            <Link
               key={label}
               href={href}
               className="cursor-pointer rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               {label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -125,14 +125,14 @@ export function Header() {
       {open && (
         <nav id="mobile-nav" aria-label="Mobile navigation" className="flex flex-col gap-1 border-b border-border bg-background pb-4 md:hidden">
           {NAV_LINKS.map(({ label, href }) => (
-            <a
+            <Link
               key={label}
               href={href}
               onClick={() => setOpen(false)}
               className="cursor-pointer rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-muted"
             >
               {label}
-            </a>
+            </Link>
           ))}
           <div className="mt-2 flex gap-2 border-t border-border pt-2">
             {hasSession && !user ? (
