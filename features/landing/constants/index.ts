@@ -20,11 +20,11 @@ export const FEATURES = [
   { icon: Users,           title: "Collaborative Workspaces", desc: "Invite teammates, assign roles, and study together with shared resources.",   color: "accent-green" },
   { icon: MessageSquare,   title: "Context-aware AI Chat",  desc: "Chat with an AI tutor that understands your pinned study materials.",           color: "deep-teal"  },
   { icon: ClipboardList,   title: "Quiz Builder",           desc: "Assemble quizzes from your question bank, track attempts and review results.",  color: "accent-green" },
-  { icon: FileText,        title: "Resource Management",    desc: "Upload PDFs, docs and images. Organize into groups for each workbench.",       color: "deep-teal"  },
+  { icon: FileText,        title: "Resource Management",    desc: "Upload PDFs, texts and images. Organize into groups for each workbench.",       color: "deep-teal"  },
 ] as const
 
 export const STEPS = [
-  { step: "01", icon: Upload,      title: "Upload your resources",  desc: "Add PDFs, docs, images, or text files. Organize them into groups.", color: "accent-green"  },
+  { step: "01", icon: Upload,      title: "Upload your resources",  desc: "Add PDFs, texts images, or text files. Organize them into groups.", color: "accent-green"  },
   { step: "02", icon: BrainCircuit, title: "Generate study content", desc: "Let AI create questions, flashcards and quizzes from your materials.", color: "deep-teal" },
   { step: "03", icon: Users,        title: "Study & collaborate",    desc: "Take quizzes, flip flashcards, chat with AI — solo or as a team.",   color: "accent-green" },
 ] as const
