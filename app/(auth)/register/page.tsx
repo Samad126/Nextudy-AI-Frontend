@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { Check, Loader2 } from "lucide-react"
 import { useForm, useWatch, Controller } from "react-hook-form"
@@ -7,9 +8,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/shared/ui/button"
 import { Checkbox } from "@/shared/ui/checkbox"
 import { Label } from "@/shared/ui/label"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/dialog"
 import { FormField } from "@/shared/components/form-field"
 import { PasswordField } from "@/shared/components/password-field"
 import { GoogleButton, OrDivider } from "@/features/auth/components"
+import { PrivacyPolicyContent } from "@/features/landing/components/Privacy-Policy-Content"
 import { registerSchema, type RegisterFormValues, getPasswordStrength } from "@/lib/validations/auth"
 import { useRegister } from "@/features/auth/mutations/use-register"
 import { getApiErrorMessage } from "@/lib/api/get-api-error"
@@ -17,6 +20,7 @@ import { getApiErrorMessage } from "@/lib/api/get-api-error"
 const STRENGTH_COLOR = { 1: "#ef4444", 2: "#f59e0b", 3: "var(--color-sage)" }
 
 export default function RegisterPage() {
+  const [privacyOpen, setPrivacyOpen] = useState(false)
   const { mutate: registerUser, isPending, error } = useRegister()
 
   const {
@@ -146,13 +150,13 @@ export default function RegisterPage() {
               className="cursor-pointer text-sm leading-relaxed text-muted-foreground"
             >
               I agree to the{" "}
-              <a href="#" className="text-teal hover:underline dark:text-sky">
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a href="#" className="text-teal hover:underline dark:text-sky">
+              <button
+                type="button"
+                onClick={() => setPrivacyOpen(true)}
+                className="text-teal hover:underline dark:text-sky"
+              >
                 Privacy Policy
-              </a>
+              </button>
             </Label>
           </div>
           {errors.terms && (
@@ -189,6 +193,17 @@ export default function RegisterPage() {
           Sign in
         </Link>
       </p>
+
+      <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Privacy Policy</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto pr-1">
+            <PrivacyPolicyContent />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

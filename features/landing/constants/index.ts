@@ -11,7 +11,6 @@ import {
 export const NAV_LINKS = [
   { label: "Features", href: "#features" },
   { label: "How it works", href: "#how-it-works" },
-  { label: "Testimonials", href: "#testimonials" },
 ]
 
 export const FEATURES = [
@@ -35,8 +34,21 @@ export const TESTIMONIALS = [
   { initials: "RP", name: "Riya Patel",  role: "Law Student",                  quote: "The AI Chat feels like a tutor who has read all my case notes. Absolutely essential.",                         color: "teal" },
 ] as const
 
+export const PRIVACY_POLICY_LAST_UPDATED = "March 2026"
+export const PRIVACY_POLICY_EMAIL = "samed192005@gmail.com"
+
 export const FOOTER_LINKS = [
-  { heading: "Product",  links: ["Features", "How it works", "Pricing", "Changelog"] },
-  { heading: "Company",  links: ["About", "Blog", "Careers", "Contact"] },
-  { heading: "Legal",    links: ["Privacy Policy", "Terms of Service", "Cookie Policy"] },
+  {
+    heading: "Product",
+    links: [
+      { label: "Features",     href: "#features" },
+      { label: "How it works", href: "#how-it-works" },
+    ],
+  },
+  {
+    heading: "Legal",
+    links: [
+      { label: "Privacy Policy", href: "/privacy-policy" },
+    ],
+  },
 ] as const

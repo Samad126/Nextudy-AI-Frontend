@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { CtaBanner, FeaturesSection, Hero, HowItWorks, Testimonials } from "@/features/landing/components";
+import { CtaBanner, FeaturesSection, Hero, HowItWorks } from "@/features/landing/components";
 
 export const metadata: Metadata = {
   title: "Nextudy — AI-powered collaborative study platform",
@@ -16,8 +16,7 @@ export default function LandingPage() {
       <Hero />
       <FeaturesSection />
       <HowItWorks />
-      <Testimonials />
-      <CtaBanner />
+<CtaBanner />
     </>
   )
 }

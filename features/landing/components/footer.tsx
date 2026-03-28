@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Logo } from "@/shared/components/logo"
 import { FOOTER_LINKS } from "../constants"
 
@@ -13,14 +14,14 @@ export function Footer() {
             </p>
           </div>
 
-          <nav aria-label="Footer navigation" className="grid grid-cols-3 gap-8 text-sm">
+          <nav aria-label="Footer navigation" className="grid grid-cols-2 gap-8 text-sm">
             {FOOTER_LINKS.map(({ heading, links }) => (
               <div key={heading}>
                 <p className="mb-3 font-medium text-foreground">{heading}</p>
                 <ul className="flex flex-col gap-2">
                   {links.map((l) => (
-                    <li key={l}>
-                      <a href="#" className="cursor-pointer text-muted-foreground transition-colors hover:text-foreground">{l}</a>
+                    <li key={l.label}>
+                      <Link href={l.href} className="cursor-pointer text-muted-foreground transition-colors hover:text-foreground">{l.label}</Link>
                     </li>
                   ))}
                 </ul>

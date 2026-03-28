@@ -18,7 +18,8 @@ import "./globals.css"
 import { AuthProvider } from "@/shared/providers/auth-provider"
 import { QueryProvider } from "@/shared/providers/query-provider"
 import { ThemeProvider } from "@/shared/providers/theme-provider"
-import { GoogleAnalytics } from "@/shared/components/google-analytics"
+import { ConditionalAnalytics } from "@/shared/components/conditional-analytics"
+import { CookieConsentBanner } from "@/shared/components/cookie-consent-banner"
 import { cn } from "@/lib/utils"
 
 const siteUrl =
@@ -104,7 +105,8 @@ export default async function RootLayout({
         )}
       </head>
       <body className="font-sans antialiased">
-        <GoogleAnalytics />
+        <ConditionalAnalytics />
+        <CookieConsentBanner />
         <QueryProvider>
           <AuthProvider hasSession={hasSession}>
             <ThemeProvider

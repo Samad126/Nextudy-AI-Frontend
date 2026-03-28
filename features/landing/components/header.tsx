@@ -40,13 +40,13 @@ export function Header() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-200",
+        "fixed inset-x-0 top-0 z-50 px-6 transition-all duration-200",
         scrolled
           ? "border-b border-border bg-background/95 shadow-sm backdrop-blur-sm"
           : "bg-transparent"
       )}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between">
         <Logo />
 
         <nav aria-label="Primary navigation" className="hidden items-center gap-1 md:flex">
@@ -123,7 +123,7 @@ export function Header() {
       </div>
 
       {open && (
-        <nav id="mobile-nav" aria-label="Mobile navigation" className="flex flex-col gap-1 border-b border-border bg-background px-6 pb-4 md:hidden">
+        <nav id="mobile-nav" aria-label="Mobile navigation" className="flex flex-col gap-1 border-b border-border bg-background pb-4 md:hidden">
           {NAV_LINKS.map(({ label, href }) => (
             <a
               key={label}
