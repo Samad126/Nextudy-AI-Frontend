@@ -27,11 +27,22 @@ export function UploadDialog({ open, setOpen, workspaceId }: UploadDialogProps) 
   const inputRef = useRef<HTMLInputElement>(null)
   const { mutate: upload, isPending } = useUploadResource(workspaceId)
 
+  const BLOCKED_EXTENSIONS = /\.(doc|docx|dot|dotx|odt|rtf|wps|wpd)$/i
+
+  function isBlockedFile(f: File) {
+    return BLOCKED_EXTENSIONS.test(f.name)
+  }
+
   const [{ isOver }, dropRef] = useDrop({
     accept: [NativeTypes.FILE],
     drop(item: { files: File[] }) {
       const dropped = item.files?.[0]
-      if (dropped) setFile(dropped)
+      if (!dropped) return
+      if (isBlockedFile(dropped)) {
+        toast.error("DOC and DOCX files are not supported. Please convert to PDF first.")
+        return
+      }
+      setFile(dropped)
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -39,7 +50,14 @@ export function UploadDialog({ open, setOpen, workspaceId }: UploadDialogProps) 
   })
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setFile(e.target.files?.[0] ?? null)
+    const picked = e.target.files?.[0]
+    if (!picked) return
+    if (isBlockedFile(picked)) {
+      toast.error("DOC and DOCX files are not supported. Please convert to PDF first.")
+      e.target.value = ""
+      return
+    }
+    setFile(picked)
   }
 
   function handleSubmit() {
@@ -92,7 +110,7 @@ export function UploadDialog({ open, setOpen, workspaceId }: UploadDialogProps) 
                   {(file.size / 1024).toFixed(1)} KB · {file.type || "unknown type"}
                 </p>
               ) : (
-                <p className="text-xs text-muted-foreground mt-0.5">PDF, DOC, image, or text file</p>
+                <p className="text-xs text-muted-foreground mt-0.5">PDF, image, or text file (DOC/DOCX not supported)</p>
               )}
             </div>
           </div>
