@@ -3,7 +3,11 @@ import { ArrowRight, Sparkles } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { MockAppUI } from "./mock-app-ui"
 
-export function Hero() {
+interface HeroProps {
+  isLoggedIn?: boolean
+}
+
+export function Hero({ isLoggedIn }: HeroProps) {
   return (
     <section className="px-6 pb-20 pt-32">
       <div className="mx-auto max-w-6xl">
@@ -24,11 +28,19 @@ export function Hero() {
           </p>
 
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/register">
-              <Button size="lg" className="h-11 cursor-pointer bg-accent-green px-6 text-white hover:bg-accent-green/90">
-                Get started free <ArrowRight className="size-4" aria-hidden="true" />
-              </Button>
-            </Link>
+            {isLoggedIn ? (
+              <Link href="/workspaces">
+                <Button size="lg" className="h-11 cursor-pointer bg-accent-green px-6 text-white hover:bg-accent-green/90">
+                  Go to dashboard <ArrowRight className="size-4" aria-hidden="true" />
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/register">
+                <Button size="lg" className="h-11 cursor-pointer bg-accent-green px-6 text-white hover:bg-accent-green/90">
+                  Get started free <ArrowRight className="size-4" aria-hidden="true" />
+                </Button>
+              </Link>
+            )}
             <a href="#how-it-works">
               <Button variant="outline" size="lg" className="h-11 cursor-pointer px-6">
                 See how it works
@@ -36,7 +48,9 @@ export function Hero() {
             </a>
           </div>
 
-          <p className="mt-4 text-xs text-muted-foreground">No credit card required · Free plan available</p>
+          {!isLoggedIn && (
+            <p className="mt-4 text-xs text-muted-foreground">No credit card required · Free plan available</p>
+          )}
         </div>
 
         <div className="mx-auto max-w-3xl">

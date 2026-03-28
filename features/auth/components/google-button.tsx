@@ -39,7 +39,7 @@ export function GoogleButton({
         markSessionActive()
         trackLogin("google")
         queryClient.resetQueries()
-        router.push("/")
+        router.push("/workspaces")
       } catch (err) {
         toast.error(getApiErrorMessage(err, "Failed to sign in with Google"))
       } finally {

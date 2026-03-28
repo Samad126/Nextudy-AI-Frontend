@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { cookies } from "next/headers"
 import { CtaBanner, FeaturesSection, Hero, HowItWorks } from "@/features/landing/components";
 
 export const metadata: Metadata = {
@@ -10,13 +11,16 @@ export const metadata: Metadata = {
   },
 }
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const cookieStore = await cookies()
+  const isLoggedIn = cookieStore.has("refreshToken")
+
   return (
     <>
-      <Hero />
+      <Hero isLoggedIn={isLoggedIn} />
       <FeaturesSection />
       <HowItWorks />
-<CtaBanner />
+      <CtaBanner isLoggedIn={isLoggedIn} />
     </>
   )
 }

@@ -30,7 +30,7 @@ export function useLogin() {
       markSessionActive()
       trackLogin("email")
       queryClient.resetQueries();
-      router.push("/")
+      router.push("/workspaces")
     },
   })
 }

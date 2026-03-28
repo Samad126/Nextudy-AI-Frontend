@@ -29,7 +29,7 @@ export function useRegister() {
       setAccessToken(data.accessToken)
       markSessionActive()
       trackSignUp("email")
-      router.push("/")
+      router.push("/workspaces")
     },
   })
 }
