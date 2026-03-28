@@ -1,15 +1,28 @@
 import type { Metadata } from "next"
 import { cookies } from "next/headers"
+import { Geist, Geist_Mono } from "next/font/google"
 import Script from "next/script"
 import { Toaster } from "sonner"
+
+const fontSans = Geist({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
+
+const fontMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+})
 
 import "./globals.css"
 import { AuthProvider } from "@/shared/providers/auth-provider"
 import { QueryProvider } from "@/shared/providers/query-provider"
 import { ThemeProvider } from "@/shared/providers/theme-provider"
 import { GoogleAnalytics } from "@/shared/components/google-analytics"
+import { cn } from "@/lib/utils"
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://nextudy.alakbaroff.com"
+const siteUrl =
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://nextudy.alakbaroff.com"
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -80,6 +93,7 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
+      className={cn(fontSans.variable, fontMono.variable)}
     >
       <head>
         {process.env.NODE_ENV === "development" && (
