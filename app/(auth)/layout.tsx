@@ -1,6 +1,11 @@
+import type { Metadata } from "next"
 import { BrainCircuit, FlipHorizontal2, Users } from "lucide-react"
 import { Logo } from "@/shared/components/logo"
 import { GoogleOAuthProvider } from "@react-oauth/google"
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 
 const HIGHLIGHTS = [
   {

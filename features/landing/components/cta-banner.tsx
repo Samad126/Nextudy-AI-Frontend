@@ -15,7 +15,7 @@ export function CtaBanner() {
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link href="/register">
               <Button size="lg" className="h-11 cursor-pointer bg-yellow px-6 font-semibold text-navy hover:bg-yellow/90">
-                Get started free <ArrowRight className="size-4" />
+                Get started free <ArrowRight className="size-4" aria-hidden="true" />
               </Button>
             </Link>
             <Link href="/login">
@@ -28,7 +28,7 @@ export function CtaBanner() {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
             {PERKS.map((p) => (
               <div key={p} className="flex items-center gap-1.5 text-xs text-white/60 dark:text-muted-foreground">
-                <CheckCircle2 className="size-3.5" /> {p}
+                <CheckCircle2 className="size-3.5" aria-hidden="true" /> {p}
               </div>
             ))}
           </div>

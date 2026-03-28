@@ -49,7 +49,7 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Logo />
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav aria-label="Primary navigation" className="hidden items-center gap-1 md:flex">
           {NAV_LINKS.map(({ label, href }) => (
             <a
               key={label}
@@ -115,13 +115,15 @@ export function Header() {
           className="cursor-pointer rounded-lg p-2 transition-colors hover:bg-muted md:hidden"
           onClick={() => setOpen((o) => !o)}
           aria-label="Toggle menu"
+          aria-expanded={open}
+          aria-controls="mobile-nav"
         >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          {open ? <X className="size-5" aria-hidden="true" /> : <Menu className="size-5" aria-hidden="true" />}
         </button>
       </div>
 
       {open && (
-        <div className="flex flex-col gap-1 border-b border-border bg-background px-6 pb-4 md:hidden">
+        <nav id="mobile-nav" aria-label="Mobile navigation" className="flex flex-col gap-1 border-b border-border bg-background px-6 pb-4 md:hidden">
           {NAV_LINKS.map(({ label, href }) => (
             <a
               key={label}
@@ -183,7 +185,7 @@ export function Header() {
               </>
             )}
           </div>
-        </div>
+        </nav>
       )}
     </header>
   )

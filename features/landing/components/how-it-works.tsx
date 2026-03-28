@@ -2,10 +2,10 @@ import { STEPS } from "../constants"
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="px-6 py-20">
+    <section id="how-it-works" aria-labelledby="how-it-works-heading" className="px-6 py-20">
       <div className="mx-auto max-w-6xl">
         <div className="mb-14 text-center">
-          <h2 className="mb-3 text-3xl font-bold tracking-tight text-navy dark:text-foreground">Up and running in minutes</h2>
+          <h2 id="how-it-works-heading" className="mb-3 text-3xl font-bold tracking-tight text-navy dark:text-foreground">Up and running in minutes</h2>
           <p className="text-muted-foreground">Three steps to smarter studying.</p>
         </div>
 
@@ -14,7 +14,7 @@ export function HowItWorks() {
 
           {STEPS.map(({ step, icon: Icon, title, desc, color }) => (
             <div key={step} className="relative z-10 flex flex-col items-center text-center">
-              <div className={`mb-5 flex size-20 items-center justify-center rounded-2xl border-2 bg-card border-${color}`}>
+              <div className={`mb-5 flex size-20 items-center justify-center rounded-2xl border-2 bg-card border-${color}`} aria-hidden="true">
                 <Icon className={`size-8 text-${color}`} />
               </div>
               <p className={`mb-2 text-xs font-bold tracking-widest text-${color}`}>STEP {step}</p>

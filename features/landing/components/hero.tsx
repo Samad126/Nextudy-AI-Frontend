@@ -9,7 +9,7 @@ export function Hero() {
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto mb-12 max-w-3xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground">
-            <Sparkles className="size-3.5 text-yellow" />
+            <Sparkles className="size-3.5 text-yellow" aria-hidden="true" />
             AI-powered study platform
           </div>
 
@@ -26,7 +26,7 @@ export function Hero() {
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link href="/register">
               <Button size="lg" className="h-11 cursor-pointer bg-teal px-6 text-white hover:bg-teal/90">
-                Get started free <ArrowRight className="size-4" />
+                Get started free <ArrowRight className="size-4" aria-hidden="true" />
               </Button>
             </Link>
             <a href="#how-it-works">

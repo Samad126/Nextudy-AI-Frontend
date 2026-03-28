@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
 import { cookies } from "next/headers"
 import Script from "next/script"
 import { Toaster } from "sonner"
@@ -8,19 +7,12 @@ import "./globals.css"
 import { AuthProvider } from "@/shared/providers/auth-provider"
 import { QueryProvider } from "@/shared/providers/query-provider"
 import { ThemeProvider } from "@/shared/providers/theme-provider"
-import { cn } from "@/lib/utils"
+import { GoogleAnalytics } from "@/shared/components/google-analytics"
 
-const fontSans = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://nextudy.alakbaroff.com"
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Nextudy — AI-powered collaborative study platform",
     template: "%s | Nextudy",
@@ -34,7 +26,46 @@ export const metadata: Metadata = {
     "collaborative",
     "education",
     "learning",
+    "quiz",
+    "spaced repetition",
   ],
+  authors: [{ name: "Nextudy" }],
+  creator: "Nextudy",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    siteName: "Nextudy",
+    title: "Nextudy — AI-powered collaborative study platform",
+    description:
+      "Study smarter with AI-generated questions, smart flashcards, and collaborative workspaces. Nextudy transforms how you learn.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Nextudy — AI-powered collaborative study platform",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Nextudy — AI-powered collaborative study platform",
+    description:
+      "Study smarter with AI-generated questions, smart flashcards, and collaborative workspaces.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 }
 
 export default async function RootLayout({
@@ -49,7 +80,6 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(fontSans.variable, fontMono.variable)}
     >
       <head>
         {process.env.NODE_ENV === "development" && (
@@ -60,6 +90,7 @@ export default async function RootLayout({
         )}
       </head>
       <body className="font-sans antialiased">
+        <GoogleAnalytics />
         <QueryProvider>
           <AuthProvider hasSession={hasSession}>
             <ThemeProvider

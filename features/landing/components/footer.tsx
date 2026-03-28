@@ -13,7 +13,7 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-8 text-sm">
+          <nav aria-label="Footer navigation" className="grid grid-cols-3 gap-8 text-sm">
             {FOOTER_LINKS.map(({ heading, links }) => (
               <div key={heading}>
                 <p className="mb-3 font-medium text-foreground">{heading}</p>
@@ -26,7 +26,7 @@ export function Footer() {
                 </ul>
               </div>
             ))}
-          </div>
+          </nav>
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-2 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row">
