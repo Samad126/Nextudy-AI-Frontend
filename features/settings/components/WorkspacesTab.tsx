@@ -9,8 +9,8 @@ export function WorkspacesTab({ contextId }: { contextId: string }) {
   const { data: workspaces = [], isLoading } = useGetWorkspaces()
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold text-foreground">My Workspaces</h2>
           <p className="text-sm text-muted-foreground">Manage your workspaces and members.</p>

@@ -23,8 +23,11 @@ export default function QuizzesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold tracking-tight">Quizzes</h1>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Quizzes</h1>
+          <p className="text-sm text-muted-foreground mt-1">Test your knowledge with quizzes built from your content.</p>
+        </div>
         {canEdit && <Button onClick={informWorkbench}>Create Quiz</Button>}
       </div>
 

@@ -28,7 +28,7 @@ export default function SettingsLayout({
   if (isSubPage) return <>{children}</>
 
   return (
-    <div className="max-w-3xl">
+    <div className="mx-auto w-full max-w-2xl">
       <h1 className="text-2xl font-bold text-foreground mb-6">Settings</h1>
       <div className="flex gap-1 border-b border-border mb-8">
         {TABS.map(({ label, segment }) => {

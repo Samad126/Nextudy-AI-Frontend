@@ -75,7 +75,7 @@ export function ProfileTab() {
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-md">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
       {/* Avatar */}
       <div className="flex items-center gap-4">
         <div className="flex size-16 items-center justify-center rounded-full bg-primary text-xl font-bold text-primary-foreground select-none">
