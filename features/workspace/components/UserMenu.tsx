@@ -19,7 +19,8 @@ function getInitials(firstName?: string, lastName?: string) {
 
 interface UserMenuProps {
   user?: UserType
-  onSettings: () => void
+  onSettings: () => void,
+  onWorkspaceSettings: () => void,
   onSwitchWorkspace: () => void
   onLogout: () => void
 }
@@ -27,6 +28,7 @@ interface UserMenuProps {
 export function UserMenu({
   user,
   onSettings,
+  onWorkspaceSettings,
   onSwitchWorkspace,
   onLogout,
 }: UserMenuProps) {
@@ -68,7 +70,7 @@ export function UserMenu({
           <User className="size-4" />
           General Settings
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer gap-2">
+        <DropdownMenuItem className="cursor-pointer gap-2" onClick={onWorkspaceSettings}>
           <Settings className="size-4" />
           Workspace Settings
         </DropdownMenuItem>

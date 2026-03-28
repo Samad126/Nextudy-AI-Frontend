@@ -43,6 +43,7 @@ export function WorkspaceHeader() {
   const handleSwitch = useCallback((wsId: number) => router.push(`/workspaces/${wsId}`), [router])
   const handleGoToWorkspaces = useCallback(() => router.push("/workspaces"), [router])
   const handleSettings = useCallback(() => router.push(`/workspaces/${id}/settings/profile`), [router, id])
+  const onWorkspaceSettings = useCallback(() => router.push(`/workspaces/${id}/settings/workspaces`), [router, id])
 
   return (
     <>
@@ -64,6 +65,7 @@ export function WorkspaceHeader() {
               <UserMenu
                 user={user}
                 onSettings={handleSettings}
+                onWorkspaceSettings={onWorkspaceSettings}
                 onSwitchWorkspace={handleGoToWorkspaces}
                 onLogout={handleLogout}
               />
@@ -118,6 +120,7 @@ export function WorkspaceHeader() {
               <UserMenu
                 user={user}
                 onSettings={handleSettings}
+                onWorkspaceSettings={onWorkspaceSettings}
                 onSwitchWorkspace={handleGoToWorkspaces}
                 onLogout={handleLogout}
               />
