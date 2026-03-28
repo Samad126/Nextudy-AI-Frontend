@@ -77,7 +77,8 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
     await clearToken()
     setHasSession(false)
     handleRedirect()
-  }, [clearToken, handleRedirect])
+    router.refresh()
+  }, [clearToken, handleRedirect, router])
 
   useEffect(() => {
     async function restoreToken() {
@@ -111,7 +112,8 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
     setHasSession(false)
     queryClient.removeQueries()
     handleRedirect()
-  }, [triggerLogout, clearToken, queryClient, handleRedirect])
+    router.refresh()
+  }, [triggerLogout, clearToken, queryClient, handleRedirect, router])
 
   useEffect(() => {
     window.addEventListener("auth:session-expired", handleSessionExpire)

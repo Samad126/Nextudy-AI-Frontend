@@ -10,20 +10,21 @@ interface LogoProps {
 
 export function Logo({ size = "md", className }: LogoProps) {
   const height = size === "sm" ? 28 : 32
+  const width = Math.round(height * (365 / 406))
 
   const text = size === "sm" ? "text-base" : "text-lg"
 
   return (
-    <Link href="/" className={cn("flex items-center gap-2 select-none", className)}>
+    <Link href="/" className={cn("flex items-center gap-2 select-none", size === "sm" ? "h-7" : "h-8", className)}>
       <Image
         src="/Logo.svg"
-        alt=""
+        alt="Nextudy Logo"
         height={height}
-        width={0}
-        style={{ width: "auto", height: height }}
+        width={width}
         priority
+        className="shrink-0"
       />
-      <span className={cn(text, "font-semibold tracking-tight text-dark-grey dark:text-foreground")}>
+      <span className={cn(text, "font-semibold leading-none tracking-tight text-dark-grey dark:text-foreground")}>
         Nextudy
       </span>
     </Link>
