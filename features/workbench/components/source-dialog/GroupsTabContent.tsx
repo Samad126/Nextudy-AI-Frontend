@@ -10,6 +10,7 @@ interface GroupsTabContentProps {
   isLoading: boolean
   localSelected: Set<number>
   onToggleGroup: (group: ResourceGroup) => void
+  onToggleResource: (id: number) => void
 }
 
 export function GroupsTabContent({
@@ -17,6 +18,7 @@ export function GroupsTabContent({
   isLoading,
   localSelected,
   onToggleGroup,
+  onToggleResource,
 }: GroupsTabContentProps) {
   if (isLoading) {
     return (
@@ -45,6 +47,7 @@ export function GroupsTabContent({
           group={group}
           localSelected={localSelected}
           onToggleGroup={onToggleGroup}
+          onToggleResource={onToggleResource}
         />
       ))}
     </>

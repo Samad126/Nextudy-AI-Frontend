@@ -4,6 +4,7 @@ import { Layers } from "lucide-react"
 import { Checkbox } from "@/shared/ui/checkbox"
 import { ResourceGroup } from "@/types"
 import { cn } from "@/lib/utils"
+import { ResourceSelectItem } from "./ResourceSelectItem"
 
 type SelectionState = "all" | "some" | "none"
 
@@ -19,41 +20,57 @@ interface GroupSelectItemProps {
   group: ResourceGroup
   localSelected: Set<number>
   onToggleGroup: (group: ResourceGroup) => void
+  onToggleResource: (id: number) => void
 }
 
-export function GroupSelectItem({ group, localSelected, onToggleGroup }: GroupSelectItemProps) {
+export function GroupSelectItem({ group, localSelected, onToggleGroup, onToggleResource }: GroupSelectItemProps) {
   const state = getSelectionState(group, localSelected)
   const checked = state === "all" ? true : state === "some" ? "indeterminate" : false
 
   return (
-    <div
-      onClick={() => onToggleGroup(group)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && onToggleGroup(group)}
-      className={cn(
-        "flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-colors",
-        state !== "none" ? "border-primary bg-primary/5" : "border-border hover:bg-muted/40"
-      )}
-    >
-      <Checkbox
-        checked={checked}
-        onCheckedChange={() => onToggleGroup(group)}
-        onClick={(e) => e.stopPropagation()}
-      />
-      <div className="flex items-center gap-2.5 min-w-0 flex-1">
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted">
-          <Layers className="size-3.5 text-muted-foreground" />
-        </div>
-        <div className="flex flex-col gap-0.5 min-w-0">
-          <span className="text-sm font-medium text-foreground truncate leading-tight">
-            {group.name}
-          </span>
-          <span className="text-xs text-muted-foreground">
-            {group.resources.length} resource{group.resources.length !== 1 ? "s" : ""}
-          </span>
+    <div className="flex flex-col gap-1">
+      <div
+        onClick={() => onToggleGroup(group)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Enter" && onToggleGroup(group)}
+        className={cn(
+          "flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-colors",
+          state !== "none" ? "border-primary bg-primary/5" : "border-border hover:bg-muted/40"
+        )}
+      >
+        <Checkbox
+          checked={checked}
+          onCheckedChange={() => onToggleGroup(group)}
+          onClick={(e) => e.stopPropagation()}
+        />
+        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+          <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted">
+            <Layers className="size-3.5 text-muted-foreground" />
+          </div>
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <span className="text-sm font-medium text-foreground truncate leading-tight">
+              {group.name}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {group.resources.length} resource{group.resources.length !== 1 ? "s" : ""}
+            </span>
+          </div>
         </div>
       </div>
+
+      {group.resources.length > 0 && (
+        <div className="ml-4 flex flex-col gap-1 border-l border-border pl-3">
+          {group.resources.map((resource) => (
+            <ResourceSelectItem
+              key={resource.id}
+              resource={resource}
+              checked={localSelected.has(resource.id)}
+              onToggle={() => onToggleResource(resource.id)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -96,6 +96,7 @@ export function SelectSourceDialogContent({
             isLoading={loadingGroups}
             localSelected={localSelected}
             onToggleGroup={handleToggleGroup}
+            onToggleResource={handleToggleResource}
           />
         )}
       </div>
