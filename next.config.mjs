@@ -4,10 +4,12 @@ import { withSentryConfig } from "@sentry/nextjs"
 const nextConfig = {
   output: "standalone",
   reactStrictMode: false,
+  // Needed for PDF Viewer
   webpack: (config) => {
     config.resolve.alias.canvas = false
     return config
   },
+  // Needed for PDF Viewer
   turbopack: {
     resolveAlias: {
       canvas: "./empty-module.js",

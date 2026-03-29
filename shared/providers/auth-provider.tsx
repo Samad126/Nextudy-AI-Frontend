@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react"
 import { useRouter, usePathname } from "next/navigation"
@@ -49,7 +50,8 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
   const pathname = usePathname();
   const queryClient = useQueryClient();
 
-  const { mutate: triggerLogout } = useLogout()
+  const { mutateAsync: triggerLogout } = useLogout()
+  const isCleaningUp = useRef(false)
 
   const handleRedirect = useCallback(() => {
     const isOptional = OPTIONAL_AUTH_PATHS.some(
@@ -62,22 +64,28 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
   }, [pathname, router])
 
   const clearToken = useCallback(async () => {
-    return fetch("/api/logout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then(() => {
+    try {
+      await fetch("/api/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      })
+    } finally {
       setAccessToken(null)
       setAccessTokenHydrated(false)
-    })
+    }
   }, [])
 
   const handleSessionExpire = useCallback(async () => {
-    await clearToken()
-    setHasSession(false)
-    handleRedirect()
-    router.refresh()
+    if (isCleaningUp.current) return
+    isCleaningUp.current = true
+    try {
+      await clearToken()
+    } finally {
+      setHasSession(false)
+      handleRedirect()
+      router.refresh()
+      isCleaningUp.current = false
+    }
   }, [clearToken, handleRedirect, router])
 
   useEffect(() => {
@@ -107,12 +115,22 @@ export function AuthProvider({ children, hasSession: initialHasSession }: AuthPr
   }, [hasSession, handleSessionExpire])
 
   const handleLogout = useCallback(async () => {
-    triggerLogout()
-    await clearToken()
-    setHasSession(false)
-    queryClient.removeQueries()
-    handleRedirect()
-    router.refresh()
+    if (isCleaningUp.current) return
+    isCleaningUp.current = true
+    try {
+      await triggerLogout()
+    } catch {
+      // backend call failed (e.g. token already expired) — proceed with local cleanup
+    }
+    try {
+      await clearToken()
+    } finally {
+      setHasSession(false)
+      queryClient.removeQueries()
+      handleRedirect()
+      router.refresh()
+      isCleaningUp.current = false
+    }
   }, [triggerLogout, clearToken, queryClient, handleRedirect, router])
 
   useEffect(() => {
