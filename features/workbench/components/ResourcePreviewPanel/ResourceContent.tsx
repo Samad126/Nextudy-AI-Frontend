@@ -8,7 +8,7 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
 }
 
-export function ResourceContent({ resource, highlight, onDismiss }: { resource: Resource; highlight?: string; onDismiss?: () => void }) {
+export function ResourceContent({ resource, highlight }: { resource: Resource; highlight?: string }) {
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* File header */}
@@ -23,16 +23,14 @@ export function ResourceContent({ resource, highlight, onDismiss }: { resource: 
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {resource.type.toUpperCase()} •{" "}
-              {resource.file_size
-                ? formatFileSize(resource.file_size)
-                : "Unknown size"}
+              {resource.file_size ? formatFileSize(resource.file_size) : "Unknown size"}
             </p>
           </div>
         </div>
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <FileViewer resource={resource} highlight={highlight} onDismiss={onDismiss} />
+        <FileViewer resource={resource} highlight={highlight} />
       </div>
     </div>
   )

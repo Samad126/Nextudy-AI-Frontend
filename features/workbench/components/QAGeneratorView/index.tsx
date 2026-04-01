@@ -43,7 +43,7 @@ function mapApiQuestion(q: ApiQuestion, index: number): QAQuestion {
     type: q.answer_source === "file" ? "verified" : "ai_plus",
     difficulty: q.difficulty.toLowerCase() as "easy" | "medium" | "hard",
     hasSource: q.answer_source === "file" || q.answer_source === "mixed",
-    sourceCitation: q.source_citation,
+    sourceCitation: q.source_citations,
     text: q.title,
     options,
     answer: correctLabel ?? q.openEndedAnswer?.sample_answer ?? "",

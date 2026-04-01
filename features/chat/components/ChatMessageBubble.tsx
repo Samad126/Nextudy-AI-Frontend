@@ -14,7 +14,7 @@ export function ChatMessageBubble({
   userName?: string
   onEdit?: (id: string, currentContent: string) => void
 }) {
-  const onSourceClick = useCitation()
+  const { onCitationClick: onSourceClick } = useCitation()
 
   if (message.role === "system") {
     return (
@@ -74,7 +74,7 @@ export function ChatMessageBubble({
             {message.sources.map((source, index) => (
               <button
                 key={`${index}`}
-                onClick={() => onSourceClick(source)}
+                onClick={() => onSourceClick([source])}
                 className="w-full text-left rounded-lg bg-muted/50 px-3 py-2 hover:bg-muted/80 transition-colors flex items-center gap-2"
               >
                 <FileText className="size-3 shrink-0 text-muted-foreground" />

@@ -1,13 +1,13 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { ChevronUp, ChevronDown, Loader2, X } from "lucide-react"
 import { useGetResourceContent } from "@/features/resources/queries/use-get-resource-content"
+import { useCitation } from "@/features/workbench/context/citation-context"
 
 interface PdfContentViewerProps {
   resourceId: number
   highlight?: string
-  onDismiss?: () => void
 }
 
 const MARK_CLASS = "pdf-highlight-mark"
@@ -117,21 +117,15 @@ function highlightChunks(
   return firstMark
 }
 
-export function PdfContentViewer({
-  resourceId,
-  highlight,
-  onDismiss,
-}: PdfContentViewerProps) {
+export function PdfContentViewer({ resourceId, highlight }: PdfContentViewerProps) {
+  const { citationIndex, citationCount, onPrevCitation, onNextCitation, onDismiss } = useCitation()
   const {
     data: content,
     isLoading,
     isError,
   } = useGetResourceContent(resourceId)
   const html = useMemo(() => content ?? null, [content])
-  const [matchCount, setMatchCount] = useState(0)
-  const [currentIndex, setCurrentIndex] = useState(0)
   const contentRef = useRef<HTMLDivElement>(null)
-  const marksRef = useRef<HTMLElement[]>([])
 
   useEffect(() => {
     if (!contentRef.current || html === null) return
@@ -141,23 +135,8 @@ export function PdfContentViewer({
   useEffect(() => {
     if (!contentRef.current || html === null) return
     const marks = highlightTextNodes(contentRef.current, highlight ?? "")
-    marksRef.current = marks
-    setMatchCount(marks.length)
-    setCurrentIndex(0)
-    if (marks[0])
-      marks[0].scrollIntoView({ behavior: "smooth", block: "center" })
+    if (marks[0]) marks[0].scrollIntoView({ behavior: "smooth", block: "center" })
   }, [highlight, html])
-
-  function scrollToMatch(index: number) {
-    const mark = marksRef.current[index]
-    if (!mark) return
-    marksRef.current.forEach((m) =>
-      m.classList.remove("ring-2", "ring-orange-500")
-    )
-    mark.classList.add("ring-2", "ring-orange-500")
-    mark.scrollIntoView({ behavior: "smooth", block: "center" })
-    setCurrentIndex(index)
-  }
 
   if (isLoading) {
     return (
@@ -185,47 +164,28 @@ export function PdfContentViewer({
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      {highlight && matchCount > 0 && (
+      {highlight && (
         <div className="flex shrink-0 items-center justify-between border-b border-border bg-muted/40 px-4 py-1.5 text-xs text-muted-foreground">
-          <span>
-            {currentIndex + 1} / {matchCount} match
-            {matchCount !== 1 ? "es" : ""}
-          </span>
+          {citationCount && citationCount > 1 ? (
+            <span>Source {(citationIndex ?? 0) + 1} / {citationCount}</span>
+          ) : (
+            <span>Source</span>
+          )}
           <div className="flex items-center gap-1">
-            <button
-              onClick={() =>
-                scrollToMatch((currentIndex - 1 + matchCount) % matchCount)
-              }
-              className="rounded p-0.5 hover:bg-muted"
-            >
-              <ChevronUp className="size-3.5" />
-            </button>
-            <button
-              onClick={() => scrollToMatch((currentIndex + 1) % matchCount)}
-              className="rounded p-0.5 hover:bg-muted"
-            >
-              <ChevronDown className="size-3.5" />
-            </button>
-            <button
-              onClick={onDismiss}
-              className="ml-1 rounded p-0.5 hover:bg-muted"
-              title="Clear highlight"
-            >
+            {citationCount && citationCount > 1 && (
+              <>
+                <button onClick={onPrevCitation} className="rounded p-0.5 hover:bg-muted">
+                  <ChevronUp className="size-3.5" />
+                </button>
+                <button onClick={onNextCitation} className="rounded p-0.5 hover:bg-muted">
+                  <ChevronDown className="size-3.5" />
+                </button>
+              </>
+            )}
+            <button onClick={onDismiss} className="ml-1 rounded p-0.5 hover:bg-muted" title="Clear highlight">
               <X className="size-3.5" />
             </button>
           </div>
-        </div>
-      )}
-      {highlight && matchCount === 0 && html !== null && (
-        <div className="flex shrink-0 items-center justify-between border-b border-border bg-muted/40 px-4 py-1.5 text-xs text-muted-foreground">
-          <span>No matches found</span>
-          <button
-            onClick={onDismiss}
-            className="rounded p-0.5 hover:bg-muted"
-            title="Clear highlight"
-          >
-            <X className="size-3.5" />
-          </button>
         </div>
       )}
 

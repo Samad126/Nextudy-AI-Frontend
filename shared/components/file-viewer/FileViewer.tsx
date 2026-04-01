@@ -11,13 +11,12 @@ import { ImageViewer } from "./ImageViewer"
 interface FileViewerProps {
   resource: Resource
   highlight?: string
-  onDismiss?: () => void
 }
 
-export function FileViewer({ resource, highlight, onDismiss }: FileViewerProps) {
+export function FileViewer({ resource, highlight }: FileViewerProps) {
   // PDF uses its own content fetch — no blob download needed
   if (resource.type === "PDF") {
-    return <PdfContentViewer resourceId={resource.id} highlight={highlight} onDismiss={onDismiss} />
+    return <PdfContentViewer resourceId={resource.id} highlight={highlight} />
   }
 
   return <BlobFileViewer resource={resource} highlight={highlight} />

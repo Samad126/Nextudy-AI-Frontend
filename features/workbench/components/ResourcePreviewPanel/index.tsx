@@ -2,17 +2,13 @@
 
 import { useState } from "react"
 import { PackageOpen } from "lucide-react"
-import { Resource, SourceCitation } from "@/types"
+import { Resource } from "@/types"
+import { useCitation } from "../../context/citation-context"
 import { ResourceTabBar } from "./ResourceTabBar"
 import { ResourceContent } from "./ResourceContent"
 
-interface ResourcePreviewPanelProps {
-  resources: Resource[]
-  activeCitation?: SourceCitation | null
-  onDismissCitation?: () => void
-}
-
-export function ResourcePreviewPanel({ resources, activeCitation, onDismissCitation }: ResourcePreviewPanelProps) {
+export function ResourcePreviewPanel({ resources }: { resources: Resource[] }) {
+  const { activeCitation } = useCitation()
   // Tracks the user's explicit tab selection. null means "no override yet".
   const [selectedId, setSelectedId] = useState<number | null>(null)
 
@@ -39,14 +35,11 @@ export function ResourcePreviewPanel({ resources, activeCitation, onDismissCitat
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card">
-      {/* Resource tabs */}
       <ResourceTabBar
         resources={resources}
         activeId={activeResource?.id ?? null}
         onTabClick={setSelectedId}
       />
-
-      {/* Preview content */}
       {activeResource && (
         <ResourceContent
           resource={activeResource}
@@ -55,7 +48,6 @@ export function ResourcePreviewPanel({ resources, activeCitation, onDismissCitat
               ? activeCitation.snippet
               : undefined
           }
-          onDismiss={onDismissCitation}
         />
       )}
     </div>

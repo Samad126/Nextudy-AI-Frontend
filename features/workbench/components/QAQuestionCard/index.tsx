@@ -22,7 +22,7 @@ export interface QAQuestion {
   type: "verified" | "ai_plus"
   difficulty: "easy" | "medium" | "hard"
   hasSource: boolean
-  sourceCitation?: SourceCitation
+  sourceCitation?: SourceCitation[]
   text: string
   options: QAOption[]
   answer: string
@@ -46,7 +46,7 @@ export function QAQuestionCard({
   selected,
   onToggleSelect,
 }: QAQuestionCardProps) {
-  const onSourceClick = useCitation()
+  const { onCitationClick: onSourceClick } = useCitation()
   return (
     <div
       className={cn(
@@ -74,7 +74,7 @@ export function QAQuestionCard({
         </span>
         <TypeBadge type={question.type} />
         <DifficultyBadge difficulty={question.difficulty} />
-        {question.hasSource && question.sourceCitation && (
+        {question.hasSource && question.sourceCitation && question.sourceCitation.length > 0 && (
           <SourceButton onClick={() => onSourceClick(question.sourceCitation!)} />
         )}
         {!selectMode && (

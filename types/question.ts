@@ -40,7 +40,7 @@ export interface ApiQuestion {
   answer_source: AnswerSource
   difficulty: ApiQuestionDifficulty
   explanation?: string
-  source_citation?: SourceCitation
+  source_citations?: SourceCitation[]
   mcqChoices: MCQChoice[]
   openEndedAnswer?: OpenEndedAnswer
   created_at: string

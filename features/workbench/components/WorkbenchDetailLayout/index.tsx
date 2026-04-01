@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import { Resource, SourceCitation } from "@/types"
+import { Resource } from "@/types"
 import { useSocket } from "@/shared/providers/socket-provider"
 import { useGetWorkbenchResources } from "../../queries/use-get-workbench-resources"
 import { useGetResources } from "@/features/resources/queries/use-get-resources"
@@ -43,8 +43,6 @@ export function WorkbenchDetailLayout({
   const [sourceDialogOpen, setSourceDialogOpen] = useState(false)
   // null means "not overridden yet" — derive from server data instead
   const [localSelectedIds, setLocalSelectedIds] = useState<Set<number> | null>(null)
-  const [activeCitation, setActiveCitation] = useState<SourceCitation | null>(null)
-
   // Connect when the chat tab is active
   useEffect(() => {
     if (ui.activeTab !== "chat" || !socket) return
@@ -78,17 +76,12 @@ export function WorkbenchDetailLayout({
     setQuestionsDialog({ open: true, isRegen: true })
   }, [])
 
-  const handleSourceClick = useCallback((citation: SourceCitation) => {
-    setActiveCitation(citation)
-    setUi((prev) => ({ ...prev, layout: "split" }))
-  }, [])
-
   // On desktop, respect the layout toggle. On mobile, always show both panels stacked.
   const showLeft = ui.layout === "left" || ui.layout === "split"
   const showRight = ui.layout === "right" || ui.layout === "split"
 
   return (
-    <CitationProvider value={handleSourceClick}>
+    <CitationProvider onCitationClick={() => setUi((prev) => ({ ...prev, layout: "split" }))}>
       <div className="-mt-2 flex flex-col gap-0">
         <WorkbenchDetailHeader
           resourceCount={selectedIds.size}
@@ -116,11 +109,7 @@ export function WorkbenchDetailLayout({
               ui.layout === "split" ? "md:min-w-0 md:flex-2" : "md:w-full"
             )}
           >
-            <ResourcePreviewPanel
-              resources={selectedResources}
-              activeCitation={activeCitation}
-              onDismissCitation={() => setActiveCitation(null)}
-            />
+            <ResourcePreviewPanel resources={selectedResources} />
           </div>
 
           {/* Right panel — QA/Chat, always visible on mobile, conditionally on desktop */}
