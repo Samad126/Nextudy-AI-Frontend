@@ -3,7 +3,7 @@
 import { Loader2 } from "lucide-react"
 import { Resource } from "@/types"
 import { useGetResourceFile } from "@/features/resources/queries/use-get-resource-file"
-import { PdfViewer } from "./PdfViewer"
+import { PdfContentViewer } from "./PdfContentViewer"
 import { DocxViewer } from "./DocxViewer"
 import { TxtViewer } from "./TxtViewer"
 import { ImageViewer } from "./ImageViewer"
@@ -11,10 +11,19 @@ import { ImageViewer } from "./ImageViewer"
 interface FileViewerProps {
   resource: Resource
   highlight?: string
-  highlightPage?: number
+  onDismiss?: () => void
 }
 
-export function FileViewer({ resource, highlight, highlightPage }: FileViewerProps) {
+export function FileViewer({ resource, highlight, onDismiss }: FileViewerProps) {
+  // PDF uses its own content fetch — no blob download needed
+  if (resource.type === "PDF") {
+    return <PdfContentViewer resourceId={resource.id} highlight={highlight} onDismiss={onDismiss} />
+  }
+
+  return <BlobFileViewer resource={resource} highlight={highlight} />
+}
+
+function BlobFileViewer({ resource, highlight }: FileViewerProps) {
   const { data: blob, isLoading, isError } = useGetResourceFile(resource.id)
 
   if (isLoading) {
@@ -34,8 +43,6 @@ export function FileViewer({ resource, highlight, highlightPage }: FileViewerPro
   }
 
   switch (resource.type) {
-    case "PDF":
-      return <PdfViewer blob={blob} highlight={highlight} highlightPage={highlightPage} />
     case "DOC":
       return <DocxViewer blob={blob} highlight={highlight} />
     case "TXT":

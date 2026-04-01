@@ -103,7 +103,27 @@ export function WorkbenchDetailLayout({
         - Desktop (md+): flex-row with a fixed viewport height, respecting layout toggle.
       */}
         <div className="mt-4 flex flex-col gap-4 md:h-[calc(100vh-230px)] md:flex-row">
-          {/* Left panel — always visible on mobile, conditionally on desktop */}
+          {/* Left panel — file preview, always visible on mobile, conditionally on desktop */}
+          <div
+            className={cn(
+              "flex flex-col overflow-hidden",
+              // Mobile: fixed height so both panels are visible
+              "h-[70dvh]",
+              // Desktop: fill available space according to layout mode, override mobile height
+              "md:h-auto",
+              // Desktop visibility and sizing
+              showRight ? "md:flex" : "md:hidden",
+              ui.layout === "split" ? "md:min-w-0 md:flex-2" : "md:w-full"
+            )}
+          >
+            <ResourcePreviewPanel
+              resources={selectedResources}
+              activeCitation={activeCitation}
+              onDismissCitation={() => setActiveCitation(null)}
+            />
+          </div>
+
+          {/* Right panel — QA/Chat, always visible on mobile, conditionally on desktop */}
           <div
             className={cn(
               "flex flex-col overflow-hidden rounded-xl border border-border bg-card",
@@ -113,7 +133,7 @@ export function WorkbenchDetailLayout({
               "md:h-auto",
               // Desktop visibility and sizing
               showLeft ? "md:flex" : "md:hidden",
-              ui.layout === "split" ? "md:min-w-0 md:flex-1" : "md:w-full"
+              ui.layout === "split" ? "md:min-w-[400px] md:flex-1" : "md:w-full"
             )}
           >
             <WorkbenchPanelTabs
@@ -133,25 +153,6 @@ export function WorkbenchDetailLayout({
                 <WorkbenchChatView workbenchId={workbenchId} />
               )}
             </div>
-          </div>
-
-          {/* Right panel — always visible on mobile, conditionally on desktop */}
-          <div
-            className={cn(
-              "flex flex-col overflow-hidden",
-              // Mobile: fixed height so both panels are visible
-              "h-[70dvh]",
-              // Desktop: fill available space according to layout mode, override mobile height
-              "md:h-auto",
-              // Desktop visibility and sizing
-              showRight ? "md:flex" : "md:hidden",
-              ui.layout === "split" ? "md:min-w-0 md:flex-1" : "md:w-full"
-            )}
-          >
-            <ResourcePreviewPanel
-              resources={selectedResources}
-              activeCitation={activeCitation}
-            />
           </div>
         </div>
 

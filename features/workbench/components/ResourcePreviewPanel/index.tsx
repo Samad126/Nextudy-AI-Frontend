@@ -9,9 +9,10 @@ import { ResourceContent } from "./ResourceContent"
 interface ResourcePreviewPanelProps {
   resources: Resource[]
   activeCitation?: SourceCitation | null
+  onDismissCitation?: () => void
 }
 
-export function ResourcePreviewPanel({ resources, activeCitation }: ResourcePreviewPanelProps) {
+export function ResourcePreviewPanel({ resources, activeCitation, onDismissCitation }: ResourcePreviewPanelProps) {
   // Tracks the user's explicit tab selection. null means "no override yet".
   const [selectedId, setSelectedId] = useState<number | null>(null)
 
@@ -54,11 +55,7 @@ export function ResourcePreviewPanel({ resources, activeCitation }: ResourcePrev
               ? activeCitation.snippet
               : undefined
           }
-          highlightPage={
-            activeCitation?.resourceId === activeResource.id
-              ? (activeCitation.page ?? undefined)
-              : undefined
-          }
+          onDismiss={onDismissCitation}
         />
       )}
     </div>

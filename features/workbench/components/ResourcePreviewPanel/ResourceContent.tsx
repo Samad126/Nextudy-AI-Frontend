@@ -8,7 +8,7 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
 }
 
-export function ResourceContent({ resource, highlight, highlightPage }: { resource: Resource; highlight?: string; highlightPage?: number }) {
+export function ResourceContent({ resource, highlight, onDismiss }: { resource: Resource; highlight?: string; onDismiss?: () => void }) {
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* File header */}
@@ -31,9 +31,8 @@ export function ResourceContent({ resource, highlight, highlightPage }: { resour
         </div>
       </div>
 
-      {/* File viewer — PDF manages its own scroll via defaultLayoutPlugin */}
       <div className="flex-1 overflow-hidden">
-        <FileViewer resource={resource} highlight={highlight} highlightPage={highlightPage} />
+        <FileViewer resource={resource} highlight={highlight} onDismiss={onDismiss} />
       </div>
     </div>
   )

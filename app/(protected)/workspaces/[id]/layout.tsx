@@ -12,7 +12,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   return (
     <WorkspaceRoleProvider workspaceId={workspaceId}>
       <WorkspaceHeader />
-      <main className="flex flex-1 flex-col mx-auto px-4 py-8 pb-20 sm:px-6 xl:w-7xl">{children}</main>
+      <main className="flex flex-1 flex-col w-full px-4 py-8 pb-20 sm:px-6">{children}</main>
     </WorkspaceRoleProvider>
   )
 }

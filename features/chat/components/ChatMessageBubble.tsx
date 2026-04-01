@@ -62,9 +62,10 @@ export function ChatMessageBubble({
         <Bot className="size-3.5 text-muted-foreground" />
       </div>
       <div className="max-w-[80%] rounded-2xl rounded-bl-sm border border-border bg-card px-4 py-2.5">
-        <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap truncate">
-          {message.content}
-        </p>
+        <div
+          className="text-sm text-foreground leading-relaxed [&_h1]:mb-2 [&_h1]:mt-3 [&_h1]:text-base [&_h1]:font-bold [&_h2]:mb-1.5 [&_h2]:mt-2.5 [&_h2]:text-sm [&_h2]:font-semibold [&_h3]:mb-1 [&_h3]:mt-2 [&_h3]:text-sm [&_h3]:font-medium [&_li]:ml-4 [&_li]:list-disc [&_ol_li]:list-decimal [&_ol]:mb-2 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_em]:italic [&_ul]:mb-2 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-xs [&_pre]:mb-2 [&_pre]:rounded [&_pre]:bg-muted [&_pre]:p-2 [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-border [&_td]:px-2 [&_td]:py-1 [&_th]:border [&_th]:border-border [&_th]:bg-muted [&_th]:px-2 [&_th]:py-1"
+          dangerouslySetInnerHTML={{ __html: message.content as string }}
+        />
         {message.sources && message.sources.length > 0 && (
           <div className="mt-3 pt-3 border-t border-border flex flex-col gap-1.5">
             <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
