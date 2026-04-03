@@ -5,6 +5,7 @@ interface QAToolbarProps {
   onRegenerate: () => void
   onExport: () => void
   isExporting: boolean
+  isExtracting?: boolean
   selectMode: boolean
   selectedCount: number
   totalCount: number
@@ -17,6 +18,7 @@ export function QAToolbar({
   onRegenerate,
   onExport,
   isExporting,
+  isExtracting = false,
   selectMode,
   selectedCount,
   totalCount,
@@ -48,6 +50,8 @@ export function QAToolbar({
           size="sm"
           className="gap-1.5 text-xs h-7 px-3"
           onClick={onRegenerate}
+          disabled={isExtracting}
+          title={isExtracting ? "Content is still being extracted" : undefined}
         >
           <RefreshCw className="size-3.5" />
           REGENERATE

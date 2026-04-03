@@ -1,10 +1,12 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
+import { useQueries } from "@tanstack/react-query"
 import { Resource } from "@/types"
 import { useSocket } from "@/shared/providers/socket-provider"
 import { useGetWorkbenchResources } from "../../queries/use-get-workbench-resources"
 import { useGetResources } from "@/features/resources/queries/use-get-resources"
+import { getResourceContent } from "@/features/resources/queries/use-get-resource-content"
 import { WorkbenchDetailHeader, LayoutMode } from "../WorkbenchDetailHeader"
 import { SelectSourceDialog } from "../SelectSourceDialog"
 import { QAGeneratorView } from "../QAGeneratorView"
@@ -67,6 +69,16 @@ export function WorkbenchDetailLayout({
     selectedIds.has(r.id)
   )
   const hasResources = selectedIds.size > 0
+
+  const contentQueries = useQueries({
+    queries: selectedResources.map((r) => ({
+      queryKey: ["resource-content", r.id],
+      queryFn: () => getResourceContent(r.id),
+      staleTime: 10 * 60 * 1000,
+      retry: false,
+    })),
+  })
+  const isExtracting = contentQueries.some((q) => !q.isLoading && q.data === null)
 
   const handleGenerate = useCallback(() => {
     setQuestionsDialog({ open: true, isRegen: false })
@@ -137,6 +149,7 @@ export function WorkbenchDetailLayout({
                   workspaceId={workspaceId}
                   onGenerate={handleGenerate}
                   onRegenerate={handleRegenerate}
+                  isExtracting={isExtracting}
                 />
               ) : (
                 <WorkbenchChatView workbenchId={workbenchId} />

@@ -57,6 +57,7 @@ interface QAGeneratorViewProps {
   workspaceId: number
   onGenerate: () => void
   onRegenerate: () => void
+  isExtracting?: boolean
 }
 
 export function QAGeneratorView({
@@ -65,6 +66,7 @@ export function QAGeneratorView({
   workspaceId,
   onGenerate,
   onRegenerate,
+  isExtracting = false,
 }: QAGeneratorViewProps) {
   const { data: questions, isLoading } = useGetQuestions(workbenchId)
   const { mutate: exportPdf, isPending: isExporting } = useExportQuestionsPdf(workbenchId)
@@ -126,9 +128,14 @@ export function QAGeneratorView({
             Generate questions from your selected materials.
           </p>
         </div>
-        <Button size="sm" onClick={onGenerate} className="mt-1">
+        <Button size="sm" onClick={onGenerate} disabled={isExtracting} className="mt-1">
           Create Questions
         </Button>
+        {isExtracting && (
+          <p className="text-xs text-muted-foreground">
+            Content is still being extracted. Please wait.
+          </p>
+        )}
       </div>
     )
   }
@@ -138,6 +145,7 @@ export function QAGeneratorView({
       <div className="flex flex-col h-full">
         <QAToolbar
           onRegenerate={onRegenerate}
+          isExtracting={isExtracting}
           onExport={() => exportPdf(undefined, {
             onError: (err) => toast.error(getApiErrorMessage(err, "Failed to export PDF")),
           })}

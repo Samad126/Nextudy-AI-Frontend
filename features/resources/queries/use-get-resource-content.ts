@@ -1,7 +1,7 @@
 import { axiosPrivate } from "@/lib/api/client"
 import { useQuery } from "@tanstack/react-query"
 
-async function getResourceContent(resourceId: number): Promise<string | null> {
+export async function getResourceContent(resourceId: number): Promise<string | null> {
   const { data } = await axiosPrivate.get<{ data: { content: string | null } }>(
     `/resources/${resourceId}/content`,
   )
