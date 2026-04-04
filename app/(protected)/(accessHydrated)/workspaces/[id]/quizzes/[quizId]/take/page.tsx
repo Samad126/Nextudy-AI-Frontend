@@ -14,7 +14,6 @@ import { Badge } from "@/shared/ui/badge"
 import { MCQQuestion } from "@/features/quizzes/components/TakeQuizTab/MCQQuestion"
 import { OpenEndedQuestion } from "@/features/quizzes/components/TakeQuizTab/OpenEndedQuestion"
 import { ReviewScreen } from "@/features/quizzes/components/TakeQuizTab/ReviewScreen"
-import { QuizResult } from "@/features/quizzes/components/TakeQuizTab/QuizResult"
 import Countdown from "@/features/quizzes/components/TakeQuizTab/Countdown"
 
 export default function QuizTakePage() {
@@ -28,14 +27,11 @@ export default function QuizTakePage() {
     phase,
     currentIndex,
     answers,
-    attempt,
     currentQQ,
     isLast,
     startedAt,
     completedAt,
     start,
-    reset,
-    setResult,
     goBackFromReview,
     goPrev,
     setAnswer,
@@ -78,17 +74,11 @@ export default function QuizTakePage() {
         completedAt: completedAt!,
       },
       {
-        onSuccess: (data) => setResult(data),
+        onSuccess: (data) => router.replace(`/workspaces/${id}/quizzes/${quizId}/attempts/${data.id}`),
         onError: (err) =>
           toast.error(getApiErrorMessage(err, "Failed to submit quiz")),
       }
     )
-  }
-
-  function handleRetake() {
-    setCountdown(3)
-    setTimePassed(0)
-    reset()
   }
 
   if (phase === "countdown") {
@@ -103,17 +93,6 @@ export default function QuizTakePage() {
         onGoBack={goBackFromReview}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
-      />
-    )
-  }
-
-  if (phase === "result" && attempt) {
-    return (
-      <QuizResult
-        quiz={quiz!}
-        attempt={attempt}
-        onRetake={handleRetake}
-        onOverview={onOverview}
       />
     )
   }

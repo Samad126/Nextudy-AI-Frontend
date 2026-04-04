@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, CheckCircle, XCircle } from "lucide-react"
+import { ArrowLeft, CheckCircle, RotateCcw, XCircle } from "lucide-react"
 import { useGetQuizAttempt } from "@/features/quizzes/queries/use-get-quiz-attempt"
 import { Button } from "@/shared/ui/button"
 import { Skeleton } from "@/shared/ui/skeleton"
@@ -32,16 +32,27 @@ export default function AttemptDetailPage() {
 
   return (
     <div className="container flex flex-col gap-6 max-w-2xl mx-auto w-full">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => router.push(`/workspaces/${id}/quizzes/${quizId}/attempts`)}
+            className="-ml-1"
+          >
+            <ArrowLeft className="size-4" />
+          </Button>
+          <span className="font-medium">Attempt result</span>
+        </div>
         <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => router.push(`/workspaces/${id}/quizzes/${quizId}/attempts`)}
-          className="-ml-1"
+          size="sm"
+          variant="outline"
+          onClick={() => router.push(`/workspaces/${id}/quizzes/${quizId}/take`)}
+          className="gap-1.5"
         >
-          <ArrowLeft className="size-4" />
+          <RotateCcw className="size-3.5" />
+          Retake
         </Button>
-        <span className="font-medium">Attempt result</span>
       </div>
 
       <div className="flex items-center gap-4 rounded-xl border border-border bg-card px-5 py-4">

@@ -21,7 +21,7 @@ export default function QuizLayout({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 container">
         <Skeleton className="h-7 w-56" />
         <Skeleton className="h-4 w-80" />
         <div className="flex gap-2">
@@ -44,7 +44,7 @@ export default function QuizLayout({
 
   return (
     <>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 container">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
