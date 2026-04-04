@@ -1,7 +1,9 @@
-import { Bot, FileText, Pencil, TriangleAlert } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { ArrowUp, Bot, FileText, Pencil, TriangleAlert, X } from "lucide-react"
 import { UserAvatar } from "./UserAvatar"
 import type { LocalChatMessage } from "@/features/chat/hooks/use-chat"
 import { useCitation } from "@/features/workbench/context/citation-context"
+import { cn } from "@/lib/utils"
 
 export type { LocalChatMessage as ChatMessage }
 
@@ -12,9 +14,42 @@ export function ChatMessageBubble({
 }: {
   message: LocalChatMessage
   userName?: string
-  onEdit?: (id: string, currentContent: string) => void
+  onEdit?: (id: string, newContent: string) => void
 }) {
   const { onCitationClick: onSourceClick } = useCitation()
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(message.content)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    if (editing) {
+      textareaRef.current?.focus()
+      const len = textareaRef.current?.value.length ?? 0
+      textareaRef.current?.setSelectionRange(len, len)
+    }
+  }, [editing])
+
+  function handleStartEdit() {
+    setDraft(message.content)
+    setEditing(true)
+  }
+
+  function handleCancel() {
+    setEditing(false)
+    setDraft(message.content)
+  }
+
+  function handleSubmit() {
+    const trimmed = draft.trim()
+    if (!trimmed || trimmed === message.content) { handleCancel(); return }
+    onEdit?.(message.id, trimmed)
+    setEditing(false)
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSubmit() }
+    if (e.key === "Escape") handleCancel()
+  }
 
   if (message.role === "system") {
     return (
@@ -32,25 +67,61 @@ export function ChatMessageBubble({
   if (message.role === "user") {
     return (
       <div className="group flex justify-end items-end gap-2">
-        {onEdit && (
+        {!editing && onEdit && (
           <button
-            onClick={() => onEdit(message.id, message.content)}
+            onClick={handleStartEdit}
             className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded text-muted-foreground hover:text-foreground"
             aria-label="Edit message"
           >
             <Pencil className="size-3.5" />
           </button>
         )}
-        <div className="max-w-[78%] rounded-2xl rounded-br-sm bg-primary px-4 py-2.5">
-          <p className="text-sm text-primary-foreground leading-relaxed">
-            {message.content}
-          </p>
-          {message.isEdited && (
-            <span className="text-[10px] text-primary-foreground/60 mt-0.5 block">
-              edited
-            </span>
-          )}
-        </div>
+
+        {editing ? (
+          <div className="flex-1 max-w-[78%] flex items-end gap-2 rounded-2xl rounded-br-sm border border-primary/50 bg-card px-3 py-2">
+            <textarea
+              ref={textareaRef}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={handleKeyDown}
+              rows={1}
+              className="flex-1 resize-none bg-transparent text-sm text-foreground outline-none leading-relaxed max-h-32 overflow-y-auto"
+              style={{ fieldSizing: "content" } as React.CSSProperties}
+            />
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                onClick={handleCancel}
+                className="flex size-6 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Cancel edit"
+              >
+                <X className="size-3" />
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={!draft.trim()}
+                className={cn(
+                  "flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity",
+                  !draft.trim() && "opacity-40"
+                )}
+                aria-label="Save edit"
+              >
+                <ArrowUp className="size-3" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="max-w-[78%] rounded-2xl rounded-br-sm bg-primary px-4 py-2.5">
+            <p className="text-sm text-primary-foreground leading-relaxed">
+              {message.content}
+            </p>
+            {message.isEdited && (
+              <span className="text-[10px] text-primary-foreground/60 mt-0.5 block">
+                edited
+              </span>
+            )}
+          </div>
+        )}
+
         <UserAvatar name={userName ?? "You"} />
       </div>
     )

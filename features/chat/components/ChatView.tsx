@@ -25,7 +25,6 @@ export function ChatView({
   onFirstMessage,
 }: ChatViewProps) {
   const [input, setInput] = useState("")
-  const [editingId, setEditingId] = useState<string | null>(null)
   const autoSendTriggered = useRef(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const { messages, isTyping, isStreaming, isConnected, sendMessage, editMessage } = useChat({
@@ -33,7 +32,6 @@ export function ChatView({
     initialMessages,
   })
 
-  // Send the first message automatically once chatId + socket are ready
   useEffect(() => {
     if (!autoSend || !chatId || !isConnected || autoSendTriggered.current) return
     autoSendTriggered.current = true
@@ -49,10 +47,7 @@ export function ChatView({
     const trimmed = input.trim()
     if (!trimmed || isTyping || !isConnected) return
 
-    if (editingId) {
-      editMessage(editingId, trimmed)
-      setEditingId(null)
-    } else if (!chatId && onFirstMessage) {
+    if (!chatId && onFirstMessage) {
       onFirstMessage(trimmed)
     } else {
       sendMessage(trimmed)
@@ -65,15 +60,6 @@ export function ChatView({
       e.preventDefault()
       handleSend()
     }
-    if (e.key === "Escape" && editingId) {
-      setEditingId(null)
-      setInput("")
-    }
-  }
-
-  function handleEditRequest(id: string, currentContent: string) {
-    setEditingId(id)
-    setInput(currentContent)
   }
 
   return (
@@ -84,7 +70,7 @@ export function ChatView({
             key={msg.id}
             message={msg}
             userName={userName}
-            onEdit={msg.role === "user" ? handleEditRequest : undefined}
+            onEdit={msg.role === "user" ? editMessage : undefined}
           />
         ))}
         {isTyping && !isStreaming && <TypingIndicator />}
@@ -97,13 +83,7 @@ export function ChatView({
         onKeyDown={handleKeyDown}
         onSend={handleSend}
         disabled={isTyping || !isConnected}
-        placeholder={
-          !isConnected
-            ? "Connecting…"
-            : editingId
-              ? "Edit your message… (Esc to cancel)"
-              : "Ask follow-up questions..."
-        }
+        placeholder={!isConnected ? "Connecting…" : "Ask follow-up questions..."}
       />
     </div>
   )
