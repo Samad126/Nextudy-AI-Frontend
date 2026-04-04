@@ -1,15 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { FolderPlus, Folders } from "lucide-react"
+import { FolderPlus } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { Skeleton } from "@/shared/ui/skeleton"
-import { useGetResourceGroups } from "../queries/use-get-resource-groups"
-import { useGetResources } from "../queries/use-get-resources"
-import { ResourceGroupCard } from "./ResourceGroupCard"
-import { CreateGroupDialog } from "./CreateGroupDialog"
+import { useGetResourceGroups } from "../../queries/use-get-resource-groups"
+import { useGetResources } from "../../queries/use-get-resources"
 import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
 import { can } from "@/lib/permissions"
+import { ResourceGroupCard } from "./ResourceGroupCard"
+import { CreateGroupDialog } from "./CreateGroupDialog"
+import { GroupsLoadingSkeleton } from "./GroupsLoadingSkeleton"
+import { GroupsEmptyState } from "./GroupsEmptyState"
 
 interface GroupsTabProps {
   workspaceId: number
@@ -41,20 +43,9 @@ export function GroupsTab({ workspaceId }: GroupsTabProps) {
         )}
       </div>
 
-      {/* List */}
+      {/* List / empty states */}
       {isLoading ? (
-        <div className="flex flex-col gap-2">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-3 rounded-xl border border-border px-4 py-3">
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="h-5 w-8 rounded-full ml-2" />
-              <div className="ml-auto flex gap-1">
-                <Skeleton className="size-6 rounded-md" />
-                <Skeleton className="size-6 rounded-md" />
-              </div>
-            </div>
-          ))}
-        </div>
+        <GroupsLoadingSkeleton />
       ) : groups && groups.length > 0 ? (
         <div className="flex flex-col gap-2">
           {groups.map((group) => (
@@ -67,20 +58,7 @@ export function GroupsTab({ workspaceId }: GroupsTabProps) {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border py-16 text-center">
-          <div className="flex size-14 items-center justify-center rounded-full bg-muted">
-            <Folders className="size-6 text-muted-foreground" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-foreground">No groups yet</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Organize your resources into groups</p>
-          </div>
-          {canEdit && (
-            <Button size="sm" variant="outline" onClick={() => setCreateOpen(true)} className="mt-1">
-              Create a group
-            </Button>
-          )}
-        </div>
+        <GroupsEmptyState canEdit={canEdit} onCreateClick={() => setCreateOpen(true)} />
       )}
 
       <CreateGroupDialog open={createOpen} setOpen={setCreateOpen} workspaceId={workspaceId} />

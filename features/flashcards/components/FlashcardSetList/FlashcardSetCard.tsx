@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { MoreVertical, Pencil, Trash2 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
-import { FlashcardSetSummary, Difficulty } from "../types/flashcard"
+import { FlashcardSetSummary, Difficulty } from "../../types/flashcard"
 import { DifficultyBadge } from "@/shared/components/DifficultyBadge"
 import { Button } from "@/shared/ui/button"
 import { Badge } from "@/shared/ui/badge"
@@ -14,8 +14,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu"
-import { DeleteSetDialog } from "./DeleteSetDialog"
-import { EditSetDialog } from "./EditSetDialog"
+import { DeleteSetDialog } from "../DeleteSetDialog"
+import { EditSetDialog } from "../EditSetDialog"
 import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
 import { can } from "@/lib/permissions"
 

@@ -7,7 +7,7 @@ import { ArrowLeft, Pencil, Trash2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { cn } from "@/lib/utils"
 import { useGetFlashcardSet } from "@/features/flashcards/queries/use-get-flashcard-set"
-import { FlashcardSetDetailSkeleton } from "@/features/flashcards/components/FlashcardSetDetailSkeleton"
+import { FlashcardSetDetailSkeleton } from "@/features/flashcards/components/FlashcardSetList/FlashcardSetDetailSkeleton"
 import { DeleteSetDialog } from "@/features/flashcards/components/DeleteSetDialog"
 import { EditSetDialog } from "@/features/flashcards/components/EditSetDialog"
 

@@ -15,9 +15,9 @@ import {
 } from "@/shared/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { ResourceTypeIcon } from "./ResourceTypeIcon"
-import { useDeleteResource } from "../mutations/use-delete-resource"
-import { useAddResourceToGroup } from "../mutations/use-add-resource-to-group"
-import { useRemoveResourceFromGroup } from "../mutations/use-remove-resource-from-group"
+import { useDeleteResource } from "../../mutations/use-delete-resource"
+import { useAddResourceToGroup } from "../../mutations/use-add-resource-to-group"
+import { useRemoveResourceFromGroup } from "../../mutations/use-remove-resource-from-group"
 import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
 import { can } from "@/lib/permissions"
 

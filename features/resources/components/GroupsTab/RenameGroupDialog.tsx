@@ -14,7 +14,7 @@ import {
 } from "@/shared/ui/dialog"
 import { Button } from "@/shared/ui/button"
 import { FormField } from "@/shared/components/form-field"
-import { useRenameResourceGroup } from "../mutations/use-rename-resource-group"
+import { useRenameResourceGroup } from "../../mutations/use-rename-resource-group"
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),

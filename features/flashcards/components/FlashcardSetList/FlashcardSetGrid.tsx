@@ -1,4 +1,4 @@
-import { FlashcardSetSummary, Difficulty } from "../types/flashcard"
+import { FlashcardSetSummary, Difficulty } from "../../types/flashcard"
 import { FlashcardSetCard } from "./FlashcardSetCard"
 
 interface FlashcardSetGridProps {

@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/ui/dialog"
-import { useUploadResource } from "../mutations/use-upload-resource"
+import { useUploadResource } from "../../mutations/use-upload-resource"
 
 interface UploadDialogProps {
   open: boolean
