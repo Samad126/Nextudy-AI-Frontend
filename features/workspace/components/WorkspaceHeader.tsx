@@ -3,12 +3,13 @@
 import Link from "next/link"
 import { useCallback } from "react"
 import { useParams, usePathname, useRouter } from "next/navigation"
-import { BookOpen, FileText, LayoutDashboard, Shuffle, Layers } from "lucide-react"
+import { BookOpen, FileText, LayoutDashboard, Shuffle, Layers, LogOut } from "lucide-react"
 import { Logo } from "@/shared/components/logo"
 import { useAuth } from "@/shared/providers/auth-provider"
 import { useGetWorkspaces } from "@/features/workspace/queries/use-get-workspaces"
 import { useGetUserProfile } from "@/features/landing/queries/useGetUserProfile"
 import { NotificationBell } from "@/features/notifications/components/NotificationBell"
+import { Button } from "@/shared/ui/button"
 import { cn } from "@/lib/utils"
 import { WorkspacePill } from "./WorkspacePill"
 import { UserMenu } from "./UserMenu"
@@ -27,8 +28,12 @@ function isLinkActive(href: string, pathname: string, baseUrl: string) {
     : pathname.startsWith(`${baseUrl}${href}`)
 }
 
-/* ── WorkspaceHeader ───────────────────────────────────────────── */
-export function WorkspaceHeader() {
+interface HeaderProps {
+  variant?: "workspace" | "simple"
+}
+
+/* ── Header ────────────────────────────────────────────────────── */
+export function WorkspaceHeader({ variant = "workspace" }: HeaderProps) {
   const { id } = useParams<{ id: string }>()
   const pathname = usePathname()
   const router = useRouter()
@@ -44,6 +49,26 @@ export function WorkspaceHeader() {
   const handleGoToWorkspaces = useCallback(() => router.push("/workspaces"), [router])
   const handleSettings = useCallback(() => router.push(`/workspaces/${id}/settings/profile`), [router, id])
   const onWorkspaceSettings = useCallback(() => router.push(`/workspaces/${id}/settings/workspaces`), [router, id])
+
+  if (variant === "simple") {
+    return (
+      <header className="flex items-center justify-between border-b border-border px-5 h-14">
+        <Logo size="sm" />
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <LogOut className="size-4" />
+            Logout
+          </Button>
+        </div>
+      </header>
+    )
+  }
 
   return (
     <>

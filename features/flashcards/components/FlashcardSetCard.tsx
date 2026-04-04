@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu"
 import { DeleteSetDialog } from "./DeleteSetDialog"
+import { EditSetDialog } from "./EditSetDialog"
 import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
 import { can } from "@/lib/permissions"
 
@@ -25,6 +26,7 @@ interface FlashcardSetCardProps {
 
 export function FlashcardSetCard({ set, workspaceId }: FlashcardSetCardProps) {
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
   const { role } = useWorkspaceRole()
   const canEdit = role !== undefined && can.editContent(role)
 
@@ -48,6 +50,10 @@ export function FlashcardSetCard({ set, workspaceId }: FlashcardSetCardProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setEditOpen(true)}>
+                  <Pencil className="size-3.5 mr-2" />
+                  Edit
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-destructive focus:text-destructive"
                   onClick={() => setDeleteOpen(true)}
@@ -93,6 +99,12 @@ export function FlashcardSetCard({ set, workspaceId }: FlashcardSetCardProps) {
         open={deleteOpen}
         setOpen={setDeleteOpen}
         setId={set.id}
+        workspaceId={workspaceId}
+      />
+      <EditSetDialog
+        open={editOpen}
+        setOpen={setEditOpen}
+        set={set}
         workspaceId={workspaceId}
       />
     </>

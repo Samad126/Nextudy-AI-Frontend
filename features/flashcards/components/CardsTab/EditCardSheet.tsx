@@ -7,11 +7,11 @@ import { z } from "zod"
 import { toast } from "sonner"
 import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/shared/ui/sheet"
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/ui/dialog"
 import { Button } from "@/shared/ui/button"
 import { Label } from "@/shared/ui/label"
 import { Textarea } from "@/shared/ui/textarea"
@@ -71,13 +71,13 @@ export function EditCardSheet({ open, setOpen, card, setId }: EditCardSheetProps
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetContent className="flex flex-col gap-0 sm:max-w-md">
-        <SheetHeader className="pb-4 border-b border-border">
-          <SheetTitle>Edit card</SheetTitle>
-        </SheetHeader>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Edit card</DialogTitle>
+        </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-5 px-4 flex-1 overflow-y-auto">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 mt-2">
           <div className="flex flex-col gap-1.5">
             <Label>Question <span className="text-destructive">*</span></Label>
             <Textarea
@@ -117,7 +117,7 @@ export function EditCardSheet({ open, setOpen, card, setId }: EditCardSheetProps
             </Select>
           </div>
 
-          <div className="flex justify-end gap-2 mt-auto pt-4 border-t border-border">
+          <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
               Cancel
             </Button>
@@ -126,7 +126,7 @@ export function EditCardSheet({ open, setOpen, card, setId }: EditCardSheetProps
             </Button>
           </div>
         </form>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
 }
