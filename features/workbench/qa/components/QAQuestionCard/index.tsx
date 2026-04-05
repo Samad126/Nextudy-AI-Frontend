@@ -8,7 +8,7 @@ import { AnswerOption } from "./AnswerOption"
 import { IconButton } from "./IconButton"
 import { Checkbox } from "@/shared/ui/checkbox"
 import { cn } from "@/lib/utils"
-import { useCitation } from "../../context/citation-context"
+import { useCitation } from "@/shared/context/citation-context"
 import type { SourceCitation } from "@/types"
 
 export interface QAOption {

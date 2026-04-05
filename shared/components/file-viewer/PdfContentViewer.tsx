@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef } from "react"
 import { ChevronUp, ChevronDown, Loader2, X } from "lucide-react"
 import { useGetResourceContent } from "@/features/resources/queries/use-get-resource-content"
-import { useCitation } from "@/features/workbench/context/citation-context"
+import { useCitation } from "@/shared/context/citation-context"
 
 interface PdfContentViewerProps {
   resourceId: number

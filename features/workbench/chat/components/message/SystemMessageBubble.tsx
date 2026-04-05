@@ -1,5 +1,5 @@
 import { TriangleAlert } from "lucide-react"
-import type { LocalChatMessage } from "@/features/chat/hooks/use-chat"
+import type { LocalChatMessage } from "@/features/workbench/chat/hooks/use-chat"
 
 export function SystemMessageBubble({ message }: { message: LocalChatMessage }) {
   return (

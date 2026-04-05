@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { PackageOpen } from "lucide-react"
 import { Resource } from "@/types"
-import { useCitation } from "../../context/citation-context"
+import { useCitation } from "@/shared/context/citation-context"
 import { ResourceTabBar } from "./ResourceTabBar"
 import { ResourceContent } from "./ResourceContent"
 

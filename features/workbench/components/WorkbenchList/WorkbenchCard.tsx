@@ -7,10 +7,10 @@ import { toast } from "sonner"
 import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import { Workbench } from "@/types"
 import { Button } from "@/shared/ui/button"
-import { useDeleteWorkbench } from "../mutations/use-delete-workbench"
 import { EditWorkbenchDialog } from "./EditWorkbenchDialog"
 import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
 import { can } from "@/lib/permissions"
+import { useDeleteWorkbench } from "../../mutations/use-delete-workbench"
 
 interface WorkbenchCardProps {
   workbench: Workbench

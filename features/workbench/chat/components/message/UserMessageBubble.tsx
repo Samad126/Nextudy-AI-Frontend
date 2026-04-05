@@ -3,7 +3,7 @@ import { Pencil } from "lucide-react"
 import { UserAvatar } from "../UserAvatar"
 import { MessageEditField } from "./MessageEditField"
 import { UserMessageContent } from "./UserMessageContent"
-import type { LocalChatMessage } from "@/features/chat/hooks/use-chat"
+import type { LocalChatMessage } from "@/features/workbench/chat/hooks/use-chat"
 
 export function UserMessageBubble({
   message,

@@ -15,7 +15,7 @@ import {
 import { Button } from "@/shared/ui/button"
 import { FormField } from "@/shared/components/form-field"
 import { Workbench } from "@/types"
-import { useUpdateWorkbench } from "../mutations/use-update-workbench"
+import { useUpdateWorkbench } from "../../mutations/use-update-workbench"
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),

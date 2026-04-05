@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { ChatMessageBubble } from "./message/ChatMessageBubble"
 import { TypingIndicator } from "./TypingIndicator"
 import { ChatInput } from "./ChatInput"
-import { useChat, type LocalChatMessage } from "@/features/chat/hooks/use-chat"
+import { useChat, type LocalChatMessage } from "@/features/workbench/chat/hooks/use-chat"
 
 
 export interface ChatViewProps {

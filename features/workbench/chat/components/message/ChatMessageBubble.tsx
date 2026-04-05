@@ -1,4 +1,4 @@
-import type { LocalChatMessage } from "@/features/chat/hooks/use-chat"
+import type { LocalChatMessage } from "@/features/workbench/chat/hooks/use-chat"
 import { SystemMessageBubble } from "./SystemMessageBubble"
 import { UserMessageBubble } from "./UserMessageBubble"
 import { AssistantMessageBubble } from "./AssistantMessageBubble"

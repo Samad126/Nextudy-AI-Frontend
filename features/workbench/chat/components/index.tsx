@@ -4,11 +4,11 @@ import { useState } from "react"
 import { ChatListHeader } from "./ChatListHeader"
 import { ChatView } from "./ChatView"
 import { useSocket } from "@/shared/providers/socket-provider"
-import { useGetWorkbenchChats, useGetChat } from "@/features/chat/queries/use-get-chat"
-import { useCreateChat } from "@/features/chat/mutations/use-create-chat"
-import { useDeleteChat } from "@/features/chat/mutations/use-delete-chat"
+import { useGetWorkbenchChats, useGetChat } from "@/features/workbench/chat/queries/use-get-chat"
+import { useCreateChat } from "@/features/workbench/chat/mutations/use-create-chat"
+import { useDeleteChat } from "@/features/workbench/chat/mutations/use-delete-chat"
 import { Loader2 } from "lucide-react"
-import type { LocalChatMessage } from "@/features/chat/hooks/use-chat"
+import type { LocalChatMessage } from "@/features/workbench/chat/hooks/use-chat"
 
 interface WorkbenchChatViewProps {
   workbenchId: number

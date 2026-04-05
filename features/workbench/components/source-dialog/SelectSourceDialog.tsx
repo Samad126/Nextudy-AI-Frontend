@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/ui/dialog"
-import { SelectSourceDialogContent } from "./source-dialog/SelectSourceDialogContent"
+import { SelectSourceDialogContent } from "./SelectSourceDialogContent"
 
 interface SelectSourceDialogProps {
   open: boolean

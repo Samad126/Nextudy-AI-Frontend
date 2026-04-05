@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams } from "next/navigation"
-import { WorkbenchList } from "@/features/workbench/components/WorkbenchList"
+import { WorkbenchList } from "@/features/workbench/components/WorkbenchList/WorkbenchList"
 
 export default function WorkbenchesPage() {
   const { id } = useParams<{ id: string }>()

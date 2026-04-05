@@ -4,11 +4,11 @@ import { useState } from "react"
 import { Plus, LayoutDashboard } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { Skeleton } from "@/shared/ui/skeleton"
-import { useGetWorkbenches } from "../queries/use-get-workbenches"
 import { WorkbenchCard } from "./WorkbenchCard"
 import { CreateWorkbenchDialog } from "./CreateWorkbenchDialog"
 import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
 import { can } from "@/lib/permissions"
+import { useGetWorkbenches } from "../../queries/use-get-workbenches"
 
 interface WorkbenchListProps {
   workspaceId: number

@@ -1,6 +1,6 @@
 import { Bot, FileText } from "lucide-react"
-import type { LocalChatMessage } from "@/features/chat/hooks/use-chat"
-import { useCitation } from "@/features/workbench/context/citation-context"
+import type { LocalChatMessage } from "@/features/workbench/chat/hooks/use-chat"
+import { useCitation } from "@/shared/context/citation-context"
 
 export function AssistantMessageBubble({ message }: { message: LocalChatMessage }) {
   const { onCitationClick: onSourceClick } = useCitation()
