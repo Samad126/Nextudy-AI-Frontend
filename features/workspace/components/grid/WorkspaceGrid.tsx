@@ -1,5 +1,5 @@
 import { Skeleton } from "@/shared/ui/skeleton"
-import { useGetWorkspaces } from "../queries/use-get-workspaces"
+import { useGetWorkspaces } from "../../queries/use-get-workspaces"
 import WorkspaceItem from "./WorkspaceItem"
 import NewWorkspaceCard from "./NewWorkspaceCard"
 

@@ -1,7 +1,7 @@
-import { Workspace } from "../types/workspace"
+import { Workspace } from "../../types/workspace"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
-import { formatDate } from "../util/util"
+import { formatDate } from "../../util/util"
 
 function WorkspaceItem({ ws }: { ws: Workspace }) {
   return (

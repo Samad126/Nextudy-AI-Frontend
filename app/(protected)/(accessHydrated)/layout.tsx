@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation"
 import FullpageSpinner from "@/shared/components/FullpageSpinner"
 import { useAuth } from "@/shared/providers/auth-provider"
-import { WorkspaceHeader } from "@/features/workspace/components/WorkspaceHeader"
+import { WorkspaceHeader } from "@/features/workspace/components/header/WorkspaceHeader"
 
 function AccessTokenHydratedRoute({ children }: { children: React.ReactNode }) {
   const { isAccessTokenHydrated } = useAuth()

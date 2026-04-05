@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Plus } from "lucide-react"
 import { Button } from "@/shared/ui/button"
-import CreateWorkspaceDialog from "@/features/workspace/components/CreateWorkspaceDialog"
+import CreateWorkspaceDialog from "@/features/workspace/components/grid/CreateWorkspaceDialog"
 
 export function CreateWorkspaceSection() {
   const [open, setOpen] = useState(false)

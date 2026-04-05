@@ -11,7 +11,7 @@ import {
 } from "@/shared/ui/dialog"
 import { Button } from "@/shared/ui/button"
 import { FormField } from "@/shared/components/form-field"
-import { useCreateWorkspace } from "../mutations/use-create-workspace"
+import { useCreateWorkspace } from "../../mutations/use-create-workspace"
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),

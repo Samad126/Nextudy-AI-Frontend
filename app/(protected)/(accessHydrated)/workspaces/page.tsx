@@ -1,5 +1,5 @@
 "use client"
-import WorkspaceGrid from "@/features/workspace/components/WorkspaceGrid"
+import WorkspaceGrid from "@/features/workspace/components/grid/WorkspaceGrid"
 
 export default function WorkspacesPage() {
   return (
