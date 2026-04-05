@@ -12,7 +12,7 @@ import {
 } from "@/shared/ui/table"
 import { Button } from "@/shared/ui/button"
 import { Skeleton } from "@/shared/ui/skeleton"
-import { AttemptRow } from "@/features/quizzes/components/AttemptsTab/AttemptRow"
+import { AttemptRow } from "@/features/quizzes/components/QuizDetail/Attempts/AttemptRow"
 
 export default function QuizAttemptsPage() {
   const { id, quizId } = useParams<{ id: string; quizId: string }>()

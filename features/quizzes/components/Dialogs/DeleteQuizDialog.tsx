@@ -10,7 +10,7 @@ import {
   DialogDescription,
 } from "@/shared/ui/dialog"
 import { Button } from "@/shared/ui/button"
-import { useDeleteQuiz } from "../mutations/use-delete-quiz"
+import { useDeleteQuiz } from "../../mutations/use-delete-quiz"
 
 interface DeleteQuizDialogProps {
   open: boolean

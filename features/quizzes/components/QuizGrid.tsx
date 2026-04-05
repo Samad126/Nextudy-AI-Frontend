@@ -1,5 +1,5 @@
 import { QuizSummary } from "../types/quiz"
-import { QuizCard } from "./QuizCard"
+import { QuizCard } from "./QuizCard/QuizCard"
 
 interface QuizGridProps {
   quizzes: QuizSummary[]

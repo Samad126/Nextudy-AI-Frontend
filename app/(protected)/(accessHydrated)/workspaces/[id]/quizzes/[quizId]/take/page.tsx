@@ -4,17 +4,16 @@ import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { getApiErrorMessage } from "@/lib/api/get-api-error"
-import { ArrowLeft, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import { ArrowLeft, Loader2 } from "lucide-react"
 import { useGetQuiz } from "@/features/quizzes/queries/use-get-quiz"
 import { useTakeQuiz } from "@/features/quizzes/hooks/use-take-quiz"
 import { useSubmitQuizAttempt } from "@/features/quizzes/mutations/use-submit-quiz-attempt"
 import { Button } from "@/shared/ui/button"
-import { Progress } from "@/shared/ui/progress"
-import { Badge } from "@/shared/ui/badge"
-import { MCQQuestion } from "@/features/quizzes/components/TakeQuizTab/MCQQuestion"
-import { OpenEndedQuestion } from "@/features/quizzes/components/TakeQuizTab/OpenEndedQuestion"
-import { ReviewScreen } from "@/features/quizzes/components/TakeQuizTab/ReviewScreen"
-import Countdown from "@/features/quizzes/components/TakeQuizTab/Countdown"
+import Countdown from "@/features/quizzes/components/QuizDetail/TakeQuiz/Countdown"
+import { ReviewScreen } from "@/features/quizzes/components/QuizDetail/TakeQuiz/ReviewScreen"
+import { QuizProgressBar } from "@/features/quizzes/components/QuizDetail/TakeQuiz/QuizProgressBar"
+import { QuizQuestionCard } from "@/features/quizzes/components/QuizDetail/TakeQuiz/QuizQuestionCard"
+import { QuizNavigation } from "@/features/quizzes/components/QuizDetail/TakeQuiz/QuizNavigation"
 
 export default function QuizTakePage() {
   const { id, quizId } = useParams<{ id: string; quizId: string }>()
@@ -41,9 +40,7 @@ export default function QuizTakePage() {
   const [countdown, setCountdown] = useState(3)
   const [timePassed, setTimePassed] = useState(0)
 
-  const { mutate: submit, isPending: isSubmitting } = useSubmitQuizAttempt(
-    Number(quizId)
-  )
+  const { mutate: submit, isPending: isSubmitting } = useSubmitQuizAttempt(Number(quizId))
 
   const onOverview = () => router.push(`/workspaces/${id}/quizzes/${quizId}`)
 
@@ -75,15 +72,12 @@ export default function QuizTakePage() {
       },
       {
         onSuccess: (data) => router.replace(`/workspaces/${id}/quizzes/${quizId}/attempts/${data.id}`),
-        onError: (err) =>
-          toast.error(getApiErrorMessage(err, "Failed to submit quiz")),
+        onError: (err) => toast.error(getApiErrorMessage(err, "Failed to submit quiz")),
       }
     )
   }
 
-  if (phase === "countdown") {
-    return <Countdown countdown={countdown} />
-  }
+  if (phase === "countdown") return <Countdown countdown={countdown} />
 
   if (phase === "review") {
     return (
@@ -106,77 +100,34 @@ export default function QuizTakePage() {
     )
   }
 
-  const currentQ = currentQQ?.question
-  const progress = ((currentIndex + 1) / questions.length) * 100
-  const currentAnswer = answers[currentQQ.id]
-
   return (
     <div className="container mx-auto flex w-full max-w-2xl flex-col gap-6">
       <div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onOverview}
-          className="-ml-2"
-        >
+        <Button variant="ghost" size="sm" onClick={onOverview} className="-ml-2">
           <ArrowLeft className="mr-1 size-4" /> Back to overview
         </Button>
       </div>
 
-      <div className="flex items-center gap-3">
-        <span className="text-sm whitespace-nowrap text-muted-foreground">
-          Question {currentIndex + 1} of {questions.length}
-        </span>
-        <Progress value={progress} className="h-1.5 flex-1" />
-        <span className="text-sm whitespace-nowrap text-muted-foreground tabular-nums">
-          {Math.floor(timePassed / 60)}:
-          {String(timePassed % 60).padStart(2, "0")}
-        </span>
-      </div>
+      <QuizProgressBar
+        current={currentIndex}
+        total={questions.length}
+        timePassed={timePassed}
+      />
 
-      <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6">
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="px-1.5 py-0 text-[10px]">
-            {currentQ.question_type === "mcq" ? "MCQ" : "Open-ended"}
-          </Badge>
-          <span className="text-xs text-muted-foreground">
-            #{currentIndex + 1}
-          </span>
-        </div>
+      <QuizQuestionCard
+        quizQuestion={currentQQ}
+        currentIndex={currentIndex}
+        currentAnswer={answers[currentQQ.id]}
+        onSelect={(choiceId) => setAnswer(currentQQ.id, choiceId)}
+        onChange={(v) => setAnswer(currentQQ.id, v)}
+      />
 
-        <p className="text-base leading-relaxed font-medium text-foreground">
-          {currentQ.title}
-        </p>
-
-        {currentQ.question_type === "mcq" && currentQ.mcqChoices ? (
-          <MCQQuestion
-            choices={currentQ.mcqChoices}
-            selected={typeof currentAnswer === "number" ? currentAnswer : null}
-            onSelect={(choiceId) => setAnswer(currentQQ.id, choiceId)}
-          />
-        ) : (
-          <OpenEndedQuestion
-            value={typeof currentAnswer === "string" ? currentAnswer : ""}
-            onChange={(v) => setAnswer(currentQQ.id, v)}
-          />
-        )}
-      </div>
-
-      <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          onClick={goPrev}
-          disabled={currentIndex === 0}
-        >
-          <ChevronLeft className="mr-1 size-4" />
-          Previous
-        </Button>
-
-        <Button onClick={goNext}>
-          {isLast ? "Review & Submit" : "Next"}
-          {!isLast && <ChevronRight className="ml-1 size-4" />}
-        </Button>
-      </div>
+      <QuizNavigation
+        currentIndex={currentIndex}
+        isLast={isLast}
+        onPrev={goPrev}
+        onNext={goNext}
+      />
     </div>
   )
 }

@@ -2,18 +2,11 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { MoreVertical, Trash2 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
-import { QuizSummary } from "../types/quiz"
+import { QuizSummary } from "../../types/quiz"
 import { Badge } from "@/shared/ui/badge"
-import { Button } from "@/shared/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu"
-import { DeleteQuizDialog } from "./DeleteQuizDialog"
+import { DeleteQuizDialog } from "../Dialogs/DeleteQuizDialog"
+import { QuizCardMenu } from "./QuizCardMenu"
 import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
 import { can } from "@/lib/permissions"
 
@@ -32,32 +25,7 @@ export function QuizCard({ quiz, workspaceId }: QuizCardProps) {
   return (
     <>
       <div className="group relative rounded-xl border border-border bg-card overflow-hidden transition-all duration-200 hover:border-primary/30 hover:shadow-sm">
-        {/* Kebab menu */}
-        {canEdit && (
-          <div className="absolute top-2.5 right-2.5 z-10">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity bg-card/80 backdrop-blur-sm"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <MoreVertical className="size-3.5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive"
-                  onClick={() => setDeleteOpen(true)}
-                >
-                  <Trash2 className="size-3.5 mr-2" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
+        {canEdit && <QuizCardMenu onDelete={() => setDeleteOpen(true)} />}
 
         {/* Card body */}
         <Link

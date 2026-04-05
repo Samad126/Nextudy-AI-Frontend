@@ -1,7 +1,7 @@
-import { QuizQuestion } from "../../types/quiz"
 import { Badge } from "@/shared/ui/badge"
 import { DifficultyBadge } from "@/shared/components/DifficultyBadge"
 import type { Difficulty } from "@/shared/components/DifficultyBadge"
+import { QuizQuestion } from "@/features/quizzes/types/quiz"
 
 interface QuestionRowProps {
   quizQuestion: QuizQuestion

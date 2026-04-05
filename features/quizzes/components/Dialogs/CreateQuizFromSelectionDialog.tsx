@@ -17,7 +17,7 @@ import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 import { Textarea } from "@/shared/ui/textarea"
 import { Label } from "@/shared/ui/label"
-import { useCreateQuiz } from "../mutations/use-create-quiz"
+import { useCreateQuiz } from "../../mutations/use-create-quiz"
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),

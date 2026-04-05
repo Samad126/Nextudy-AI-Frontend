@@ -2,8 +2,8 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { useGetQuiz } from "@/features/quizzes/queries/use-get-quiz"
-import { QuestionRow } from "@/features/quizzes/components/OverviewTab/QuestionRow"
 import { Button } from "@/shared/ui/button"
+import { QuestionRow } from "@/features/quizzes/components/QuizDetail/Overview/QuestionRow"
 
 export default function QuizOverviewPage() {
   const { id, quizId } = useParams<{ id: string; quizId: string }>()
