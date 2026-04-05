@@ -45,7 +45,7 @@ export function RegenerateQuestionDialog({
 }: RegenerateQuestionDialogProps) {
   const { mutate: regenerate, isPending } = useRegenerateQuestion(workbenchId)
 
-  const { control, handleSubmit, watch, reset } = useForm<FormValues>({
+  const { control, handleSubmit, reset } = useForm<FormValues>({
     defaultValues: {
       regenerateFromScratch: false,
       questionType: question?.question_type ?? "mcq",
@@ -67,16 +67,12 @@ export function RegenerateQuestionDialog({
 
   if (!question) return null
 
-  const questionType = watch("questionType")
-  const answerSource = watch("answerSource")
-  const fileDisabled = questionType === "mcq"
-
   function onSubmit(data: FormValues) {
     regenerate(
       {
         id: question!.id,
         regenerateFromScratch: data.regenerateFromScratch,
-        answerSource: fileDisabled && data.answerSource === "file" ? "ai" : data.answerSource,
+        answerSource: data.answerSource,
         questionType: data.questionType,
         difficulty: (data.difficulty as ApiQuestionDifficulty) || undefined,
       },
@@ -167,18 +163,11 @@ export function RegenerateQuestionDialog({
                     <SelectContent>
                       <SelectItem value="ai">AI</SelectItem>
                       <SelectItem value="mixed">Mixed</SelectItem>
-                      <SelectItem value="file" disabled={fileDisabled}>
-                        File {fileDisabled ? "(unavailable for MCQ)" : ""}
-                      </SelectItem>
+                      <SelectItem value="file">File</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
               />
-              {fileDisabled && answerSource === "file" && (
-                <p className="text-xs text-destructive">
-                  File-verbatim answers are not supported for MCQ
-                </p>
-              )}
             </div>
 
             {/* Difficulty */}

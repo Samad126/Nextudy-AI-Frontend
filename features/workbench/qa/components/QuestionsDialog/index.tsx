@@ -1,6 +1,6 @@
 "use client"
 
-import { useForm, Controller } from "react-hook-form"
+import { useForm, Controller, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 import { getApiErrorMessage } from "@/lib/api/get-api-error"
 import {
@@ -21,6 +21,8 @@ import type {
   ApiQuestionDifficultyMixed,
   CreateQuestionsInput,
 } from "@/types"
+import { SegmentedControl } from "./SegmentedControl"
+import { SelectField } from "./SelectField"
 
 interface QuestionsDialogProps {
   open: boolean
@@ -40,70 +42,6 @@ interface FormValues {
   count: string
 }
 
-const SEGMENT_BASE =
-  "flex-1 rounded-md py-1 text-xs font-medium transition-colors cursor-pointer"
-const SEGMENT_ACTIVE = "bg-background shadow-sm text-foreground"
-const SEGMENT_INACTIVE = "text-muted-foreground hover:text-foreground"
-
-function SegmentedControl<T extends string>({
-  value,
-  onChange,
-  options,
-}: {
-  value: T
-  onChange: (v: T) => void
-  options: { label: string; value: T }[]
-}) {
-  return (
-    <div className="flex gap-0.5 rounded-lg bg-muted p-0.5">
-      {options.map((opt) => (
-        <button
-          key={opt.value}
-          type="button"
-          onClick={() => onChange(opt.value)}
-          className={`${SEGMENT_BASE} ${value === opt.value ? SEGMENT_ACTIVE : SEGMENT_INACTIVE}`}
-        >
-          {opt.label}
-        </button>
-      ))}
-    </div>
-  )
-}
-
-function SelectField<T extends string>({
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  label: string
-  value: T
-  onChange: (v: T) => void
-  options: { label: string; value: T }[]
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label className="text-xs font-medium">{label}</Label>
-      <div className="flex gap-1.5 flex-wrap">
-        {options.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => onChange(opt.value)}
-            className={`rounded-md border px-3 py-1 text-xs font-medium transition-colors cursor-pointer ${
-              value === opt.value
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-border bg-card text-muted-foreground hover:text-foreground hover:border-foreground/30"
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 export function QuestionsDialog({
   open,
   setOpen,
@@ -112,7 +50,7 @@ export function QuestionsDialog({
 }: QuestionsDialogProps) {
   const { mutate: createQuestions, isPending } = useCreateQuestions(workbenchId)
 
-  const { control, handleSubmit, watch, register } = useForm<FormValues>({
+  const { control, handleSubmit, register } = useForm<FormValues>({
     defaultValues: {
       generationMode: "AI_GENERATED",
       answerSource: "file",
@@ -124,8 +62,8 @@ export function QuestionsDialog({
     },
   })
 
-  const generationMode = watch("generationMode")
-  const generationScope = watch("generationScope")
+  const generationMode = useWatch({ control, name: "generationMode" })
+  const generationScope = useWatch({ control, name: "generationScope" })
 
   function onSubmit(data: FormValues) {
     const input: CreateQuestionsInput = {
