@@ -1,7 +1,7 @@
 import { Badge } from "@/shared/ui/badge"
 import { MCQQuestion } from "./MCQQuestion"
 import { OpenEndedQuestion } from "./OpenEndedQuestion"
-import type { QuizQuestion } from "../../types/quiz"
+import { QuizQuestion } from "@/features/quizzes/types/quiz"
 
 interface QuizQuestionCardProps {
   quizQuestion: QuizQuestion

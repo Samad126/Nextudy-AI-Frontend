@@ -1,9 +1,9 @@
 "use client"
 
-import { QuizQuestion } from "../../types/quiz"
 import { Button } from "@/shared/ui/button"
 import { Badge } from "@/shared/ui/badge"
 import { cn } from "@/lib/utils"
+import { QuizQuestion } from "@/features/quizzes/types/quiz"
 
 type Answers = Record<number, string | number>
 

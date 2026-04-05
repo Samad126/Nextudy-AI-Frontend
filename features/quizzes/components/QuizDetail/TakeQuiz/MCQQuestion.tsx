@@ -1,6 +1,6 @@
 "use client"
 
-import { MCQChoice } from "../../types/quiz"
+import { MCQChoice } from "@/features/quizzes/types/quiz"
 import { cn } from "@/lib/utils"
 
 interface MCQQuestionProps {

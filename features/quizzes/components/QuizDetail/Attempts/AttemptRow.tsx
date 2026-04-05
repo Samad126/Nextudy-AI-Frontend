@@ -1,7 +1,7 @@
 import { formatDistanceToNow, intervalToDuration } from "date-fns"
-import { QuizAttempt } from "../../types/quiz"
 import { TableCell, TableRow } from "@/shared/ui/table"
 import { Button } from "@/shared/ui/button"
+import { QuizAttempt } from "@/features/quizzes/types/quiz"
 
 function formatDuration(start: string, end?: string): string {
   if (!end) return "—"
