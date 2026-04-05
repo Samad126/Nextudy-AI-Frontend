@@ -1,7 +1,7 @@
 "use client"
 
 import { use } from "react"
-import { WorkspacesTab } from "@/features/settings/components/WorkspacesTab"
+import { WorkspacesTab } from "@/features/settings/components/workspace/WorkspacesTab"
 
 export default function WorkspacesSettingsPage({
   params,

@@ -1,7 +1,7 @@
 "use client"
 
 import { use } from "react"
-import { MembersPage } from "@/features/settings/components/MembersPage"
+import { MembersPage } from "@/features/settings/components/members/MembersPage"
 
 export default function MembersRoute({
   params,

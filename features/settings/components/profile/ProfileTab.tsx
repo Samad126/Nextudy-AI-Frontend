@@ -9,8 +9,8 @@ import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 import { Label } from "@/shared/ui/label"
 import { Skeleton } from "@/shared/ui/skeleton"
-import { useGetProfile } from "../queries/use-get-profile"
-import { useUpdateProfile } from "../mutations/use-update-profile"
+import { useGetProfile } from "../../queries/use-get-profile"
+import { useUpdateProfile } from "../../mutations/use-update-profile"
 import { ThemeSwitcher } from "./ThemeSwitcher"
 
 interface FormValues {
