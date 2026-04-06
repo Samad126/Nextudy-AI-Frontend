@@ -13,12 +13,13 @@ import {
 import { Button } from "@/shared/ui/button"
 import { Skeleton } from "@/shared/ui/skeleton"
 import { AttemptRow } from "@/features/quizzes/components/QuizDetail/Attempts/AttemptRow"
+import { PageError } from "@/shared/components/page-error"
 
 export default function QuizAttemptsPage() {
   const { id, quizId } = useParams<{ id: string; quizId: string }>()
   const router = useRouter()
 
-  const { data: attempts, isLoading } = useGetQuizAttempts(Number(quizId))
+  const { data: attempts, isLoading, error, refetch } = useGetQuizAttempts(Number(quizId))
 
   if (isLoading) {
     return (
@@ -28,6 +29,10 @@ export default function QuizAttemptsPage() {
         ))}
       </div>
     )
+  }
+
+  if (error) {
+    return <PageError error={error} onRetry={refetch} />
   }
 
   if (!attempts || attempts.length === 0) {

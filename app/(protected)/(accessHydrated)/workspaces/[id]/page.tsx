@@ -8,6 +8,8 @@ import { WorkspaceTutorial } from "@/features/workspace/components/overview/Work
 import { useGetMembers } from "@/features/workspace/queries/use-get-members"
 import { useGetWorkspaceOverview } from "@/features/workspace/queries/use-get-workspace-overview"
 import { useGetWorkspaces } from "@/features/workspace/queries/use-get-workspaces"
+import { PageError } from "@/shared/components/page-error"
+import { Skeleton } from "@/shared/ui/skeleton"
 import { format } from "date-fns"
 import { BookOpen, Calendar, FileText, Layers, Shuffle, Users } from "lucide-react"
 import { useParams } from "next/navigation"
@@ -19,13 +21,17 @@ export default function WorkspaceHome() {
 
   const { data: workspaces } = useGetWorkspaces()
   const { data: members } = useGetMembers(workspaceId)
-  const { data: overview } = useGetWorkspaceOverview(workspaceId)
+  const { data: overview, isLoading: overviewLoading, error: overviewError, refetch } = useGetWorkspaceOverview(workspaceId)
 
   const workspace = workspaces?.find((ws) => ws.id === workspaceId)
 
   const recentWorkbenches = overview?.recentWorkbenches ?? []
   const recentQuizzes = overview?.recentQuizzes ?? []
   const recentFlashcardSets = overview?.recentFlashcardSets ?? []
+
+  if (overviewError) {
+    return <PageError error={overviewError} onRetry={refetch} />
+  }
 
   return (
     <>
@@ -60,88 +66,104 @@ export default function WorkspaceHome() {
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard
-            label="Resources"
-            value={overview?.counts.resources}
-            icon={FileText}
-            href={`${base}/resources`}
-            colorClass="bg-sky-500/10 text-sky-500"
-          />
-          <StatCard
-            label="Workbenches"
-            value={overview?.counts.workbenches}
-            icon={BookOpen}
-            href={`${base}/workbenches`}
-            colorClass="bg-teal-500/10 text-teal-500"
-          />
-          <StatCard
-            label="Quizzes"
-            value={overview?.counts.quizzes}
-            icon={Shuffle}
-            href={`${base}/quizzes`}
-            colorClass="bg-green-500/10 text-green-500"
-          />
-          <StatCard
-            label="Flashcard Sets"
-            value={overview?.counts.flashcardSets}
-            icon={Layers}
-            href={`${base}/flashcards`}
-            colorClass="bg-amber-500/10 text-amber-500"
-          />
+          {overviewLoading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))
+          ) : (
+            <>
+              <StatCard
+                label="Resources"
+                value={overview?.counts.resources}
+                icon={FileText}
+                href={`${base}/resources`}
+                colorClass="bg-sky-500/10 text-sky-500"
+              />
+              <StatCard
+                label="Workbenches"
+                value={overview?.counts.workbenches}
+                icon={BookOpen}
+                href={`${base}/workbenches`}
+                colorClass="bg-teal-500/10 text-teal-500"
+              />
+              <StatCard
+                label="Quizzes"
+                value={overview?.counts.quizzes}
+                icon={Shuffle}
+                href={`${base}/quizzes`}
+                colorClass="bg-green-500/10 text-green-500"
+              />
+              <StatCard
+                label="Flashcard Sets"
+                value={overview?.counts.flashcardSets}
+                icon={Layers}
+                href={`${base}/flashcards`}
+                colorClass="bg-amber-500/10 text-amber-500"
+              />
+            </>
+          )}
         </div>
 
         {/* Recent sections */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <RecentSection
-            title="Recent Workbenches"
-            href={`${base}/workbenches`}
-          >
-            {recentWorkbenches.length > 0 ? (
-              recentWorkbenches.map((wb) => (
-                <RecentItem
-                  key={wb.id}
-                  title={wb.name}
-                  subtitle={format(new Date(wb.created_at), "MMM d, yyyy")}
-                  href={`${base}/workbenches/${wb.id}`}
-                />
-              ))
-            ) : (
-              <EmptyRow label="No workbenches yet" />
-            )}
-          </RecentSection>
+          {overviewLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-32 rounded-xl" />
+            ))
+          ) : (
+            <>
+              <RecentSection
+                title="Recent Workbenches"
+                href={`${base}/workbenches`}
+              >
+                {recentWorkbenches.length > 0 ? (
+                  recentWorkbenches.map((wb) => (
+                    <RecentItem
+                      key={wb.id}
+                      title={wb.name}
+                      subtitle={format(new Date(wb.created_at), "MMM d, yyyy")}
+                      href={`${base}/workbenches/${wb.id}`}
+                    />
+                  ))
+                ) : (
+                  <EmptyRow label="No workbenches yet" />
+                )}
+              </RecentSection>
 
-          <RecentSection title="Recent Quizzes" href={`${base}/quizzes`}>
-            {recentQuizzes.length > 0 ? (
-              recentQuizzes.map((q) => (
-                <RecentItem
-                  key={q.id}
-                  title={q.title}
-                  subtitle={format(new Date(q.created_at), "MMM d, yyyy")}
-                  href={`${base}/quizzes/${q.id}`}
-                />
-              ))
-            ) : (
-              <EmptyRow label="No quizzes yet" />
-            )}
-          </RecentSection>
+              <RecentSection title="Recent Quizzes" href={`${base}/quizzes`}>
+                {recentQuizzes.length > 0 ? (
+                  recentQuizzes.map((q) => (
+                    <RecentItem
+                      key={q.id}
+                      title={q.title}
+                      subtitle={format(new Date(q.created_at), "MMM d, yyyy")}
+                      href={`${base}/quizzes/${q.id}`}
+                    />
+                  ))
+                ) : (
+                  <EmptyRow label="No quizzes yet" />
+                )}
+              </RecentSection>
 
-          <RecentSection
-            title="Recent Flashcard Sets"
-            href={`${base}/flashcards`}
-          >
-            {recentFlashcardSets.length > 0 ? (
-              recentFlashcardSets.map((fs) => (
-                <RecentItem
-                  key={fs.id}
-                  title={fs.title}
-                  subtitle={format(new Date(fs.created_at), "MMM d, yyyy")}
-                  href={`${base}/flashcards/${fs.id}`}
-                />
-              ))
-            ) : (
-              <EmptyRow label="No flashcard sets yet" />
-            )}
-          </RecentSection>
+              <RecentSection
+                title="Recent Flashcard Sets"
+                href={`${base}/flashcards`}
+              >
+                {recentFlashcardSets.length > 0 ? (
+                  recentFlashcardSets.map((fs) => (
+                    <RecentItem
+                      key={fs.id}
+                      title={fs.title}
+                      subtitle={format(new Date(fs.created_at), "MMM d, yyyy")}
+                      href={`${base}/flashcards/${fs.id}`}
+                    />
+                  ))
+                ) : (
+                  <EmptyRow label="No flashcard sets yet" />
+                )}
+              </RecentSection>
+            </>
+          )}
         </div>
       </div>
     </>

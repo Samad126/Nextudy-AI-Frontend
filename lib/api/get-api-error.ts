@@ -7,3 +7,7 @@ export function getApiErrorMessage(error: unknown, fallback: string): string {
   }
   return fallback
 }
+
+export function isNotFoundError(error: unknown): boolean {
+  return isAxiosError(error) && error.response?.status === 404
+}

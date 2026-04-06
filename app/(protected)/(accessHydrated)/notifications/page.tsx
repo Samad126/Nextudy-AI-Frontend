@@ -7,6 +7,7 @@ import { useGetNotifications } from "@/features/notifications/queries/use-get-no
 import { FilterTab } from "@/features/notifications/types"
 import { filterNotifications } from "@/features/notifications/util"
 import { getApiErrorMessage } from "@/lib/api/get-api-error"
+import { PageError } from "@/shared/components/page-error"
 import { cn } from "@/lib/utils"
 import { Button } from "@/shared/ui/button"
 import { Skeleton } from "@/shared/ui/skeleton"
@@ -18,7 +19,7 @@ import { toast } from "sonner"
 export default function NotificationsRoute() {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<FilterTab>("all")
-  const { data: notifications = [], isLoading } = useGetNotifications()
+  const { data: notifications = [], isLoading, error, refetch } = useGetNotifications()
   const { mutate: markAllRead, isPending: isMarkingAll } = useMarkAllRead()
 
   const unreadCount = notifications.filter((n) => !n.is_read).length
@@ -82,6 +83,8 @@ export default function NotificationsRoute() {
             <Skeleton key={i} className="h-20 rounded-lg" />
           ))}
         </div>
+      ) : error ? (
+        <PageError error={error} onRetry={refetch} />
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Bell className="mb-3 size-12 text-muted-foreground/40" />

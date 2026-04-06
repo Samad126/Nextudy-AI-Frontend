@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, notFound } from "next/navigation"
 import { useGetQuiz } from "@/features/quizzes/queries/use-get-quiz"
 import { DeleteQuizDialog } from "@/features/quizzes/components/Dialogs/DeleteQuizDialog"
 import { QuizDetailSkeleton } from "@/features/quizzes/components/QuizDetail/QuizDetailSkeleton"
 import { QuizDetailHeader } from "@/features/quizzes/components/QuizDetail/QuizDetailHeader"
+import { PageError } from "@/shared/components/page-error"
+import { isNotFoundError } from "@/lib/api/get-api-error"
 
 export default function QuizLayout({
   children,
@@ -16,19 +18,18 @@ export default function QuizLayout({
   const router = useRouter()
   const [deleteOpen, setDeleteOpen] = useState(false)
 
-  const { data: quiz, isLoading } = useGetQuiz(Number(quizId))
+  const { data: quiz, isLoading, error, refetch } = useGetQuiz(Number(quizId))
 
   if (isLoading) {
     return <QuizDetailSkeleton />
   }
 
-  if (!quiz) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <p className="text-sm text-muted-foreground">Quiz not found</p>
-      </div>
-    )
+  if (error) {
+    if (isNotFoundError(error)) notFound()
+    return <PageError error={error} onRetry={refetch} />
   }
+
+  if (!quiz) return null
 
   return (
     <>

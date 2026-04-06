@@ -8,6 +8,7 @@ import { FlashcardSetGrid } from "@/features/flashcards/components/FlashcardSetL
 import { FlashcardSetsEmptyState } from "@/features/flashcards/components/FlashcardSetList/FlashcardSetsEmptyState"
 import { FlashcardSetsSkeleton } from "@/features/flashcards/components/FlashcardSetList/FlashcardSetsSkeleton"
 import { CreateFlashcardSetModal } from "@/features/flashcards/components/CreateFlashcardSetModal"
+import { PageError } from "@/shared/components/page-error"
 import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
 import { can } from "@/lib/permissions"
 
@@ -15,7 +16,7 @@ export default function FlashcardsPage() {
   const { id } = useParams<{ id: string }>()
   const workspaceId = Number(id)
   const [createOpen, setCreateOpen] = useState(false)
-  const { data: sets, isLoading } = useGetFlashcardSets(workspaceId)
+  const { data: sets, isLoading, error, refetch } = useGetFlashcardSets(workspaceId)
   const { role } = useWorkspaceRole()
   const canEdit = role !== undefined && can.editContent(role)
 
@@ -32,6 +33,8 @@ export default function FlashcardsPage() {
 
         {isLoading ? (
           <FlashcardSetsSkeleton />
+        ) : error ? (
+          <PageError error={error} onRetry={refetch} />
         ) : !sets || sets.length === 0 ? (
           <FlashcardSetsEmptyState onCreateClick={canEdit ? () => setCreateOpen(true) : undefined} />
         ) : (

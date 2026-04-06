@@ -65,7 +65,7 @@ axiosPrivate.interceptors.response.use(
       error.config
 
     if (
-      (error.response?.status !== 401 && error.response?.status !== 403) ||
+      (error.response?.status !== 401) ||
       originalRequest._retry
     ) {
       return Promise.reject(error)

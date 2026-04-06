@@ -7,6 +7,7 @@ import { useGetQuizzes } from "@/features/quizzes/queries/use-get-quizzes"
 import { QuizGrid } from "@/features/quizzes/components/QuizGrid"
 import { QuizEmptyState } from "@/features/quizzes/components/QuizEmptyState"
 import { QuizzesSkeleton } from "@/features/quizzes/components/QuizzesSkeleton"
+import { PageError } from "@/shared/components/page-error"
 import { useWorkspaceRole } from "@/shared/providers/workspace-role-provider"
 import { can } from "@/lib/permissions"
 
@@ -17,7 +18,7 @@ function informWorkbench() {
 export default function QuizzesPage() {
   const { id } = useParams<{ id: string }>()
   const workspaceId = Number(id)
-  const { data: quizzes, isLoading } = useGetQuizzes(workspaceId)
+  const { data: quizzes, isLoading, error, refetch } = useGetQuizzes(workspaceId)
   const { role } = useWorkspaceRole()
   const canEdit = role !== undefined && can.editContent(role)
 
@@ -33,6 +34,8 @@ export default function QuizzesPage() {
 
       {isLoading ? (
         <QuizzesSkeleton />
+      ) : error ? (
+        <PageError error={error} onRetry={refetch} />
       ) : !quizzes || quizzes.length === 0 ? (
         <QuizEmptyState onCreateClick={canEdit ? informWorkbench : undefined} />
       ) : (

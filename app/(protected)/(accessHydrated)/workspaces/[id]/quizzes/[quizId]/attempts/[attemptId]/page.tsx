@@ -1,19 +1,27 @@
 "use client"
 
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, notFound } from "next/navigation"
 import { ArrowLeft, RotateCcw } from "lucide-react"
 import { useGetQuizAttempt } from "@/features/quizzes/queries/use-get-quiz-attempt"
 import { Button } from "@/shared/ui/button"
 import { AttemptDetailSkeleton } from "@/features/quizzes/components/QuizDetail/AttemptDetail/AttemptDetailSkeleton"
 import { AttemptScoreSummary } from "@/features/quizzes/components/QuizDetail/AttemptDetail/AttemptScoreSummary"
 import { AttemptAnswerCard } from "@/features/quizzes/components/QuizDetail/AttemptDetail/AttemptAnswerCard"
+import { PageError } from "@/shared/components/page-error"
+import { isNotFoundError } from "@/lib/api/get-api-error"
 
 export default function AttemptDetailPage() {
   const { id, quizId, attemptId } = useParams<{ id: string; quizId: string; attemptId: string }>()
   const router = useRouter()
-  const { data: attempt, isLoading } = useGetQuizAttempt(Number(quizId), Number(attemptId))
+  const { data: attempt, isLoading, error, refetch } = useGetQuizAttempt(Number(quizId), Number(attemptId))
 
   if (isLoading) return <AttemptDetailSkeleton />
+
+  if (error) {
+    if (isNotFoundError(error)) notFound()
+    return <PageError error={error} onRetry={refetch} />
+  }
+
   if (!attempt) return null
 
   const totalQ = attempt.answers.length

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useParams, useRouter, usePathname } from "next/navigation"
+import { useParams, useRouter, usePathname, notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
@@ -10,6 +10,8 @@ import { useGetFlashcardSet } from "@/features/flashcards/queries/use-get-flashc
 import { FlashcardSetDetailSkeleton } from "@/features/flashcards/components/FlashcardSetList/FlashcardSetDetailSkeleton"
 import { DeleteSetDialog } from "@/features/flashcards/components/DeleteSetDialog"
 import { EditSetDialog } from "@/features/flashcards/components/EditSetDialog"
+import { PageError } from "@/shared/components/page-error"
+import { isNotFoundError } from "@/lib/api/get-api-error"
 
 export default function FlashcardSetLayout({ children }: { children: React.ReactNode }) {
   const { id, flashcardId } = useParams<{ id: string; flashcardId: string }>()
@@ -20,9 +22,15 @@ export default function FlashcardSetLayout({ children }: { children: React.React
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
 
-  const { data: set, isLoading } = useGetFlashcardSet(setId)
+  const { data: set, isLoading, error, refetch } = useGetFlashcardSet(setId)
 
   if (isLoading) return <FlashcardSetDetailSkeleton />
+
+  if (error) {
+    if (isNotFoundError(error)) notFound()
+    return <PageError error={error} onRetry={refetch} />
+  }
+
   if (!set) return null
 
   const base = `/workspaces/${id}/flashcards/${flashcardId}`

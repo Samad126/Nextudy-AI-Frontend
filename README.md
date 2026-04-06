@@ -132,7 +132,7 @@ The root `app/layout.tsx` reads the `refreshToken` cookie with `next/headers` at
 
 **Refresh queue (concurrent requests)**
 
-`axiosPrivate` attaches a `Bearer` header to every outgoing request. Its response interceptor catches `401`/`403` responses. While a token refresh is already in-flight (`isRefreshing = true`), subsequent failing requests are suspended in a `queue` array. Once the refresh resolves, all queued requests are retried with the new token. If the refresh itself fails, the queue is rejected, the in-memory token is cleared, and a global `auth:session-expired` CustomEvent is dispatched so that `AuthProvider` can redirect the user to `/login` and clear the React Query cache.
+`axiosPrivate` attaches a `Bearer` header to every outgoing request. Its response interceptor catches `401` response. While a token refresh is already in-flight (`isRefreshing = true`), subsequent failing requests are suspended in a `queue` array. Once the refresh resolves, all queued requests are retried with the new token. If the refresh itself fails, the queue is rejected, the in-memory token is cleared, and a global `auth:session-expired` CustomEvent is dispatched so that `AuthProvider` can redirect the user to `/login` and clear the React Query cache.
 
 **Logout**
 
