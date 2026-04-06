@@ -38,6 +38,33 @@ export const TESTIMONIALS = [
 export const PRIVACY_POLICY_LAST_UPDATED = "March 2026"
 export const PRIVACY_POLICY_EMAIL = "samed192005@gmail.com"
 
+export const PRIVACY_POLICY_SECTIONS = [
+  {
+    title: "Information We Collect",
+    body: "We collect information you provide directly: name, email address, and password when you register. We also collect usage data such as study activity, quiz results, and flashcard interactions to improve your experience.",
+  },
+  {
+    title: "How We Use Your Information",
+    body: "We use your information to operate and improve Nextudy, personalise your study experience, send essential account notifications, and ensure platform security. We do not sell your data to third parties.",
+  },
+  {
+    title: "Data Storage & Security",
+    body: "Your data is stored on secure servers. We use industry-standard encryption in transit and at rest. Passwords are hashed and never stored in plain text.",
+  },
+  {
+    title: "Cookies",
+    body: "We use essential cookies to keep you signed in and remember your preferences. No third-party advertising cookies are used.",
+  },
+  {
+    title: "Third-Party Services",
+    body: "We use Google OAuth for sign-in. If you choose this option, Google may collect data according to their own privacy policy. We receive only your name and email from Google.",
+  },
+  {
+    title: "Your Rights",
+    body: "You may request access to, correction of, or deletion of your personal data at any time by contacting us. You can delete your account from your profile settings.",
+  },
+] as const
+
 export const FOOTER_LINKS = [
   {
     heading: "Product",

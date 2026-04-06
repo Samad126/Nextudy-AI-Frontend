@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/di
 import { FormField } from "@/shared/components/form-field"
 import { PasswordField } from "@/shared/components/password-field"
 import { GoogleButton, OrDivider } from "@/features/auth/components"
-import { PrivacyPolicyContent } from "@/features/landing/components/Privacy-Policy-Content"
+import { PrivacyPolicyContent } from "@/features/landing/components/PrivacyPolicyContent"
 import { registerSchema, type RegisterFormValues, getPasswordStrength } from "@/lib/validations/auth"
 import { useRegister } from "@/features/auth/mutations/use-register"
 import { getApiErrorMessage } from "@/lib/api/get-api-error"

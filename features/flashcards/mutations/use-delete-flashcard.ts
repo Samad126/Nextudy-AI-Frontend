@@ -1,6 +1,6 @@
 import { axiosPrivate } from "@/lib/api/client"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { flashcardKeys } from "../types/flashcard"
+import { flashcardKeys, type FlashcardSet } from "../types/flashcard"
 
 interface DeleteFlashcardInput {
   setId: number
@@ -19,9 +19,9 @@ export function useDeleteFlashcard(setId: number) {
     onMutate: async ({ cardId }) => {
       await queryClient.cancelQueries({ queryKey: flashcardKeys.detail(setId) })
       const previous = queryClient.getQueryData(flashcardKeys.detail(setId))
-      queryClient.setQueryData(flashcardKeys.detail(setId), (old: any) => {
+      queryClient.setQueryData<FlashcardSet>(flashcardKeys.detail(setId), (old) => {
         if (!old) return old
-        return { ...old, cards: old.cards.filter((c: any) => c.id !== cardId) }
+        return { ...old, cards: old.cards.filter((c) => c.id !== cardId) }
       })
       return { previous }
     },

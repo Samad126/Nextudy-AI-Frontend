@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { PrivacyPolicyContent } from "@/features/landing/components/Privacy-Policy-Content"
+import { PrivacyPolicyContent } from "@/features/landing/components/PrivacyPolicyContent"
 
 export const metadata: Metadata = {
   title: "Privacy Policy — Nextudy",
