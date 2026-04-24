@@ -68,7 +68,7 @@ export function WorkbenchDetailLayout({
   const selectedResources: Resource[] = allResources.filter((r) =>
     selectedIds.has(r.id)
   )
-  const hasResources = selectedIds.size > 0
+  const hasResources = selectedIds.size > 0;
 
   const contentQueries = useQueries({
     queries: selectedResources.map((r) => ({
@@ -78,7 +78,9 @@ export function WorkbenchDetailLayout({
       retry: false,
     })),
   })
-  const isExtracting = contentQueries.some((q) => !q.isLoading && q.data === null)
+  const isExtracting = contentQueries.some(
+    (q, i) => selectedResources[i].type !== "IMAGE" && !q.isLoading && q.data === null
+  );
 
   const handleGenerate = useCallback(() => {
     setQuestionsDialog({ open: true, isRegen: false })
